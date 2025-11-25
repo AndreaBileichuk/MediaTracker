@@ -1,0 +1,6 @@
+@MediaTracker.Presentation_HostAddress = http://localhost:5025
+
+GET {{MediaTracker.Presentation_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
