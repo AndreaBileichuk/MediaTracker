@@ -142,4 +142,16 @@ static class ServiceExtensions
 
         return services;
     }
+
+    public static IServiceCollection AddCaching(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddStackExchangeRedisCache(redisOptions =>
+        {
+            var conection = configuration.GetConnectionString("Redis");
+
+            redisOptions.Configuration = conection;
+        });
+
+        return services;
+    }
 }

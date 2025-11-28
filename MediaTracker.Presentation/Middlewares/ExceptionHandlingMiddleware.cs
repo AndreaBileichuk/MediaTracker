@@ -17,7 +17,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
             await context.Response.WriteAsJsonAsync(new
             {
                 error = "Internal Server Error",
-                message = e.Message
+                message = "Something went wrong"
             });
         }
     } 

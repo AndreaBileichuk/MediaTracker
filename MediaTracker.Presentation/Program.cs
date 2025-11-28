@@ -21,7 +21,8 @@ builder.Services
     .AddJwtAuth(builder.Configuration)
     .AddApplicationServices()
     .AddValidation()
-    .AddCustomCors();
+    .AddCustomCors()
+    .AddCaching(builder.Configuration);
 
 var app = builder.Build();
 
