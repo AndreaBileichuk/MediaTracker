@@ -1,37 +1,42 @@
 ﻿using System.Net.Http.Json;
 using MediaTracker.BLL.DTOs.MediaProvider;
+using MediaTracker.BLL.Errors;
+using MediaTracker.BLL.Infrastructure;
 using MediaTracker.BLL.Settings;
 using MediaTracker.DAL.Entities;
 using Microsoft.Extensions.Options;
 
 namespace MediaTracker.BLL.Services.MediaProvider;
 
-public class TmdbService(IHttpClientFactory httpClientFactory, IOptions<TmdbOptions> options) : IMediaProvider
+public class TmdbProviderService(IHttpClientFactory httpClientFactory, IOptions<TmdbOptions> options) : IMediaProviderService
 {
-    public async Task<List<IMediaProviderDto>> Search(string query)
+    public async Task<Result<List<IMediaProviderDto>>> Search(string query)
     {
         var client = httpClientFactory.CreateClient("TmdbClient");
         var response = await client.GetAsync($"search/movie?query={Uri.EscapeDataString(query)}&api_key={options.Value.ApiKey}");
         
         if (!response.IsSuccessStatusCode)
         {
-            return [];
+            return Result.Failure<List<IMediaProviderDto>>(MediaErrors.ProviderRequestFailed);
         }
 
         var tmdbResponse = await response.Content.ReadFromJsonAsync<TmdbProviderSearchResponseList>();
         
-        return tmdbResponse?.Results == null
-            ? new List<IMediaProviderDto>()
-            : tmdbResponse.Results
-                .Select(r =>
+        var resultList = tmdbResponse?.Results
+            .Select(r =>
+            {
+                if (!string.IsNullOrEmpty(r.PosterPath))
                 {
                     r.PosterPath = $"{options.Value.ImageBaseUrl}{r.PosterPath}";
-                    return (IMediaProviderDto)r;
-                })
-                .ToList();
+                }
+                return (IMediaProviderDto)r;
+            })
+            .ToList() ?? [];
+
+        return Result.Success(resultList);
     }
 
-    public async Task<MediaItem> GetByIdAsync(string externalId)
+    public async Task<Result<MediaItem>> GetByIdAsync(string externalId)
     {
         throw new NotImplementedException();
     }

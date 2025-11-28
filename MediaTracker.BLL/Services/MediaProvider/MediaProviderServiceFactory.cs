@@ -3,13 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MediaTracker.BLL.Services.MediaProvider;
 
-public class MediaProviderFactory(IServiceProvider provider)
+public class MediaProviderServiceFactory(IServiceProvider provider)
 {
-    public IMediaProvider GetProvider(EMediaType type)
+    public IMediaProviderService GetProvider(EMediaType type)
     {
         return type switch
         {
-            EMediaType.Movie => provider.GetRequiredService<TmdbService>(),
+            EMediaType.Movie => provider.GetRequiredService<TmdbProviderService>(),
             _ => throw new ArgumentException("No such media type")
         };
     }

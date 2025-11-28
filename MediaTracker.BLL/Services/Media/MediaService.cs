@@ -5,13 +5,11 @@ using MediaTracker.DAL.Enums;
 
 namespace MediaTracker.BLL.Services.Media;
 
-public class MediaService(MediaProviderFactory mediaProviderFactory) : IMediaService
+public class MediaService : IMediaService
 {
     public async Task<List<IMediaProviderDto>> Search(string query, EMediaType mediaType)
     {
-        var mediaProvider = mediaProviderFactory.GetProvider(mediaType);
-        
-        return await mediaProvider.Search(query);
+        throw new NotImplementedException();
     }
 
     public async Task<MediaItem> GetByIdAsync(string externalId, EMediaType type)

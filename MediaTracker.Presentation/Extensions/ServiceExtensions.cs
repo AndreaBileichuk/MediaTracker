@@ -110,10 +110,12 @@ static class ServiceExtensions
 
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddScoped<TmdbService>();
-        services.AddScoped<MediaProviderFactory>();
+        services.AddScoped<TmdbProviderService>();
+        services.AddScoped<MediaProviderServiceFactory>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IMediaService, MediaService>();
+        services.AddScoped<IMediaProviderManager, MediaProviderManager>();
+        services.AddScoped<IMediaProviderService, TmdbProviderService>();
         
         return services;
     }
