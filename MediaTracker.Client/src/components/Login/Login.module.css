@@ -1,0 +1,148 @@
+:root {
+    --eye_gap: 4px;
+}
+
+.container {
+    min-height: 100vh;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 7fr 3fr;
+}
+
+.login-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.loginBox {
+    max-width: 400px;
+    background: white;
+    padding: 48px 32px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.title {
+    margin: 0 0 32px 0;
+    font-size: 24px;
+    font-weight: 400;
+    color: #1a1a1a;
+    letter-spacing: -0.02em;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 8px;
+}
+
+.label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #525252;
+    letter-spacing: 0.01em;
+}
+
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+    color: #1a1a1a;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.15s ease;
+    font-family: inherit;
+}
+
+.input::placeholder {
+    color: #a3a3a3;
+}
+
+.input:focus {
+    border-color: #525252;
+}
+
+.eyeButton {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    transition: color 0.2s;
+}
+
+.eyeButton:hover {
+    color: #111827;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+}
+
+.button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: white;
+    background-color: #1a1a1a;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    font-family: inherit;
+}
+
+.button:hover {
+    background-color: #2a2a2a;
+}
+
+.button:active {
+    background-color: #0a0a0a;
+}
+
+.error {
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #b91c1c;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 2px;
+}
+
+.fieldError {
+    font-size: 12px;
+    color: #b91c1c;
+    margin-top: 2px;
+}
+
+.logo {
+    width: 80px;
+    margin-bottom: 10px;
+}

@@ -16,10 +16,12 @@ builder.Services
     .AddSwagger()
     .AddDatabase(builder.Configuration)
     .AddConfigOptions(builder.Configuration)
+    .AddHttpClients()
     .AddIdentityServices()
     .AddJwtAuth(builder.Configuration)
     .AddApplicationServices()
-    .AddValidation();
+    .AddValidation()
+    .AddCustomCors();
 
 var app = builder.Build();
 
@@ -36,6 +38,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCors("AllowFrontend");
 
 app.MapControllers();
 

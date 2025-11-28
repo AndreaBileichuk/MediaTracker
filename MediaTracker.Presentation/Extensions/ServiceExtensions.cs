@@ -3,12 +3,15 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediaTracker.BLL.DTOs.Validator;
 using MediaTracker.BLL.Services.Auth;
+using MediaTracker.BLL.Services.Media;
+using MediaTracker.BLL.Services.MediaProvider;
 using MediaTracker.BLL.Settings;
 using MediaTracker.DAL.Data;
 using MediaTracker.DAL.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MediaTracker.Presentation.Extensions;
@@ -50,8 +53,23 @@ static class ServiceExtensions
         services.Configure<JwtOptions>(
             configuration.GetSection(JwtOptions.SectionName)
         );
+
+        services.Configure<TmdbOptions>(
+            configuration.GetSection(TmdbOptions.SectionName)
+        );
         
         return services;
+    }
+
+    public static IServiceCollection AddHttpClients(this IServiceCollection service)
+    {
+        service.AddHttpClient("TmdbClient", (serviceProvider, client) =>
+        {
+            var options = serviceProvider.GetRequiredService<IOptions<TmdbOptions>>().Value;
+            client.BaseAddress = new Uri(options.BaseUrl);
+        });
+
+        return service;
     }
     
     public static IServiceCollection AddIdentityServices(this IServiceCollection services)
@@ -92,7 +110,10 @@ static class ServiceExtensions
 
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
+        services.AddScoped<TmdbService>();
+        services.AddScoped<MediaProviderFactory>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IMediaService, MediaService>();
         
         return services;
     }
@@ -102,6 +123,21 @@ static class ServiceExtensions
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
         
+        return services;
+    }
+
+    public static IServiceCollection AddCustomCors(this IServiceCollection services)
+    {
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowFrontend", policy =>
+            {
+                policy.WithOrigins("http://localhost:5174")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+
         return services;
     }
 }
