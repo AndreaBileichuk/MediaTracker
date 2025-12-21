@@ -23,6 +23,7 @@ public class AuthService(
     public async Task<Result<string>> LoginAsync(LoginRequest loginRequest)
     {
         var user = await userManager.FindByEmailAsync(loginRequest.Email);
+        
         if (user == null)
         {
             return Result.Failure<string>(AuthErrors.InvalidCredentials);
@@ -40,12 +41,6 @@ public class AuthService(
 
     public async Task<Result<string>> RegisterAsync(RegisterRequest registerRequest)
     {
-        var existingUser = await userManager.FindByEmailAsync(registerRequest.Email);
-        if (existingUser != null)
-        {
-            return Result.Failure<string>(AuthErrors.EmailTaken);
-        }
-
         var user = new ApplicationUser()
         {
             Email = registerRequest.Email,
@@ -53,7 +48,6 @@ public class AuthService(
         };
         
         var result = await userManager.CreateAsync(user, registerRequest.Password);
-        
         
         if (result.Succeeded)
         {

@@ -1,0 +1,55 @@
+import styles from "./MediaSearch.module.css";
+import { Link } from "react-router-dom";
+import type { ProvidedMedia } from "../../api/mediaApi.ts";
+import React from "react";
+
+interface MediaCardProps {
+    media: ProvidedMedia
+}
+
+const PLACEHOLDER_IMG = "https://placehold.co/220x330?text=No+Image";
+
+function MediaCard({ media }: MediaCardProps) {
+    function handleImageError(e: React.SyntheticEvent<HTMLImageElement, Event>) {
+        const img = e.currentTarget;
+        img.onerror = null;
+        img.src = PLACEHOLDER_IMG;
+    }
+
+    return (
+        <li className={styles.card}>
+            <Link to={`${media.id}`}
+                  style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+                <div className={styles.posterWrapper}>
+                    <img
+                        src={media.posterPath ?? PLACEHOLDER_IMG}
+                        alt={media.title}
+                        className={styles.poster}
+                        onError={handleImageError}
+                        loading="lazy"
+                    />
+                </div>
+
+                <div className={styles.content}>
+                    <h3 className={styles.title} title={media.title}>{media.title}</h3>
+
+                    <div className={styles.meta}>
+                        <span>
+                            {media.releaseDate
+                                ? new Date(media.releaseDate).getFullYear()
+                                : "Unknown"}
+                        </span>
+
+                        {media.isAdult && (
+                            <span className={styles.badge} style={{ borderColor: '#ff4444', color: '#ff4444' }}>
+                                18+
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </Link>
+        </li>
+    )
+}
+
+export default MediaCard;

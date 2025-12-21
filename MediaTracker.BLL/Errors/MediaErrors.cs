@@ -11,4 +11,9 @@ public static class MediaErrors
     public static readonly Error ExternalIdNotFound = new(
         "Media.ExternalIdNotFound", 
         "The media item with the provided external ID was not found.");
+
+    public static readonly Error NotFound = new(
+            "Media.NotFound",
+            "The media you're trying to find by id was not found."
+        );
 }

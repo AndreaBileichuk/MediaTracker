@@ -76,6 +76,7 @@ static class ServiceExtensions
     {
         services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         {
+            options.User.RequireUniqueEmail = true;
             options.SignIn.RequireConfirmedAccount = false;
         }).AddEntityFrameworkStores<ApplicationDbContext>();
         
@@ -135,6 +136,10 @@ static class ServiceExtensions
             options.AddPolicy("AllowFrontend", policy =>
             {
                 policy.WithOrigins("http://localhost:5174")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                
+                policy.WithOrigins("http://localhost:5173")
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });

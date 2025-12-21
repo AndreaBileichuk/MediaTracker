@@ -30,9 +30,6 @@ public class MediaItemConfiguration : IEntityTypeConfiguration<MediaItem>
 
         builder.Property(mi => mi.UserRating)
             .IsRequired(false);
-
-        builder.Property(mi => mi.UserNotes)
-            .HasMaxLength(300);
         
         builder.Property(mi => mi.DateAdded)
             .HasDefaultValueSql("CURRENT_TIMESTAMP");

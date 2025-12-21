@@ -12,33 +12,42 @@ public class ValidationAndResultFilter : IActionFilter
         if (context.ModelState.IsValid) return;
 
         var errors = context.ModelState
-            .SelectMany(kvp => kvp.Value!.Errors
-                .Select(e => new Error(kvp.Key, e.ErrorMessage))).ToArray();
+            .Where(x => x.Value!.Errors.Any())
+            .SelectMany(x => x.Value!.Errors.Select(e 
+                => new Error(e.ErrorMessage, e.ErrorMessage)))
+            .Distinct()
+            .ToArray();
 
-        var validationResult = ValidationResult.WithErrors(errors);
-        context.Result = new BadRequestObjectResult(
-            ActionResultFactory.ValidationActionResult(validationResult));
+        context.Result = new BadRequestObjectResult(ApiResponse.Validation(errors));
     }
 
     public void OnActionExecuted(ActionExecutedContext context)
     {
-        if (context.Result is ObjectResult objectResult
-            && objectResult.Value is Result result)
-        {
-            if (result is IValidationResult validationResult)
-            {
-                context.Result = new BadRequestObjectResult(ActionResultFactory.ValidationActionResult(validationResult));
-                return;
-            }
+        if (context.Result is not ObjectResult objectResult) return;
 
-            if (result.IsSuccess)
-            {
-                context.Result = new OkObjectResult(result);
-            }
-            else
-            {
-                context.Result = new BadRequestObjectResult(ActionResultFactory.ResultActionResult(result));
-            }
+        var value = objectResult.Value;
+
+        if (value is not Result result) return;
+        
+        var type = value.GetType();
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Result<>))
+        {
+            var dataProperty = type.GetProperty("Value");
+            var dataValue = dataProperty?.GetValue(value);
+
+            var apiResponse = ResponseFactory.FromGenericResult(result, dataValue);
+                
+            context.Result = result.IsSuccess 
+                ? new OkObjectResult(apiResponse) 
+                : new BadRequestObjectResult(apiResponse);
+        }
+        else
+        {
+            var apiResponse = ResponseFactory.FromResult(result);
+                
+            context.Result = result.IsSuccess 
+                ? new OkObjectResult(apiResponse) 
+                : new BadRequestObjectResult(apiResponse);
         }
     }
 }

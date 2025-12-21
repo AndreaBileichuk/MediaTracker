@@ -104,6 +104,13 @@ namespace MediaTracker.DAL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<int>("ExternalId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PosterPath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -117,10 +124,6 @@ namespace MediaTracker.DAL.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
-                    b.Property<string>("UserNotes")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
                     b.Property<int?>("UserRating")
                         .HasColumnType("integer");
 
@@ -132,6 +135,34 @@ namespace MediaTracker.DAL.Migrations
                         {
                             t.HasCheckConstraint("CK_MediaItems_UserRating_Range", "\"UserRating\" IS NULL OR (\"UserRating\" >= 1 AND \"UserRating\" <= 10)");
                         });
+                });
+
+            modelBuilder.Entity("MediaTracker.DAL.Entities.Note", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("MediaItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MediaItemId");
+
+                    b.ToTable("Notes", "App");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -277,6 +308,17 @@ namespace MediaTracker.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MediaTracker.DAL.Entities.Note", b =>
+                {
+                    b.HasOne("MediaTracker.DAL.Entities.MediaItem", "MediaItem")
+                        .WithMany("UserNotes")
+                        .HasForeignKey("MediaItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MediaItem");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -331,6 +373,11 @@ namespace MediaTracker.DAL.Migrations
             modelBuilder.Entity("MediaTracker.DAL.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("MediaItems");
+                });
+
+            modelBuilder.Entity("MediaTracker.DAL.Entities.MediaItem", b =>
+                {
+                    b.Navigation("UserNotes");
                 });
 #pragma warning restore 612, 618
         }

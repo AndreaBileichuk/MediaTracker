@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 function ProtectedRoute({ children } : Readonly<ProtectedRouteProps>) {
-    const isAuth = useSelector((state : RootState) => state.auth.isAuth);
+    const isAuth = useSelector((state : RootState) => state.auth.isAuthenticated);
 
     if(!isAuth) {
         return <Navigate to="/login" replace />;
