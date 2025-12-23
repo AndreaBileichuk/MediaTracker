@@ -6,9 +6,9 @@ namespace MediaTracker.BLL.Services.MediaProvider;
 
 public interface IMediaProviderService
 {
-    Task<Result<List<IMediaProviderDto>>> Search(string query);
+    Task<Result<MediaSearchResponse>> SearchAsync(string query, int page);
 
     Task<Result<IMediaProviderDetailsDto>> GetByIdAsync(string externalId);
     
-    Task<Result<List<IMediaProviderDto>>> GetTopRated();
+    Task<Result<MediaSearchResponse>> GetTopRatedAsync(int page = 1);
 }

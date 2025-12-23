@@ -9,30 +9,19 @@ namespace MediaTracker.BLL.Services.MediaProvider;
 
 public class TmdbProviderService(IHttpClientFactory httpClientFactory, IOptions<TmdbOptions> options) : IMediaProviderService
 {
-    public async Task<Result<List<IMediaProviderDto>>> Search(string query)
+    public async Task<Result<MediaSearchResponse>> SearchAsync(string query, int page)
     {
         var client = httpClientFactory.CreateClient("TmdbClient");
-        var response = await client.GetAsync($"search/movie?query={Uri.EscapeDataString(query)}&api_key={options.Value.ApiKey}");
+        var response = await client.GetAsync($"search/movie?query={Uri.EscapeDataString(query)}&page={page}&api_key={options.Value.ApiKey}");
         
         if (!response.IsSuccessStatusCode)
         {
-            return Result.Failure<List<IMediaProviderDto>>(MediaErrors.ProviderRequestFailed);
+            return Result.Failure<MediaSearchResponse>(MediaErrors.ProviderRequestFailed);
         }
-
-        var tmdbResponse = await response.Content.ReadFromJsonAsync<TmdbProviderSearchResponseList>();
         
-        var resultList = tmdbResponse?.Results
-            .Select(r =>
-            {
-                if (!string.IsNullOrEmpty(r.PosterPath))
-                {
-                    r.PosterPath = $"{options.Value.ImageBaseUrl}{r.PosterPath}";
-                }
-                return (IMediaProviderDto)r;
-            })
-            .ToList() ?? [];
+        Console.WriteLine(response.Content);
 
-        return Result.Success(resultList);
+        return await GetResultingList(response.Content);
     }
 
     public async Task<Result<IMediaProviderDetailsDto>> GetByIdAsync(string externalId)
@@ -66,8 +55,49 @@ public class TmdbProviderService(IHttpClientFactory httpClientFactory, IOptions<
         return Result.Success((IMediaProviderDetailsDto)tmdbMovie);
     }
 
-    public async Task<Result<List<IMediaProviderDto>>> GetTopRated()
+    public async Task<Result<MediaSearchResponse>> GetTopRatedAsync(int page)
     {
-        throw new NotImplementedException();
+        var client = httpClientFactory.CreateClient("TmdbClient");
+
+        var response = await client.GetAsync($"movie/top_rated?page={page}&api_key={options.Value.ApiKey}");
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            return Result.Failure<MediaSearchResponse>(MediaErrors.ProviderRequestFailed);
+        }
+        
+        return await GetResultingList(response.Content);
     }
+
+    private async Task<Result<MediaSearchResponse>> GetResultingList(HttpContent content)
+    {
+        try
+        {
+            var tmdbResponse = await content.ReadFromJsonAsync<TmdbProviderSearchResponseList>();
+
+            if (tmdbResponse is null)
+            {
+                return Result.Failure<MediaSearchResponse>(MediaErrors.ProviderInvalidResponse);
+            }
+
+            return Result.Success(new MediaSearchResponse
+            {
+                Results = tmdbResponse.Results.Select(r =>
+                {
+                    if (!string.IsNullOrWhiteSpace(r.PosterPath))
+                    {
+                        r.PosterPath = $"{options.Value.ImageBaseUrl}{r.PosterPath}";
+                    }
+                    
+                    return (IMediaProviderDto)r;
+                }).ToList(),
+                TotalPages = tmdbResponse.TotalPages
+            });
+        }
+        catch
+        {
+            return Result.Failure<MediaSearchResponse>(MediaErrors.ProviderInvalidResponse);
+        }
+    }
+
 }

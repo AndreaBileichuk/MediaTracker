@@ -27,4 +27,13 @@ public class TmdbProviderSearchResponseList
 {
     [JsonPropertyName("results")]
     public List<TmdbProviderSearchResponse> Results { get; set; }
+
+    [JsonPropertyName("total_pages")]
+    public int TotalPages { get; set; }
+}
+
+public class MediaSearchResponse
+{
+    public List<IMediaProviderDto> Results { get; set; } = [];
+    public int TotalPages { get; set; }
 }

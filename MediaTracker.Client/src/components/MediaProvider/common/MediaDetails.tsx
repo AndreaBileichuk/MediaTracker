@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
-import s from "./MediaSearch.module.css";
-import { mediaApi, type ProvidedMediaDetails } from "../../api/mediaApi.ts";
+import s from "../MediaProvider.module.css";
+import { mediaApi, type ProvidedMediaDetails } from "../../../api/mediaApi.ts";
 import { Calendar, Clock, Star, X } from "lucide-react";
 
 function MediaDetails() {

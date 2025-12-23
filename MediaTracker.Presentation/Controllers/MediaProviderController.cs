@@ -10,15 +10,15 @@ namespace MediaTracker.Presentation.Controllers;
 public class MediaProviderController(IMediaProviderManager mediaManager) : ControllerBase
 {
     [HttpGet]
-    public async Task<Result<List<IMediaProviderDto>>> Search(string query, EMediaType type)
+    public async Task<Result<MediaSearchResponse>> Search(string query, EMediaType type, int page = 1)
     {
-        return await mediaManager.Search(query, type);
+        return await mediaManager.SearchAsync(query, type, page);
     }
     
     [HttpGet("top-rated")]
-    public async Task<Result<List<IMediaProviderDto>>> GetTopRated(EMediaType type)
+    public async Task<Result<MediaSearchResponse>> GetTopRated([FromQuery] EMediaType type, [FromQuery] int page)
     {
-        return await mediaManager.GetTopRated(type);
+        return await mediaManager.GetTopRatedAsync(type, page);
     }
 
     [HttpGet("{id}")]

@@ -25,14 +25,23 @@ export interface Genre {
     name: string;
 }
 
+export interface MediaApiResponse {
+    results: ProvidedMedia[],
+    totalPages: number
+}
+
 export type MediaType = "book" | "movie";
 
 export const mediaApi = {
-    searchMedia: async (query: string, type: MediaType) => {
-        return await axiosClient.get<BackendResult<ProvidedMedia[]>>(`mediaprovider?query=${query}&type=${type}`);
+    searchMedia: async (query: string, type: MediaType, page: number) => {
+        return await axiosClient.get<BackendResult<MediaApiResponse>>(`mediaprovider?page=${page}&query=${query}&type=${type}`);
     },
 
     getMediaById: async (id: number, type: MediaType) => {
         return await axiosClient.get<BackendResult<ProvidedMediaDetails>>(`mediaprovider/${id}?type=${type}`);
+    },
+
+    getTopRated: async (type: MediaType, currentPage: number) => {
+        return await axiosClient.get<BackendResult<MediaApiResponse>>(`mediaprovider/top-rated?type=${type}&page=${currentPage}`);
     }
 };

@@ -8,9 +8,9 @@ public static class MediaErrors
         "Media.ProviderRequestFailed", 
         "Failed to fetch data from the external media provider.");
 
-    public static readonly Error ExternalIdNotFound = new(
-        "Media.ExternalIdNotFound", 
-        "The media item with the provided external ID was not found.");
+    public static readonly Error ProviderInvalidResponse = new(
+        "Media.ProviderInvalidResponse", 
+        "Something is wrong with provided data.");
 
     public static readonly Error NotFound = new(
             "Media.NotFound",

@@ -1,8 +1,6 @@
 ﻿using MediaTracker.BLL.DTOs.MediaProvider;
 using MediaTracker.BLL.Infrastructure;
-using MediaTracker.DAL.Entities;
 using MediaTracker.DAL.Enums;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
@@ -12,7 +10,7 @@ public class MediaProviderManager(
     MediaProviderServiceFactory mediaProviderServiceFactory, IDistributedCache distributedCache
     ) : IMediaProviderManager
 {
-    public async Task<Result<List<IMediaProviderDto>>> Search(string query, EMediaType type)
+    public async Task<Result<MediaSearchResponse>> SearchAsync(string query, EMediaType type, int page = 1)
     {        
         var key = $"media-provider-{query}-{type}";
 
@@ -22,7 +20,7 @@ public class MediaProviderManager(
         {
             try
             {
-                var cachedResult = JsonConvert.DeserializeObject<Result<List<IMediaProviderDto>>>(cachedMember);
+                var cachedResult = JsonConvert.DeserializeObject<Result<MediaSearchResponse>>(cachedMember);
 
                 if (cachedResult != null)
                 {
@@ -35,9 +33,9 @@ public class MediaProviderManager(
             }
         }
 
-        var result = await (mediaProviderServiceFactory.GetProvider(type)).Search(query);
+        var result = await (mediaProviderServiceFactory.GetProvider(type)).SearchAsync(query, page);
 
-        if (result is { IsSuccess: true, Value.Count: > 0 })
+        if (result is { IsSuccess: true, Value.Results.Count: > 0 })
         {
             await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result), new DistributedCacheEntryOptions
             {
@@ -85,8 +83,39 @@ public class MediaProviderManager(
         return result;
     }
 
-    public async Task<Result<List<IMediaProviderDto>>> GetTopRated(EMediaType type)
+    public async Task<Result<MediaSearchResponse>> GetTopRatedAsync(EMediaType type, int page = 1)
     {
-        throw new NotImplementedException();
+        var key = $"media-provider-top-rated-{type}";
+
+        var cachedMember = await distributedCache.GetStringAsync(key);
+
+        if (!string.IsNullOrEmpty(cachedMember))
+        {
+            try
+            {
+                var cachedResult = JsonConvert.DeserializeObject<Result<MediaSearchResponse>>(cachedMember);
+
+                if (cachedResult != null)
+                {
+                    return cachedResult;
+                }
+            }
+            catch (Exception)
+            {
+                await distributedCache.RemoveAsync(key);
+            }
+        }
+
+        var result = await (mediaProviderServiceFactory.GetProvider(type)).GetTopRatedAsync(page);
+
+        if (result is { IsSuccess: true, Value.Results.Count: > 0 })
+        {
+            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result), new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) 
+            });
+        }
+
+        return result;
     }
 }

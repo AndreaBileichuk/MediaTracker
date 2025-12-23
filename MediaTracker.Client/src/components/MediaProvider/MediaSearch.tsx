@@ -1,56 +1,71 @@
-import React, { useRef, useState } from "react";
-import styles from "./MediaSearch.module.css";
-import { mediaApi, type ProvidedMedia } from "../../api/mediaApi.ts";
-import { Outlet } from "react-router-dom";
-import MediaCard from "./MediaCard.tsx";
-
+import React, {useEffect, useState} from "react";
+import styles from "./MediaProvider.module.css";
+import {mediaApi, type MediaApiResponse} from "../../api/mediaApi.ts";
+import {Outlet} from "react-router-dom";
+import MediaList from "./common/MediaList.tsx";
+import Pagination from "../common/Pagination/Pagination.tsx";
 
 function MediaSearch() {
-    const [media, setMedia] = useState<ProvidedMedia[] | null>(null);
+    const [media, setMedia] = useState<MediaApiResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const input = useRef<HTMLInputElement>(null);
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
-    async function handleSearch() {
-        if (!input.current?.value) return;
+    const [inputValue, setInputValue] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+
+    async function fetchMedia(queryToFetch: string, page: number) {
+        if (!queryToFetch) return;
 
         try {
             setIsLoading(true);
 
-            const response = await mediaApi.searchMedia(input.current.value, "movie");
+            const response = await mediaApi.searchMedia(queryToFetch, "movie", page);
             const result = response.data;
 
             if (!result.isSuccess || !result.data) {
-                // Ideally toast, simplified for now
-                alert("Something went wrong");
                 setMedia(null);
                 return;
             }
 
             setMedia(result.data);
-        }
-        catch (error) {
+        } catch (error) {
             console.error("Network error:", error);
-        }
-        finally {
+        } finally {
             setIsLoading(false);
         }
     }
 
-    async function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-        if (e.key === 'Enter') await handleSearch();
+    useEffect(() => {
+        if (!searchQuery) return;
+        fetchMedia(searchQuery, currentPage);
+    }, [searchQuery, currentPage]);
+
+    function handleSearch() {
+        if (!inputValue.trim()) return;
+
+        setSearchQuery(inputValue);
+        setCurrentPage(1);
     }
+
+    function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.key === 'Enter') handleSearch();
+    }
+
+    const showNoResults = !isLoading && media && media.results.length === 0 && searchQuery;
 
     return (
         <div className={styles.container}>
             <div className={styles.searchBox}>
                 <input
                     type="text"
-                    ref={input}
+                    value={inputValue}
+                    onChange={e => setInputValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     className={styles.input}
                     placeholder="Search for movies..."
-                    onKeyDown={handleKeyDown}
                     disabled={isLoading}
                 />
+
                 <button
                     onClick={handleSearch}
                     className={styles.button}
@@ -62,17 +77,26 @@ function MediaSearch() {
 
             {isLoading && <div className={styles.loader}>Searching...</div>}
 
-            <ul className={styles.grid}>
-                {media?.map(m => (
-                    <MediaCard media={m} key={m.id} />
-                ))}
-            </ul>
-
-            {!isLoading && media && media.length === 0 && (
-                <p style={{ textAlign: 'center', color: '#666', marginTop: '20px' }}>No results found.</p>
+            {showNoResults && (
+                <p style={{textAlign: 'center', color: '#666', marginTop: '20px'}}>No results found.</p>
             )}
 
-            <Outlet />
+            {
+                (media && media.results && media.results.length > 0) &&
+                (
+                    <>
+                        <MediaList mediaList={media.results}/>
+
+                        <Pagination
+                            totalPages={media.totalPages}
+                            currentPage={currentPage}
+                            setCurrentPage={setCurrentPage}
+                        />
+                    </>
+                )
+            }
+
+            <Outlet/>
         </div>
     );
 }

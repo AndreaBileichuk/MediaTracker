@@ -7,9 +7,9 @@ import { Provider } from "react-redux";
 import { store } from "./bll/store.ts";
 import ProtectedRoute from "./components/common/ProtectedRoute/ProtectedRoute.tsx";
 import Register from "./components/Register/Register.tsx";
-import MediaDetails from "./components/MediaProvider/MediaDetails.tsx";
+import MediaDetails from "./components/MediaProvider/common/MediaDetails.tsx";
 import MainLayout from "./components/layout/MainLayout.tsx";
-import MediaTop from "./components/MediaProvider/MediaTop.tsx";
+import MediaTopRated from "./components/MediaProvider/MediaTopRated.tsx";
 
 const router = createBrowserRouter([
     {
@@ -33,7 +33,13 @@ const router = createBrowserRouter([
             },
             {
                 path: "media/top",
-                element: <MediaTop />
+                element: <MediaTopRated />,
+                children: [
+                    {
+                        path: ":id",
+                        element: <MediaDetails />
+                    }
+                ]
             }
         ]
     },
