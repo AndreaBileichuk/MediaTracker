@@ -24,11 +24,4 @@ public class AuthController(IAuthService service) : ControllerBase
     {
         return await service.RegisterAsync(registerRequest);
     }
-    
-    [Authorize]
-    [HttpGet("[action]")]
-    public async Task<Result<UserResponse>> Me()
-    {
-        return await service.GetMeAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-    }
 }

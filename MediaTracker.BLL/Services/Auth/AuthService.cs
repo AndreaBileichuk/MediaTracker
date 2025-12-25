@@ -61,20 +61,6 @@ public class AuthService(
         return ValidationResult<string>.WithErrors(errors);
     }
 
-    public async Task<Result<UserResponse>> GetMeAsync(string? userId)
-    {
-        var applicationUser =  await context.Users.FindAsync(userId);
-
-        if (applicationUser == null)
-        {
-            return Result.Failure<UserResponse>(AuthErrors.UserNotFound);
-        }
-
-        var user = new UserResponse(applicationUser.Email!, applicationUser.UserName!);
-
-        return Result.Success(user);
-    }
-
     private string GenerateToken(ApplicationUser user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.Key));

@@ -4,12 +4,12 @@ import { Film, User } from "lucide-react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../bll/store.ts";
-import { fetchCurrentUser } from "../../bll/authSlice.ts";
+import {fetchCurrentUser} from "../../bll/account/thunks.ts";
 
 function MainLayout() {
     const dispatch = useDispatch<AppDispatch>();
 
-    const { user, status } = useSelector((state: RootState) => state.auth);
+    const { user, status } = useSelector((state: RootState) => state.account);
 
     useEffect(() => {
         if (!user && status === 'idle') {

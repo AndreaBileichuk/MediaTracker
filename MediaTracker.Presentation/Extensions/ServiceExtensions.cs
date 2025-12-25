@@ -2,9 +2,11 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediaTracker.BLL.DTOs.Validator;
+using MediaTracker.BLL.Services.Account;
 using MediaTracker.BLL.Services.Auth;
 using MediaTracker.BLL.Services.Media;
 using MediaTracker.BLL.Services.MediaProvider;
+using MediaTracker.BLL.Services.PhotoService;
 using MediaTracker.BLL.Settings;
 using MediaTracker.DAL.Data;
 using MediaTracker.DAL.Entities;
@@ -56,6 +58,10 @@ static class ServiceExtensions
 
         services.Configure<TmdbOptions>(
             configuration.GetSection(TmdbOptions.SectionName)
+        );
+
+        services.Configure<CloudinaryOptions>(
+            configuration.GetSection(CloudinaryOptions.SectionName)
         );
         
         return services;
@@ -117,6 +123,8 @@ static class ServiceExtensions
         services.AddScoped<IMediaService, MediaService>();
         services.AddScoped<IMediaProviderManager, MediaProviderManager>();
         services.AddScoped<IMediaProviderService, TmdbProviderService>();
+        services.AddScoped<IPhotoService, CloudinaryPhotoService>();
+        services.AddScoped<IAccountService, AccountService>();
         
         return services;
     }

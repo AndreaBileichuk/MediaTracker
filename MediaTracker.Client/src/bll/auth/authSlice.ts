@@ -1,0 +1,52 @@
+import {createSlice} from "@reduxjs/toolkit";
+import {fetchCurrentUser} from "../account/thunks.ts";
+import {loginUser} from "./thunks.ts";
+
+interface AuthState {
+    token: string | null;
+    isAuthenticated: boolean;
+    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+}
+
+const initialState: AuthState = {
+    token: localStorage.getItem('token'),
+    isAuthenticated: !!localStorage.getItem('token'),
+    status: 'idle',
+};
+
+const authSlice = createSlice({
+    name: 'auth',
+    initialState,
+    reducers: {
+        logout: (state) => {
+            state.token = null;
+            state.isAuthenticated = false;
+            state.status = 'idle';
+            localStorage.removeItem('token');
+        },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(loginUser.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(loginUser.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.token = action.payload;
+                state.isAuthenticated = true;
+                localStorage.setItem('token', action.payload);
+            })
+            .addCase(loginUser.rejected, (state) => {
+                state.status = 'failed';
+            });
+
+        builder.addCase(fetchCurrentUser.rejected, (state) => {
+            state.token = null;
+            state.isAuthenticated = false;
+            localStorage.removeItem('token');
+        });
+    },
+});
+
+export const { logout } = authSlice.actions;
+export default authSlice.reducer;
