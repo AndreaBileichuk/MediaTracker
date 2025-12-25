@@ -3,8 +3,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #e0e0e0;
+    background-color: #0f0f0f;
 }
+
 .shapes {
     display: flex;
     align-items: flex-end;
@@ -12,27 +13,32 @@
     gap: 3px;
     padding-bottom: 50px;
 }
+
 .face {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
 }
+
 .eyebrows {
     display: flex;
     gap: 24px;
     transition: transform 0.1s ease-out;
 }
+
 .eyebrow {
     width: 25px;
     height: 6px;
     background-color: #1a1a1a;
     border-radius: 10px;
 }
+
 .eyesRow {
     display: flex;
     gap: 10px;
 }
+
 .eye {
     width: 40px;
     height: 40px;
@@ -42,7 +48,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: height 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), margin 0.2s;
 }
@@ -56,9 +62,11 @@
     border-radius: 20px;
     overflow: visible;
 }
+
 .eyeClosed .pupil {
     opacity: 0;
 }
+
 .eyeClosed .lashes {
     opacity: 1;
     transform: translateY(-8px);
@@ -72,6 +80,7 @@
     position: relative;
     transition: transform 0.2s ease-out, opacity 0.1s;
 }
+
 .pupil::after {
     content: '';
     position: absolute;
@@ -96,6 +105,7 @@
     display: flex;
     justify-content: center;
 }
+
 .lash {
     width: 2px;
     height: 8px;
@@ -104,9 +114,18 @@
     top: -6px;
     transform-origin: bottom center;
 }
-.lash:nth-child(1) { transform: rotate(-25deg) translateX(-8px); }
-.lash:nth-child(2) { transform: rotate(0deg) translateY(-2px); }
-.lash:nth-child(3) { transform: rotate(25deg) translateX(8px); }
+
+.lash:nth-child(1) {
+    transform: rotate(-25deg) translateX(-8px);
+}
+
+.lash:nth-child(2) {
+    transform: rotate(0deg) translateY(-2px);
+}
+
+.lash:nth-child(3) {
+    transform: rotate(25deg) translateX(8px);
+}
 
 .mouth {
     width: 30px;
@@ -118,6 +137,7 @@
     transition: border-radius 0.1s ease-out;
     margin-top: -5px;
 }
+
 .square {
     width: 200px;
     height: 200px;
@@ -126,6 +146,7 @@
     align-items: center;
     justify-content: center;
 }
+
 .semicircle {
     width: 250px;
     height: 250px;
@@ -137,6 +158,7 @@
     justify-content: center;
     padding-bottom: 30px;
 }
+
 .rectangle {
     width: 80px;
     height: 300px;

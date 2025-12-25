@@ -1,18 +1,21 @@
-import { type FormEvent, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../../bll/store.ts";
+import { type FormEvent, useRef, useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../bll/store.ts";
 import { loginUser } from "../../bll/auth/thunks.ts";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import styles from "./Login.module.css";
 import Shapes, { type ShapesHandle } from "../InteractableShapes/Shapes.tsx";
 import { EyeIconClosed, EyeIconOpen } from "../common/Icons.tsx";
 import { CustomInput } from "../common/CustomInput.tsx";
-import type {BackendResult} from "../../api/types.ts";
+import type { BackendResult } from "../../api/types.ts";
 
 function Login() {
     const shapesRef = useRef<ShapesHandle>(null);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+
+    // Access auth status
+    const { status, isAuthenticated } = useSelector((state: RootState) => state.auth);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -21,16 +24,21 @@ function Login() {
     const [generalError, setGeneralError] = useState<string | null>(null);
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-    async function handleSubmit(e: FormEvent): Promise<void> {
-        e.preventDefault();
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/");
+        }
+    }, [isAuthenticated, navigate]);
 
+    async function handleSubmit(e: FormEvent) {
+        e.preventDefault();
         setGeneralError(null);
         setValidationErrors({});
 
         try {
             await dispatch(loginUser({ email, password })).unwrap();
-
-            navigate("/");
+            // Navigation handled by useEffect
         }
         catch (err) {
             const apiError = err as BackendResult<string>;
@@ -52,12 +60,14 @@ function Login() {
         }
     }
 
+    const isLoading = status === 'loading';
+
     return (
         <div className={styles.container}>
             <Shapes ref={shapesRef} />
             <div className={styles.loginBox}>
                 <h1 className={styles.title}>
-                    Welcome back to <span style={{ color: "blue" }}>MediaTracker</span>!
+                    Welcome back to <span>MediaTracker</span>!
                 </h1>
 
                 <form onSubmit={handleSubmit} className={styles.form}>
@@ -77,6 +87,7 @@ function Login() {
                         onFocus={() => shapesRef.current?.startTyping()}
                         onBlur={() => shapesRef.current?.reset()}
                         required
+                        disabled={isLoading}
                     />
 
                     <CustomInput
@@ -89,19 +100,25 @@ function Login() {
                         onFocus={() => shapesRef.current?.showPassword()}
                         onBlur={() => shapesRef.current?.reset()}
                         required
+                        disabled={isLoading}
                     >
                         <button
                             type="button"
                             className={styles.eyeButton}
                             onClick={() => setShowPassword(!showPassword)}
+                            disabled={isLoading}
                         >
-                            {showPassword ? <EyeIconOpen className={styles.icon}/> : <EyeIconClosed className={styles.icon}/>}
+                            {showPassword ? <EyeIconOpen className={styles.icon} /> : <EyeIconClosed className={styles.icon} />}
                         </button>
                     </CustomInput>
 
-                    <button type="submit" className={styles.button}>
-                        Sign In
+                    <button type="submit" className={styles.button} disabled={isLoading}>
+                        {isLoading ? <span className={styles.loader}></span> : "Sign In"}
                     </button>
+
+                    <div className={styles.registerLink}>
+                        Don't have an account? <Link to="/register">Register</Link>
+                    </div>
                 </form>
             </div>
         </div>

@@ -1,22 +1,41 @@
-import { Outlet, NavLink, Link } from "react-router-dom";
+import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
 import styles from "./MainLayout.module.css";
-import { Film, User } from "lucide-react";
-import { useEffect } from "react";
+import { Film, User, LogOut, Settings } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../bll/store.ts";
-import {fetchCurrentUser} from "../../bll/account/thunks.ts";
+import { fetchCurrentUser } from "../../bll/account/thunks.ts";
+import { logout } from "../../bll/auth/authSlice.ts";
 
 function MainLayout() {
     const dispatch = useDispatch<AppDispatch>();
-
+    const navigate = useNavigate();
     const { user, status } = useSelector((state: RootState) => state.account);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!user && status === 'idle') {
             dispatch(fetchCurrentUser());
         }
-        console.log(user)
     }, [dispatch, user, status]);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleLogout = () => {
+        setIsDropdownOpen(false);
+        dispatch(logout());
+        navigate("/login");
+    };
 
     return (
         <div className={styles.layout}>
@@ -43,7 +62,11 @@ function MainLayout() {
                     </NavLink>
                 </nav>
 
-                <div className={styles.userArea}>
+                <div
+                    className={styles.userArea}
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    ref={dropdownRef}
+                >
                     {status === 'loading' ? (
                         <div className={styles.skeletonName}></div>
                     ) : (
@@ -55,6 +78,20 @@ function MainLayout() {
                     <div className={styles.avatar}>
                         <User size={20} />
                     </div>
+
+                    {/* Dropdown Menu */}
+                    {isDropdownOpen && (
+                        <div className={styles.dropdown} onClick={(e) => e.stopPropagation()}>
+                            <div className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)}>
+                                <Settings size={18} />
+                                <span>Account</span>
+                            </div>
+                            <div className={`${styles.dropdownItem} ${styles.logout}`} onClick={handleLogout}>
+                                <LogOut size={18} />
+                                <span>Logout</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </header>
 
