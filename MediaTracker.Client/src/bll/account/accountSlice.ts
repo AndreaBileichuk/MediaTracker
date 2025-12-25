@@ -1,6 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {logout} from "../auth/authSlice.ts";
-import {fetchCurrentUser} from "./thunks.ts";
+import {fetchCurrentUser, uploadUserAvatar} from "./thunks.ts";
 
 export interface User {
     email: string;
@@ -21,8 +21,7 @@ const initialState: AccountState = {
 const accountSlice = createSlice({
     name: 'account',
     initialState,
-    reducers: {
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(fetchCurrentUser.pending, (state) => {
@@ -35,12 +34,24 @@ const accountSlice = createSlice({
             .addCase(fetchCurrentUser.rejected, (state) => {
                 state.status = 'failed';
                 state.user = null;
-            });
+            })
+            .addCase(logout, (state) => {
+                state.user = null;
+                state.status = 'idle';
+            })
+            .addCase(uploadUserAvatar.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(uploadUserAvatar.fulfilled, (state, action) => {
+                state.status = 'succeeded';
 
-        builder.addCase(logout, (state) => {
-            state.user = null;
-            state.status = 'idle';
-        });
+                if (state.user) {
+                    state.user.avatarUrl = action.payload;
+                }
+            })
+            .addCase(uploadUserAvatar.rejected, (state) => {
+                state.status = 'failed';
+            });
     },
 });
 

@@ -29,3 +29,32 @@ export const fetchCurrentUser = createAsyncThunk<User, void, {rejectValue: Backe
         }
     }
 );
+
+export const uploadUserAvatar = createAsyncThunk<string, File, {rejectValue: BackendResult<string>}>(
+    "account/uploadAvatar",
+    async (file, {rejectWithValue}) => {
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const response = await accountApi.uploadAvatar(formData);
+
+            return response.data.data!;
+        }
+        catch (err) {
+            const error = err as AxiosError<BackendResult<string>>;
+
+            if (error.response && error.response.data) {
+                return rejectWithValue(error.response.data);
+            }
+
+            return rejectWithValue({
+                isSuccess: false,
+                code: "Network.Error",
+                message: "Network error. Please check your connection.",
+                errors: [],
+                data: undefined
+            });
+        }
+    }
+)

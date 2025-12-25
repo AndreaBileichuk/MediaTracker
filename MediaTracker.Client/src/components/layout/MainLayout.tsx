@@ -1,15 +1,15 @@
-import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
+import { Outlet, NavLink, Link } from "react-router-dom";
 import styles from "./MainLayout.module.css";
-import { Film, User, LogOut, Settings } from "lucide-react";
+import { Film, LogOut, Settings } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../bll/store.ts";
 import { fetchCurrentUser } from "../../bll/account/thunks.ts";
 import { logout } from "../../bll/auth/authSlice.ts";
+import Avatar from "../common/Avatar.tsx";
 
 function MainLayout() {
     const dispatch = useDispatch<AppDispatch>();
-    const navigate = useNavigate();
     const { user, status } = useSelector((state: RootState) => state.account);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -34,7 +34,6 @@ function MainLayout() {
     const handleLogout = () => {
         setIsDropdownOpen(false);
         dispatch(logout());
-        navigate("/login");
     };
 
     return (
@@ -76,16 +75,15 @@ function MainLayout() {
                     )}
 
                     <div className={styles.avatar}>
-                        <User size={20} />
+                        <Avatar avatarUrl={user?.avatarUrl || null} />
                     </div>
 
-                    {/* Dropdown Menu */}
                     {isDropdownOpen && (
                         <div className={styles.dropdown} onClick={(e) => e.stopPropagation()}>
-                            <div className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)}>
+                            <Link to={"account"} className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)}>
                                 <Settings size={18} />
                                 <span>Account</span>
-                            </div>
+                            </Link>
                             <div className={`${styles.dropdownItem} ${styles.logout}`} onClick={handleLogout}>
                                 <LogOut size={18} />
                                 <span>Logout</span>

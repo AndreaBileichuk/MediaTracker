@@ -10,6 +10,7 @@ import Register from "./components/Register/Register.tsx";
 import MediaDetails from "./components/MediaProvider/common/MediaDetails.tsx";
 import MainLayout from "./components/layout/MainLayout.tsx";
 import MediaTopRated from "./components/MediaProvider/MediaTopRated.tsx";
+import Account from "./components/Account/Account.tsx";
 
 const router = createBrowserRouter([
     {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
                         element: <MediaDetails />
                     }
                 ]
+            },
+            {
+                path: "account",
+                element: <Account />
             }
         ]
     },
