@@ -29,16 +29,49 @@ export const loginUser = createAsyncThunk<string, LoginRequest, { rejectValue: B
     }
 );
 
+export const fetchCurrentUser = createAsyncThunk<User, void, {rejectValue: BackendResult<User>}>
+(
+    "auth/fetchMe",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await authApi.me();
+
+            return response.data.data!;
+        } catch (err) {
+            const error = err as AxiosError<BackendResult<User>>;
+
+            if (error.response && error.response.data) {
+                return rejectWithValue(error.response.data);
+            }
+
+            return rejectWithValue({
+                isSuccess: false,
+                code: "Network.Error",
+                message: "Network error. Please check your connection.",
+                errors: [],
+                data: undefined
+            });
+        }
+    }
+);
+
+export interface User {
+    email: string;
+    username: string;
+}
+
 interface AuthState {
     token: string | null;
     isAuthenticated: boolean;
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    user: User | null
 }
 
 const initialState: AuthState = {
     token: localStorage.getItem('token'),
     isAuthenticated: !!localStorage.getItem('token'),
     status: 'idle',
+    user: null
 };
 
 const authSlice = createSlice({
@@ -65,6 +98,23 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.rejected, (state) => {
                 state.status = 'failed';
+            });
+
+        builder
+            .addCase(fetchCurrentUser.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.user = action.payload;
+                state.isAuthenticated = true;
+            })
+            .addCase(fetchCurrentUser.rejected, (state) => {
+                state.status = 'failed';
+                state.user = null;
+                state.isAuthenticated = false;
+                state.token = null;
+                localStorage.removeItem('token');
             });
     },
 });

@@ -70,7 +70,7 @@ public class AuthService(
             return Result.Failure<UserResponse>(AuthErrors.UserNotFound);
         }
 
-        var user = new UserResponse(applicationUser.UserName!, applicationUser.Email!);
+        var user = new UserResponse(applicationUser.Email!, applicationUser.UserName!);
 
         return Result.Success(user);
     }

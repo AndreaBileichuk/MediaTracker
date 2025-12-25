@@ -1,5 +1,6 @@
 import axiosClient from "./axiosClient.ts";
 import type {BackendResult} from "./types.ts";
+import type {User} from "../bll/authSlice.ts";
 
 export interface LoginRequest {
     email: string,
@@ -19,5 +20,9 @@ export const authApi = {
 
     register: async (data: RegisterRequest) => {
         return await axiosClient.post<BackendResult<string>>('/auth/register', data);
+    },
+
+    me: async () => {
+        return await axiosClient.get<BackendResult<User>>("/auth/me");
     }
 };

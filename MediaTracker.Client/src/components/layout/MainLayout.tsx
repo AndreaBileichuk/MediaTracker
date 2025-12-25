@@ -1,8 +1,23 @@
 import { Outlet, NavLink, Link } from "react-router-dom";
 import styles from "./MainLayout.module.css";
 import { Film, User } from "lucide-react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../bll/store.ts";
+import { fetchCurrentUser } from "../../bll/authSlice.ts";
 
 function MainLayout() {
+    const dispatch = useDispatch<AppDispatch>();
+
+    const { user, status } = useSelector((state: RootState) => state.auth);
+
+    useEffect(() => {
+        if (!user && status === 'idle') {
+            dispatch(fetchCurrentUser());
+        }
+        console.log(user)
+    }, [dispatch, user, status]);
+
     return (
         <div className={styles.layout}>
             <header className={styles.header}>
@@ -29,7 +44,14 @@ function MainLayout() {
                 </nav>
 
                 <div className={styles.userArea}>
-                    <span className={styles.userName}>AndreB</span>
+                    {status === 'loading' ? (
+                        <div className={styles.skeletonName}></div>
+                    ) : (
+                        <span className={styles.userName}>
+                            {user?.username || "Guest"}
+                        </span>
+                    )}
+
                     <div className={styles.avatar}>
                         <User size={20} />
                     </div>
