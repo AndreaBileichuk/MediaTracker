@@ -16,4 +16,5 @@ public static class MediaErrors
             "Media.NotFound",
             "The media you're trying to find by id was not found."
         );
+    
 }

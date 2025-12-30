@@ -1,4 +1,6 @@
-﻿using MediaTracker.BLL.DTOs.MediaProvider;
+﻿using MediaTracker.BLL.DTOs.Media;
+using MediaTracker.BLL.DTOs.MediaProvider;
+using MediaTracker.BLL.Infrastructure;
 using MediaTracker.DAL.Entities;
 using MediaTracker.DAL.Enums;
 
@@ -6,7 +8,7 @@ namespace MediaTracker.BLL.Services.Media;
 
 public interface IMediaService
 {
-    Task<List<IMediaProviderDto>> Search(string query, EMediaType mediaType);
+    Task<Result<MediaListResponse>> GetAsync(int page, string? userId);
 
-    Task<MediaItem> GetByIdAsync(string externalId, EMediaType type);
+    Task<Result<MediaItemResponse>> CreateAsync(MediaItemRequest request, string? userId);
 }
