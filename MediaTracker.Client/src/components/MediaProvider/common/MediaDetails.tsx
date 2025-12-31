@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import s from "../MediaProvider.module.css";
-import { mediaApi, type ProvidedMediaDetails } from "../../../api/mediaApi.ts";
+import { mediaProviderApi, type ProvidedMediaDetails } from "../../../api/mediaProviderApi.ts";
 import { Calendar, Clock, Star, X } from "lucide-react";
 
 function MediaDetails() {
@@ -29,7 +29,7 @@ function MediaDetails() {
         const fetchMedia = async () => {
             try {
                 setIsLoading(true);
-                const response = await mediaApi.getMediaById(Number(id), "movie");
+                const response = await mediaProviderApi.getMediaById(Number(id), "movie");
                 const result = response.data
 
                 if (!result.isSuccess || !result.data) {

@@ -11,8 +11,10 @@ public class MediaProviderManager(
     ) : IMediaProviderManager
 {
     public async Task<Result<MediaSearchResponse>> SearchAsync(string query, EMediaType type, int page = 1)
-    {        
-        var key = $"media-provider-{query}-{type}";
+    {
+        if (page < 1) page = 1;
+
+        var key = $"media-provider-{query}-{type}-{page}";
 
         var cachedMember = await distributedCache.GetStringAsync(key);
 
@@ -20,14 +22,15 @@ public class MediaProviderManager(
         {
             try
             {
-                var cachedResult = JsonConvert.DeserializeObject<Result<MediaSearchResponse>>(cachedMember);
+
+                var cachedResult = JsonConvert.DeserializeObject<MediaSearchResponse>(cachedMember);
 
                 if (cachedResult != null)
                 {
-                    return cachedResult;
+                    return Result.Success(cachedResult);
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 await distributedCache.RemoveAsync(key);
             }
@@ -37,7 +40,7 @@ public class MediaProviderManager(
 
         if (result is { IsSuccess: true, Value.Results.Count: > 0 })
         {
-            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result), new DistributedCacheEntryOptions
+            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Value), new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) 
             });
@@ -46,7 +49,7 @@ public class MediaProviderManager(
         return result;
     }
 
-    public async Task<Result<IMediaProviderDetailsDto>> GetByIdAsync(string externalId, EMediaType type)
+    public async Task<Result<MediaProviderDetailsResponse>> GetByIdAsync(string externalId, EMediaType type)
     {
         var key = $"media-provider-{externalId}-{type}";
 
@@ -56,11 +59,11 @@ public class MediaProviderManager(
         {
             try
             {
-                var cachedResult = JsonConvert.DeserializeObject<Result<IMediaProviderDetailsDto>>(cachedMember);
+                var cachedResult = JsonConvert.DeserializeObject<MediaProviderDetailsResponse>(cachedMember);
 
                 if(cachedResult != null)
                 {
-                    return cachedResult;
+                    return Result.Success(cachedResult);
                 }
             }
             catch (Exception)
@@ -73,7 +76,7 @@ public class MediaProviderManager(
 
         if (result.IsSuccess)
         {
-            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result),
+            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Value),
                 new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
@@ -85,7 +88,9 @@ public class MediaProviderManager(
 
     public async Task<Result<MediaSearchResponse>> GetTopRatedAsync(EMediaType type, int page = 1)
     {
-        var key = $"media-provider-top-rated-{type}";
+        if (page < 1) page = 1;
+
+        var key = $"media-provider-top-rated-{page}-{type}";
 
         var cachedMember = await distributedCache.GetStringAsync(key);
 
@@ -93,15 +98,16 @@ public class MediaProviderManager(
         {
             try
             {
-                var cachedResult = JsonConvert.DeserializeObject<Result<MediaSearchResponse>>(cachedMember);
+                var cachedResult = JsonConvert.DeserializeObject<MediaSearchResponse>(cachedMember);
 
                 if (cachedResult != null)
                 {
-                    return cachedResult;
+                    return Result.Success(cachedResult);
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
+                Console.Write(exception);
                 await distributedCache.RemoveAsync(key);
             }
         }
@@ -110,7 +116,7 @@ public class MediaProviderManager(
 
         if (result is { IsSuccess: true, Value.Results.Count: > 0 })
         {
-            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result), new DistributedCacheEntryOptions
+            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Value), new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) 
             });

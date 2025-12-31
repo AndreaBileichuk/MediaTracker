@@ -2,7 +2,7 @@
 
 namespace MediaTracker.BLL.DTOs.MediaProvider;
 
-public class TmdbProviderSearchDetailedResponse : IMediaProviderDetailsDto
+public class TmdbProviderSearchDetailedResponse
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }

@@ -1,6 +1,6 @@
 import styles from "../MediaProvider.module.css";
 import { Link } from "react-router-dom";
-import type { ProvidedMedia } from "../../../api/mediaApi.ts";
+import type { ProvidedMedia } from "../../../api/mediaProviderApi.ts";
 import React from "react";
 
 interface MediaCardProps {

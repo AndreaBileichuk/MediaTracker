@@ -1,6 +1,6 @@
 ﻿namespace MediaTracker.BLL.DTOs.MediaProvider;
 
-public interface IMediaProviderDetailsDto : IMediaProviderDto
+public class MediaProviderDetailsResponse : MediaProviderResponse
 {
     public string? BackdropPath { get; set; }
 
@@ -13,6 +13,6 @@ public interface IMediaProviderDetailsDto : IMediaProviderDto
     public double VoteAverage { get; set; }
 
     public int VoteCount { get; set; }
-    
-    public List<TmdbGenreDto> Genres { get; set; }
+
+    public List<TmdbGenreDto> Genres { get; set; } = [];
 }

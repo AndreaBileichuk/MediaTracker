@@ -16,13 +16,13 @@ public class MediaProviderController(IMediaProviderManager mediaManager) : Contr
     }
     
     [HttpGet("top-rated")]
-    public async Task<Result<MediaSearchResponse>> GetTopRated([FromQuery] EMediaType type, [FromQuery] int page)
+    public async Task<Result<MediaSearchResponse>> GetTopRated([FromQuery] EMediaType type, [FromQuery] int page = 1)
     {
         return await mediaManager.GetTopRatedAsync(type, page);
     }
 
     [HttpGet("{id}")]
-    public async Task<Result<IMediaProviderDetailsDto>> GetByIdAsync([FromRoute] string id, [FromQuery] EMediaType type)
+    public async Task<Result<MediaProviderDetailsResponse>> GetByIdAsync([FromRoute] string id, [FromQuery] EMediaType type)
     {
         return await mediaManager.GetByIdAsync(id, type);
     }

@@ -48,6 +48,12 @@ function MainLayout() {
 
                 <nav className={styles.nav}>
                     <NavLink
+                        to="/media/list"
+                        className={({ isActive }) => isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink}
+                    >
+                        My Media
+                    </NavLink>
+                    <NavLink
                         to="/media/search"
                         className={({ isActive }) => isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink}
                     >

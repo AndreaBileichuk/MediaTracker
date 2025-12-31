@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import styles from "./MediaProvider.module.css";
-import {mediaApi, type MediaApiResponse} from "../../api/mediaApi.ts";
+import {mediaProviderApi, type MediaApiResponse} from "../../api/mediaProviderApi.ts";
 import {Outlet} from "react-router-dom";
 import MediaList from "./common/MediaList.tsx";
 import Pagination from "../common/Pagination/Pagination.tsx";
@@ -19,7 +19,7 @@ function MediaSearch() {
         try {
             setIsLoading(true);
 
-            const response = await mediaApi.searchMedia(queryToFetch, "movie", page);
+            const response = await mediaProviderApi.searchMedia(queryToFetch, "movie", page);
             const result = response.data;
 
             if (!result.isSuccess || !result.data) {

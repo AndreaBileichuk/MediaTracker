@@ -8,7 +8,7 @@ public interface IMediaProviderManager
 {
     Task<Result<MediaSearchResponse>> SearchAsync(string query, EMediaType type, int page = 1);
 
-    Task<Result<IMediaProviderDetailsDto>> GetByIdAsync(string externalId, EMediaType type);
+    Task<Result<MediaProviderDetailsResponse>> GetByIdAsync(string externalId, EMediaType type);
     
     Task<Result<MediaSearchResponse>> GetTopRatedAsync(EMediaType type, int page = 1);
 }

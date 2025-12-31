@@ -11,6 +11,7 @@ import MediaDetails from "./components/MediaProvider/common/MediaDetails.tsx";
 import MainLayout from "./components/layout/MainLayout.tsx";
 import MediaTopRated from "./components/MediaProvider/MediaTopRated.tsx";
 import Account from "./components/Account/Account.tsx";
+import MediaList from "./components/Media/MediaList.tsx";
 
 const router = createBrowserRouter([
     {
@@ -20,7 +21,11 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <Navigate to="/media/search" replace />
+                element: <Navigate to="/media/list" replace />
+            },
+            {
+                path: "media/list",
+                element: <MediaList />
             },
             {
                 path: "media/search",

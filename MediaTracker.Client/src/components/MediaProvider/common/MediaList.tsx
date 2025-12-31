@@ -1,4 +1,4 @@
-import type {ProvidedMedia} from "../../../api/mediaApi.ts";
+import type {ProvidedMedia} from "../../../api/mediaProviderApi.ts";
 import styles from "../MediaProvider.module.css";
 import MediaCard from "./MediaCard.tsx";
 

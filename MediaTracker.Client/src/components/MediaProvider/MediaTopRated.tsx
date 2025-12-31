@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {mediaApi, type MediaApiResponse} from "../../api/mediaApi.ts";
+import {mediaProviderApi, type MediaApiResponse} from "../../api/mediaProviderApi.ts";
 import MediaList from "./common/MediaList.tsx";
 import Pagination from "../common/Pagination/Pagination.tsx";
 import styles from "./MediaProvider.module.css";
@@ -14,7 +14,7 @@ function MediaTopRated() {
         async function fetchList() {
             try {
                 setIsLoading(true);
-                const response = await mediaApi.getTopRated("movie", currentPage);
+                const response = await mediaProviderApi.getTopRated("movie", currentPage);
                 const result = response.data;
 
                 if(!result.isSuccess || !result.data) {

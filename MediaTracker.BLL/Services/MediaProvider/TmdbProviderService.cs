@@ -7,24 +7,27 @@ using Microsoft.Extensions.Options;
 
 namespace MediaTracker.BLL.Services.MediaProvider;
 
-public class TmdbProviderService(IHttpClientFactory httpClientFactory, IOptions<TmdbOptions> options) : IMediaProviderService
+public class TmdbProviderService(IHttpClientFactory httpClientFactory, IOptions<TmdbOptions> options)
+    : IMediaProviderService
 {
     public async Task<Result<MediaSearchResponse>> SearchAsync(string query, int page)
     {
         var client = httpClientFactory.CreateClient("TmdbClient");
-        var response = await client.GetAsync($"search/movie?query={Uri.EscapeDataString(query)}&page={page}&api_key={options.Value.ApiKey}");
-        
+        var response =
+            await client.GetAsync(
+                $"search/movie?query={Uri.EscapeDataString(query)}&page={page}&api_key={options.Value.ApiKey}");
+
         if (!response.IsSuccessStatusCode)
         {
             return Result.Failure<MediaSearchResponse>(MediaErrors.ProviderRequestFailed);
         }
-        
+
         Console.WriteLine(response.Content);
 
         return await GetResultingList(response.Content);
     }
 
-    public async Task<Result<IMediaProviderDetailsDto>> GetByIdAsync(string externalId)
+    public async Task<Result<MediaProviderDetailsResponse>> GetByIdAsync(string externalId)
     {
         var client = httpClientFactory.CreateClient("TmdbClient");
 
@@ -32,14 +35,14 @@ public class TmdbProviderService(IHttpClientFactory httpClientFactory, IOptions<
 
         if (!response.IsSuccessStatusCode)
         {
-            return Result.Failure<IMediaProviderDetailsDto>(MediaErrors.NotFound);
+            return Result.Failure<MediaProviderDetailsResponse>(MediaErrors.NotFound);
         }
 
         var tmdbMovie = await response.Content.ReadFromJsonAsync<TmdbProviderSearchDetailedResponse>();
-        
+
         if (tmdbMovie is null)
         {
-            return Result.Failure<IMediaProviderDetailsDto>(MediaErrors.NotFound);
+            return Result.Failure<MediaProviderDetailsResponse>(MediaErrors.NotFound);
         }
 
         if (!string.IsNullOrEmpty(tmdbMovie.PosterPath))
@@ -51,8 +54,23 @@ public class TmdbProviderService(IHttpClientFactory httpClientFactory, IOptions<
         {
             tmdbMovie.BackdropPath = $"{options.Value.ImageBaseUrl}{tmdbMovie.BackdropPath}";
         }
-        
-        return Result.Success((IMediaProviderDetailsDto)tmdbMovie);
+
+        return Result.Success(new MediaProviderDetailsResponse()
+        {
+            Id = tmdbMovie.Id,
+            Title = tmdbMovie.Title,
+            Overview = tmdbMovie.Overview,
+            PosterPath = tmdbMovie.PosterPath,
+            BackdropPath = tmdbMovie.BackdropPath,
+            Runtime = tmdbMovie.Runtime,
+            ReleaseDate = tmdbMovie.ReleaseDate,
+            IsAdult = tmdbMovie.IsAdult,
+            Status = tmdbMovie.Status,
+            Tagline = tmdbMovie.Tagline,
+            VoteAverage = tmdbMovie.VoteAverage,
+            VoteCount = tmdbMovie.VoteCount,
+            Genres = tmdbMovie.Genres
+        });
     }
 
     public async Task<Result<MediaSearchResponse>> GetTopRatedAsync(int page)
@@ -60,12 +78,12 @@ public class TmdbProviderService(IHttpClientFactory httpClientFactory, IOptions<
         var client = httpClientFactory.CreateClient("TmdbClient");
 
         var response = await client.GetAsync($"movie/top_rated?page={page}&api_key={options.Value.ApiKey}");
-        
+
         if (!response.IsSuccessStatusCode)
         {
             return Result.Failure<MediaSearchResponse>(MediaErrors.ProviderRequestFailed);
         }
-        
+
         return await GetResultingList(response.Content);
     }
 
@@ -88,8 +106,16 @@ public class TmdbProviderService(IHttpClientFactory httpClientFactory, IOptions<
                     {
                         r.PosterPath = $"{options.Value.ImageBaseUrl}{r.PosterPath}";
                     }
-                    
-                    return (IMediaProviderDto)r;
+
+                    return new MediaProviderResponse()
+                    {
+                        Id = r.Id,         
+                        Title = r.Title,
+                        Overview = r.Overview,
+                        PosterPath = r.PosterPath,
+                        ReleaseDate = r.ReleaseDate,
+                        IsAdult = r.IsAdult
+                    };
                 }).ToList(),
                 TotalPages = tmdbResponse.TotalPages
             });
@@ -99,5 +125,4 @@ public class TmdbProviderService(IHttpClientFactory httpClientFactory, IOptions<
             return Result.Failure<MediaSearchResponse>(MediaErrors.ProviderInvalidResponse);
         }
     }
-
 }
