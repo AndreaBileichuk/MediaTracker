@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import s from "../MediaProvider.module.css";
 import { mediaProviderApi, type ProvidedMediaDetails } from "../../../api/mediaProviderApi.ts";
 import { Calendar, Clock, Star, X } from "lucide-react";
+import {myMediaApi} from "../../../api/myMediaApi.ts";
 
 function MediaDetails() {
     const { id } = useParams<{ id: string }>();
@@ -51,6 +52,20 @@ function MediaDetails() {
 
         fetchMedia();
     }, [id]);
+
+    async function handleAddClick() {
+        if(detailedMediaInfo === null) return;
+
+        const result = await myMediaApi.createMedia(detailedMediaInfo, "movie");
+        const data = result.data;
+
+        if(data.isSuccess) {
+            alert("Success");
+            // Todo: add toaster messages
+        }
+
+        navigate("..");
+    }
 
     return (
         <div className={s.mediaDetailsContainer} onClick={handleClose}>
@@ -126,7 +141,10 @@ function MediaDetails() {
                                     ))}
                                 </div>
                             </div>
+
+                            <button className={s.addToListBtn} onClick={handleAddClick}>Add to my list</button>
                         </div>
+
                     </>
                 ) : (
                     <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>

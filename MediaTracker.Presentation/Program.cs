@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using MediaTracker.Presentation.Extensions;
 using MediaTracker.Presentation.Filters;
 using MediaTracker.Presentation.Middlewares;
@@ -9,6 +10,11 @@ builder.Services
     .AddControllers(options =>
     {
         options.Filters.Add<ValidationAndResultFilter>();
+    }).AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter()
+        );
     });
 
 builder.Services

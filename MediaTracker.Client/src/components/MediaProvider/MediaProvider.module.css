@@ -483,3 +483,34 @@
         width: 100%;
     }
 }
+.addToListBtn {
+    padding: 14px 30px;
+    width: calc(100% - 30px);
+    background: linear-gradient(135deg, #ffb347, #ffcc33);
+    color: #1a1a1a;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition:
+            transform 0.15s ease,
+            box-shadow 0.15s ease,
+            background 0.2s ease;
+}
+
+.addToListBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(255, 204, 51, 0.35);
+}
+
+.addToListBtn:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 14px rgba(255, 204, 51, 0.25);
+}
+
+.addToListBtn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 204, 51, 0.5);
+}
