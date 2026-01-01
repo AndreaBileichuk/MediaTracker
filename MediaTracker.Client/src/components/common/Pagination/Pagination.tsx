@@ -8,7 +8,6 @@ interface PaginationProps {
 }
 
 function Pagination({totalPages, currentPage, setCurrentPage}: PaginationProps) {
-
     const paginationRange = useMemo(() => {
         const delta = 1;
         const range = [];

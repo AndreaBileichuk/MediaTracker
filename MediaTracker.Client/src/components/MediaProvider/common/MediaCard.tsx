@@ -2,12 +2,11 @@ import styles from "../MediaProvider.module.css";
 import { Link } from "react-router-dom";
 import type { ProvidedMedia } from "../../../api/mediaProviderApi.ts";
 import React from "react";
+import {PLACEHOLDER_IMG} from "../../../consts.ts";
 
 interface MediaCardProps {
     media: ProvidedMedia
 }
-
-const PLACEHOLDER_IMG = "https://placehold.co/220x330?text=No+Image";
 
 function MediaCard({ media }: MediaCardProps) {
     function handleImageError(e: React.SyntheticEvent<HTMLImageElement, Event>) {

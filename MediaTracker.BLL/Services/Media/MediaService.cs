@@ -48,6 +48,7 @@ public class MediaService(ApplicationDbContext context) : IMediaService
         {
             Results = items,
             TotalPages = totalPages,
+            TotalCount = totalCount
         });
     }
 
@@ -57,6 +58,10 @@ public class MediaService(ApplicationDbContext context) : IMediaService
         {
             return Result.Failure<MediaItemResponse>(AuthErrors.UserNotFound);
         }
+
+        var media = await context.MediaItems.SingleOrDefaultAsync(m => m.ApplicationUserId == userId && m.ExternalId == request.ExternalId);
+
+        if (media != null) return Result.Failure<MediaItemResponse>(MediaErrors.AlreadyExists);
         
         var newMediaItem = new MediaItem()
         {

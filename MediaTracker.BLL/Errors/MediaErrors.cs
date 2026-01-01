@@ -16,5 +16,9 @@ public static class MediaErrors
             "Media.NotFound",
             "The media you're trying to find by id was not found."
         );
-    
+
+    public static readonly Error AlreadyExists = new(
+        "Media.AlreadyExists", 
+        "The media you are trying to add is already in your list.");
+
 }

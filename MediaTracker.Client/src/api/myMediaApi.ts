@@ -5,7 +5,8 @@ import type {MediaType, ProvidedMediaDetails} from "./mediaProviderApi.ts";
 
 export interface MyMediaListApiResponse {
     results: MediaItem[],
-    totalPages: number
+    totalPages: number,
+    totalCount: number
 }
 
 export interface MediaItem {
