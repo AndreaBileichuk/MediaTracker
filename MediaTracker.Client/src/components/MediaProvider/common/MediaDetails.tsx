@@ -5,7 +5,7 @@ import { mediaProviderApi, type ProvidedMediaDetails } from "../../../api/mediaP
 import { Calendar, Clock, Star, X } from "lucide-react";
 import {type MediaItem, myMediaApi} from "../../../api/myMediaApi.ts";
 import { toast } from "react-toastify";
-import axios, {type AxiosError} from "axios";
+import axios from "axios";
 import type {BackendResult} from "../../../api/types.ts";
 
 function MediaDetails() {

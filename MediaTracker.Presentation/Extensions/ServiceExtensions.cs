@@ -147,7 +147,10 @@ static class ServiceExtensions
         services.AddScoped<TmdbProviderService>();
         services.AddScoped<MediaProviderServiceFactory>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IMediaService, MediaService>();
+        
+        services.AddScoped<IMediaService, MediaServiceWithCaching>();
+        services.AddScoped<MediaService>();
+        
         services.AddScoped<IMediaProviderManager, MediaProviderManager>();
         services.AddScoped<IMediaProviderService, TmdbProviderService>();
         services.AddScoped<IPhotoService, CloudinaryPhotoService>();

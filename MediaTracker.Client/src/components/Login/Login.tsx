@@ -8,6 +8,7 @@ import Shapes, { type ShapesHandle } from "../InteractableShapes/Shapes.tsx";
 import { EyeIconClosed, EyeIconOpen } from "../common/Icons.tsx";
 import { CustomInput } from "../common/CustomInput.tsx";
 import type { BackendResult } from "../../api/types.ts";
+import {toast} from "react-toastify";
 
 function Login() {
     const shapesRef = useRef<ShapesHandle>(null);
@@ -38,7 +39,14 @@ function Login() {
 
         try {
             await dispatch(loginUser({ email, password })).unwrap();
-            // Navigation handled by useEffect
+            toast.success("Login successful",
+                {
+                    autoClose: 2000,
+                    hideProgressBar: true,
+                    closeOnClick: false,
+                    pauseOnHover: false,
+                    draggable: false,
+                });
         }
         catch (err) {
             const apiError = err as BackendResult<string>;
