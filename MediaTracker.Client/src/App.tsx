@@ -12,6 +12,7 @@ import MainLayout from "./components/layout/MainLayout.tsx";
 import MediaTopRated from "./components/MediaProvider/MediaTopRated.tsx";
 import Account from "./components/Account/Account.tsx";
 import MediaList from "./components/Media/MediaList.tsx";
+import {ToastContainer} from "react-toastify";
 
 const router = createBrowserRouter([
     {
@@ -66,6 +67,18 @@ const router = createBrowserRouter([
 function App() {
     return (
         <Provider store={store}>
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
             <RouterProvider router={router} />
         </Provider>
     )

@@ -3,7 +3,10 @@ import { useCallback, useEffect, useState } from "react";
 import s from "../MediaProvider.module.css";
 import { mediaProviderApi, type ProvidedMediaDetails } from "../../../api/mediaProviderApi.ts";
 import { Calendar, Clock, Star, X } from "lucide-react";
-import {myMediaApi} from "../../../api/myMediaApi.ts";
+import {type MediaItem, myMediaApi} from "../../../api/myMediaApi.ts";
+import { toast } from "react-toastify";
+import axios, {type AxiosError} from "axios";
+import type {BackendResult} from "../../../api/types.ts";
 
 function MediaDetails() {
     const { id } = useParams<{ id: string }>();
@@ -54,17 +57,28 @@ function MediaDetails() {
     }, [id]);
 
     async function handleAddClick() {
-        if(detailedMediaInfo === null) return;
+        try {
+            if(detailedMediaInfo === null) return;
 
-        const result = await myMediaApi.createMedia(detailedMediaInfo, "movie");
-        const data = result.data;
+            const result = await myMediaApi.createMedia(detailedMediaInfo, "movie");
+            const data = result.data;
 
-        if(data.isSuccess) {
-            alert("Success");
-            // Todo: add toaster messages
+            if(data.isSuccess) {
+                toast.success("Media added");
+            }
+
+            navigate("..");
         }
+        catch(e) {
+            if (axios.isAxiosError<BackendResult<MediaItem>>(e)) {
+                toast.error(e.response?.data?.message ?? "Request failed");
+                console.error(e.response);
+                return;
+            }
 
-        navigate("..");
+            toast.error("Unexpected error");
+            console.error(e);
+        }
     }
 
     return (
