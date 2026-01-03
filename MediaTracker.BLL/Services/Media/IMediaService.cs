@@ -8,7 +8,7 @@ namespace MediaTracker.BLL.Services.Media;
 
 public interface IMediaService
 {
-    Task<Result<MediaListResponse>> GetAsync(int page, string? userId);
+    Task<Result<MediaListResponse>> GetAsync(int page, string? userId, EMediaStatus? status);
 
     Task<Result<MediaItemResponse>> CreateAsync(MediaItemRequest request, string? userId);
 

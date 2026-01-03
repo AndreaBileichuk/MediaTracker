@@ -1,6 +1,7 @@
 ﻿using MediaTracker.BLL.DTOs.Media;
 using MediaTracker.BLL.Errors;
 using MediaTracker.BLL.Infrastructure;
+using MediaTracker.DAL.Enums;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
@@ -8,12 +9,12 @@ namespace MediaTracker.BLL.Services.Media;
 
 public class MediaServiceWithCaching(MediaService mediaService, IDistributedCache distributedCache) : IMediaService
 {
-    public async Task<Result<MediaListResponse>> GetAsync(int page, string? userId)
+    public async Task<Result<MediaListResponse>> GetAsync(int page, string? userId, EMediaStatus? status)
     {
         if (string.IsNullOrEmpty(userId)) return Result.Failure<MediaListResponse>(AuthErrors.UserNotFound);
 
         var version = await GetUserCacheVersion(userId);
-        var key = $"my-media-{page}-{userId}-{version}";
+        var key = $"my-media-{page}-{userId}-{status}-{version}";
 
         var cachedMedia = await distributedCache.GetStringAsync(key);
 
@@ -30,7 +31,7 @@ public class MediaServiceWithCaching(MediaService mediaService, IDistributedCach
             }
         }
 
-        var result = await mediaService.GetAsync(page, userId);
+        var result = await mediaService.GetAsync(page, userId, status);
 
         if (result is { IsSuccess: true, Value.Results.Count: > 0 })
         {

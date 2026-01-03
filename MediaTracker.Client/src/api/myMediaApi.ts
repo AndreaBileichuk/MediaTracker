@@ -25,9 +25,20 @@ export interface MediaDetails {
     mediaInfo: ProvidedMediaDetails,
 }
 
+export type FilterType = 'Active' | 'InProcess' | 'Planned' | 'Completed' | 'Dropped';
+
 export const myMediaApi = {
-    getMedia: async (page: number) => {
-        return await axiosClient.get<BackendResult<MyMediaListApiResponse>>(`media?page=${page}`);
+    getMedia: async (page: number, filter: FilterType) => {
+        const params : {page: number, status: string | null} = { page, status: null }
+
+        if (filter !== 'Active') {
+            params.status = filter;
+        }
+
+        return axiosClient.get<BackendResult<MyMediaListApiResponse>>(
+            'media',
+            { params }
+        );
     },
     createMedia: async (media: ProvidedMediaDetails, type: MediaType) => {
         return await axiosClient.post<BackendResult<MediaItem>>(`media`, {

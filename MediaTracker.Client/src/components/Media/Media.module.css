@@ -212,3 +212,71 @@
 .ctaButton:hover {
     background-color: #f40612;
 }
+
+.filterBar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #333;
+    overflow-x: auto; /* Allows scrolling on mobile if many filters */
+    scrollbar-width: none; /* Hide scrollbar for cleaner look */
+}
+
+.divider {
+    width: 1px;
+    height: 24px;
+    background-color: #444;
+    margin: 0 8px;
+}
+
+.filterBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #888;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.filterBtn:hover {
+    color: #ddd;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Active State for standard filters */
+.filterBtn.activeFilter {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Specific style for Dropped button */
+.droppedBtn:hover {
+    color: #ff6b6b;
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+.droppedBtn.activeFilter {
+    color: #ff6b6b;
+    background-color: rgba(255, 107, 107, 0.15);
+    border-color: rgba(255, 107, 107, 0.3);
+}
+
+/* Hide text labels on very small screens if needed, keep icons */
+@media (max-width: 600px) {
+    .btnLabel {
+        display: none;
+    }
+    .filterBtn {
+        padding: 8px 10px;
+    }
+}

@@ -30,7 +30,7 @@ export interface MediaApiResponse {
     totalPages: number
 }
 
-export type MediaStatus = "Want" | "Inprogress" | "Completed" | "Dropped";
+export type MediaStatus = "Planned" | "Inprogress" | "Completed" | "Dropped";
 
 export type MediaType = "book" | "movie";
 

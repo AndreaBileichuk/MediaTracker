@@ -26,7 +26,7 @@ public class MediaItemConfiguration : IEntityTypeConfiguration<MediaItem>
 
         builder.Property(mi => mi.Status)
             .IsRequired()
-            .HasDefaultValue(EMediaStatus.Want);
+            .HasDefaultValue(EMediaStatus.Planned);
 
         builder.Property(mi => mi.UserRating)
             .IsRequired(false);

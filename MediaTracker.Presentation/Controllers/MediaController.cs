@@ -2,6 +2,7 @@
 using MediaTracker.BLL.DTOs.Media;
 using MediaTracker.BLL.Infrastructure;
 using MediaTracker.BLL.Services.Media;
+using MediaTracker.DAL.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,9 +13,9 @@ namespace MediaTracker.Presentation.Controllers;
 public class MediaController(IMediaService service) : ControllerBase
 {
     [HttpGet()]
-    public async Task<Result<MediaListResponse>> GetAsync([FromQuery] int page)
+    public async Task<Result<MediaListResponse>> GetAsync([FromQuery] int page, [FromQuery] EMediaStatus? status)
     {
-        return await service.GetAsync(page, User.FindFirstValue(ClaimTypes.NameIdentifier));
+        return await service.GetAsync(page, User.FindFirstValue(ClaimTypes.NameIdentifier), status);
     }
 
     [HttpPost]

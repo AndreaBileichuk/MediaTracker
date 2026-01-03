@@ -1,5 +1,4 @@
 ﻿using MediaTracker.BLL.DTOs.Media;
-using MediaTracker.BLL.DTOs.MediaProvider;
 using MediaTracker.BLL.Errors;
 using MediaTracker.BLL.Infrastructure;
 using MediaTracker.BLL.Services.MediaProvider;
@@ -15,7 +14,7 @@ public class MediaService(ApplicationDbContext context, IMediaProviderManager me
 {
     private readonly int _pageSize = 10;
     
-    public async Task<Result<MediaListResponse>> GetAsync(int page, string? userId)
+    public async Task<Result<MediaListResponse>> GetAsync(int page, string? userId, EMediaStatus? status)
     {
         if (string.IsNullOrEmpty(userId))
         {
@@ -23,11 +22,20 @@ public class MediaService(ApplicationDbContext context, IMediaProviderManager me
         }
 
         if (page < 1) page = 1;
-        
+
         var query = context.MediaItems
             .AsNoTracking()
             .Where(m => m.ApplicationUserId == userId);
 
+        if (status != null)
+        {
+            query = query.Where(m => m.Status == status);
+        }
+        else
+        {
+            query = query.Where(m => m.Status != EMediaStatus.Dropped);
+        }
+        
         var totalCount = await query.CountAsync();
         
         var totalPages = (int)Math.Ceiling((double)totalCount / _pageSize);
@@ -71,7 +79,7 @@ public class MediaService(ApplicationDbContext context, IMediaProviderManager me
             PosterPath = request.PosterPath,
             ExternalId = request.ExternalId,
             Type = request.Type,
-            Status = EMediaStatus.Want,
+            Status = EMediaStatus.Planned,
             ApplicationUserId = userId
         };
 

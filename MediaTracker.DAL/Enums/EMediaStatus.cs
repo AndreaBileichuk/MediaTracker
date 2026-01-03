@@ -2,7 +2,7 @@
 
 public enum EMediaStatus
 {
-    Want,
+    Planned,
     InProcess,
     Completed,
     Dropped
