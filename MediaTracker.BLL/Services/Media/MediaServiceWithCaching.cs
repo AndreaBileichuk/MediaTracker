@@ -56,6 +56,41 @@ public class MediaServiceWithCaching(MediaService mediaService, IDistributedCach
         return result;
     }
 
+    public async Task<Result<MediaItemDetailsResponse>> GetDetailsAsync(string? userId, int mediaItemId)
+    {
+        if (string.IsNullOrWhiteSpace(userId)) return Result.Failure<MediaItemDetailsResponse>(AuthErrors.UserNotFound);
+
+        var key = $"media-item-details-{userId}-{mediaItemId}";
+
+        var cachedMedia = await distributedCache.GetStringAsync(key);
+
+        if (!string.IsNullOrWhiteSpace(cachedMedia))
+        {
+            try
+            {
+                var cachedResult = JsonConvert.DeserializeObject<MediaItemDetailsResponse>(cachedMedia);
+                if (cachedResult != null) return Result.Success(cachedResult);
+            }
+            catch (Exception)
+            {
+                await distributedCache.RemoveAsync(key);
+            }
+        }
+
+        var result = await mediaService.GetDetailsAsync(userId, mediaItemId);
+
+        if (result is { IsSuccess: true, Value: not null })
+        {
+            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Value),
+                new DistributedCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
+                });
+        }
+
+        return result;
+    }
+
     private async Task InvalidateUserCache(string userId)
     {
         var versionKey = $"user-media-ver-{userId}";

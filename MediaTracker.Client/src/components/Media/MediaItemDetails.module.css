@@ -1,0 +1,345 @@
+.pageContainer {
+    color: #fff;
+    padding-bottom: 50px;
+}
+
+.loadingScreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    font-size: 1.5rem;
+}
+
+/* --- HERO SECTION --- */
+.heroWrapper {
+    position: relative;
+    width: 100%;
+    min-height: 80vh;
+    /* Takes up most of the screen */
+    display: flex;
+    flex-direction: column;
+}
+
+/* The Background Image Layer */
+.heroBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    z-index: 0;
+}
+
+/* The Gradient Overlay Layer */
+.heroGradientOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+            rgba(20, 20, 20, 0.4) 0%,
+            rgba(20, 20, 20, 0.7) 40%,
+            rgba(20, 20, 20, 0.95) 85%,
+            #141414 100%);
+    z-index: 1;
+}
+
+/* The Container for Content (Relative ensures it pushes the page height) */
+.heroContentContainer {
+    position: relative;
+    z-index: 2;
+    /* Above background/gradient */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 4rem;
+    padding-top: 80px;
+    /* Space for back button area */
+}
+
+.backButton {
+    position: absolute;
+    top: 30px;
+    left: 40px;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: #eee;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 30px;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+    z-index: 10;
+}
+
+.backButton:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: translateX(-4px);
+}
+
+.heroMainContent {
+    display: flex;
+    gap: 4rem;
+    align-items: flex-start;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Poster */
+.posterWrapper {
+    flex-shrink: 0;
+    width: 300px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.poster {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Info Side */
+.infoWrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.year {
+    font-weight: 300;
+    color: #aaa;
+    margin-left: 10px;
+}
+
+.tagline {
+    font-style: italic;
+    color: #ccc;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.metaRow {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 1rem;
+    color: #ddd;
+}
+
+.metaItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.userScore {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.genres {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.genreBadge {
+    border: 1px solid #aaa;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    color: #ddd;
+}
+
+.statusContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.statusBadge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: #000;
+    /* Dark text on colored badge */
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.overview {
+    margin-top: 1rem;
+    max-width: 800px;
+}
+
+.overview h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.overview p {
+    line-height: 1.6;
+    color: #ddd;
+    font-size: 1.05rem;
+}
+
+/* --- NOTES SECTION --- */
+.notesSection {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 4rem;
+}
+
+.notesHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 1rem;
+}
+
+.notesHeader h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.addNoteBtn {
+    background: linear-gradient(135deg, #eee 0%, #ccc 100%);
+    color: #111;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+}
+
+.addNoteBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #fff 0%, #ddd 100%);
+}
+
+.notesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.noteCard {
+    background-color: #1f1f1f;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 140px;
+    transition: all 0.2s ease;
+}
+
+.noteContent {
+    color: #eee;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.noteFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #333;
+    padding-top: 10px;
+}
+
+.noteDate {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.deleteNoteBtn {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 6px;
+    border-radius: 50%;
+}
+
+.deleteNoteBtn:hover {
+    color: #ff4444;
+    background-color: rgba(255, 68, 68, 0.1);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .heroContentContainer {
+        padding: 1rem;
+        padding-top: 70px;
+        /* More space for back button on mobile */
+    }
+
+    .heroMainContent {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 2rem;
+    }
+
+    .posterWrapper {
+        width: 200px;
+    }
+
+    .infoWrapper {
+        align-items: center;
+    }
+
+    .metaRow {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .notesSection {
+        padding: 1rem;
+    }
+
+    .backButton {
+        left: 20px;
+        top: 20px;
+    }
+}

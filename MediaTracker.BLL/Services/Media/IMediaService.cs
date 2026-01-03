@@ -11,4 +11,6 @@ public interface IMediaService
     Task<Result<MediaListResponse>> GetAsync(int page, string? userId);
 
     Task<Result<MediaItemResponse>> CreateAsync(MediaItemRequest request, string? userId);
+
+    Task<Result<MediaItemDetailsResponse>> GetDetailsAsync(string? userId, int mediaItemId);
 }

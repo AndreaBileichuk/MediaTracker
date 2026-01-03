@@ -7,6 +7,7 @@ import {type MediaItem, myMediaApi} from "../../../api/myMediaApi.ts";
 import { toast } from "react-toastify";
 import axios from "axios";
 import type {BackendResult} from "../../../api/types.ts";
+import {formatRuntime, getYear} from "../../../globalFunctions.ts";
 
 function MediaDetails() {
     const { id } = useParams<{ id: string }>();
@@ -125,11 +126,11 @@ function MediaDetails() {
                             <div className={s.statsRow}>
                                 <div className={s.statBadge}>
                                     <Calendar size={14} />
-                                    {new Date(detailedMediaInfo.releaseDate).getFullYear()}
+                                    {getYear(detailedMediaInfo.releaseDate)}
                                 </div>
                                 <div className={s.statBadge}>
                                     <Clock size={14} />
-                                    {detailedMediaInfo.runtime} min
+                                    {formatRuntime(detailedMediaInfo.runtime)}
                                 </div>
                                 <div className={`${s.statBadge} ${s.rating}`}>
                                     <Star size={14} fill="#ffd700" color="#ffd700" />

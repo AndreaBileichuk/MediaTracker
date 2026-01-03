@@ -17,6 +17,14 @@ export interface MediaItem {
     status: string,
 }
 
+export interface MediaDetails {
+    id: number,
+    type: MediaType,
+    status: string,
+    userRating: number | null,
+    mediaInfo: ProvidedMediaDetails,
+}
+
 export const myMediaApi = {
     getMedia: async (page: number) => {
         return await axiosClient.get<BackendResult<MyMediaListApiResponse>>(`media?page=${page}`);
@@ -28,5 +36,8 @@ export const myMediaApi = {
             externalId: media.id,
             type: type
         });
+    },
+    getDetails: async (id: string) => {
+        return await axiosClient.get<BackendResult<MediaDetails>>(`media/${id}`);
     }
 };

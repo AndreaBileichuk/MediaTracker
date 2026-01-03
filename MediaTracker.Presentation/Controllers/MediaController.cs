@@ -22,4 +22,10 @@ public class MediaController(IMediaService service) : ControllerBase
     {
         return await service.CreateAsync(request, User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
+
+    [HttpGet("{id}")]
+    public async Task<Result<MediaItemDetailsResponse>> GetDetailsAsync([FromRoute] int id)
+    {
+        return await service.GetDetailsAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), id);
+    }
 }

@@ -5,10 +5,13 @@ import {useNavigate} from "react-router-dom";
 import s from "./Media.module.css";
 import { Loader2, PlusCircle } from "lucide-react";
 import {PLACEHOLDER_IMG} from "../../consts.ts";
+import {getStatusColor} from "../../globalFunctions.ts";
 
 function MediaList() {
     const [myMedia, setMyMedia] = useState<MyMediaListApiResponse | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         async function handleFetch() {
@@ -28,13 +31,9 @@ function MediaList() {
         handleFetch();
     }, [currentPage])
 
-    const getStatusStyle = (status: string) => {
-        switch (status.toLowerCase()) {
-            case 'completed': return s.statusCompleted;
-            case 'inprogress': return s.statusInProgress;
-            default: return s.statusWant;
-        }
-    };
+    function handleMediaClick(id: number) {
+        navigate(`${id}`);
+    }
 
     if(myMedia == null || myMedia.results == null) {
         return <div className={s.loadingContainer}><Loader2 className={s.spinner} size={40}/></div>
@@ -61,7 +60,7 @@ function MediaList() {
             ) : (
                 <div className={s.grid}>
                     {myMedia.results.map(m => (
-                        <div key={m.id} className={s.card}>
+                        <div key={m.id} className={s.card} onClick={() => handleMediaClick(m.id)}>
                             <div className={s.posterWrapper}>
                                 <img
                                     src={m.posterPath || PLACEHOLDER_IMG}
@@ -75,7 +74,7 @@ function MediaList() {
                             <div className={s.content}>
                                 <h3 className={s.title} title={m.title}>{m.title}</h3>
                                 <div className={s.meta}>
-                                    <span className={`${s.statusBadge} ${getStatusStyle(m.status)}`}>
+                                    <span className={`${s.statusBadge} ${getStatusColor(m.status)}`}>
                                         {m.status}
                                     </span>
                                 </div>

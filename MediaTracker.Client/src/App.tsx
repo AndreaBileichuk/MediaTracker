@@ -13,6 +13,7 @@ import MediaTopRated from "./components/MediaProvider/MediaTopRated.tsx";
 import Account from "./components/Account/Account.tsx";
 import MediaList from "./components/Media/MediaList.tsx";
 import {ToastContainer} from "react-toastify";
+import MediaItemDetails from "./components/Media/MediaItemDetails.tsx";
 
 const router = createBrowserRouter([
     {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
             {
                 path: "media/list",
                 element: <MediaList />
+            },
+            {
+                path: "media/list/:id",
+                element: <MediaItemDetails />
             },
             {
                 path: "media/search",

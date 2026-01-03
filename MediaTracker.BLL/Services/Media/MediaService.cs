@@ -1,6 +1,8 @@
 ﻿using MediaTracker.BLL.DTOs.Media;
+using MediaTracker.BLL.DTOs.MediaProvider;
 using MediaTracker.BLL.Errors;
 using MediaTracker.BLL.Infrastructure;
+using MediaTracker.BLL.Services.MediaProvider;
 using MediaTracker.DAL.Data;
 using MediaTracker.DAL.Entities;
 using MediaTracker.DAL.Enums;
@@ -9,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MediaTracker.BLL.Services.Media;
 
 
-public class MediaService(ApplicationDbContext context) : IMediaService
+public class MediaService(ApplicationDbContext context, IMediaProviderManager mediaProviderManager) : IMediaService
 {
     private readonly int _pageSize = 10;
     
@@ -81,5 +83,30 @@ public class MediaService(ApplicationDbContext context) : IMediaService
         {
             Id = result.Entity.Id
         });
+    }
+
+    public async Task<Result<MediaItemDetailsResponse>> GetDetailsAsync(string? userId, int mediaItemId)
+    {
+        if (string.IsNullOrWhiteSpace(userId)) return Result.Failure<MediaItemDetailsResponse>(AuthErrors.UserNotFound);
+
+        var mediaItem = await context.MediaItems.FindAsync(mediaItemId);
+
+        if (mediaItem is null) return Result.Failure<MediaItemDetailsResponse>(MediaErrors.NotFound);
+
+        var externalMediaResult = await mediaProviderManager.GetByIdAsync($"{mediaItem.ExternalId}", mediaItem.Type);
+
+        if (!externalMediaResult.IsSuccess || externalMediaResult.Value == null) 
+            return Result.Failure<MediaItemDetailsResponse>(MediaErrors.NotFound);
+
+        var result = new MediaItemDetailsResponse()
+        {
+            Id = mediaItem.Id,
+            Type = mediaItem.Type,
+            Status = mediaItem.Status,
+            UserRating = mediaItem.UserRating,
+            MediaInfo = externalMediaResult.Value
+        };
+
+        return Result.Success(result);
     }
 }
