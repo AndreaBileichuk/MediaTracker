@@ -91,6 +91,19 @@ public class MediaServiceWithCaching(MediaService mediaService, IDistributedCach
         return result;
     }
 
+    public async Task<Result> DropAsync(string? userId, int mediaItemId)
+    {
+        var result = await mediaService.DropAsync(userId, mediaItemId);
+
+        if (result.IsSuccess && !string.IsNullOrEmpty(userId))
+        {
+            await InvalidateUserCache(userId);
+            await distributedCache.RemoveAsync($"media-item-details-{userId}-{mediaItemId}");
+        }
+
+        return result;
+    }
+
     private async Task InvalidateUserCache(string userId)
     {
         var versionKey = $"user-media-ver-{userId}";

@@ -343,3 +343,112 @@
         top: 20px;
     }
 }
+
+.actionsToolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 1.5rem 0; /* Відступ зверху і знизу */
+    align-items: center;
+}
+
+.actionBtn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column; /* Label зверху, Value знизу */
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 100px;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(5px);
+    position: relative;
+    overflow: hidden;
+}
+
+.actionBtn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.actionBtn:active {
+    transform: translateY(0);
+}
+
+/* Стилі для внутрішніх частин кнопки */
+.actionLabel {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 2px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.actionValue {
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filledStar {
+    fill: gold;
+    color: gold;
+}
+
+/* Специфічні стилі для кнопки DROP */
+.dropBtn {
+    flex-direction: row; /* Іконка зліва, текст справа */
+    align-items: center;
+    gap: 8px;
+    min-width: auto; /* Вона може бути меншою */
+    border-color: rgba(255, 68, 68, 0.3);
+    background: rgba(40, 0, 0, 0.4);
+    height: 52px; /* Щоб збігатися по висоті з іншими */
+}
+
+.dropBtn:hover {
+    background: rgba(220, 20, 60, 0.6);
+    border-color: #ff4444;
+}
+
+.dropBtn span {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.btnDisable {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(100%);
+}
+
+.btnDisable:hover,
+.btnDisable:active {
+    transform: none;
+    background: rgba(40, 0, 0, 0.4);
+    border-color: rgba(255, 68, 68, 0.3);
+    box-shadow: none;
+}
+
+/* Mobile fix for toolbar */
+@media (max-width: 768px) {
+    .actionsToolbar {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .actionBtn {
+        flex: 1; /* Кнопки розтягуються на мобільному */
+        align-items: center; /* Центруємо текст на мобільному */
+        min-width: 80px;
+    }
+}

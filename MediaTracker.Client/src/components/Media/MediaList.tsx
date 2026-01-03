@@ -12,7 +12,6 @@ function MediaList() {
     const [currentPage, setCurrentPage] = useState(1);
     const navigate = useNavigate();
 
-
     useEffect(() => {
         async function handleFetch() {
             try {
@@ -74,7 +73,8 @@ function MediaList() {
                             <div className={s.content}>
                                 <h3 className={s.title} title={m.title}>{m.title}</h3>
                                 <div className={s.meta}>
-                                    <span className={`${s.statusBadge} ${getStatusColor(m.status)}`}>
+                                    <span className={`${s.statusBadge}`}
+                                          style={{ backgroundColor: getStatusColor(m.status)}}>
                                         {m.status}
                                     </span>
                                 </div>

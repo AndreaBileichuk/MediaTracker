@@ -39,5 +39,8 @@ export const myMediaApi = {
     },
     getDetails: async (id: string) => {
         return await axiosClient.get<BackendResult<MediaDetails>>(`media/${id}`);
+    },
+    dropMedia: async (id: number) => {
+        return await axiosClient.patch<BackendResult<void>>(`media/drop/${id}`);
     }
 };

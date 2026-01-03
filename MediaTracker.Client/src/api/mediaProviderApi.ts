@@ -14,7 +14,7 @@ export interface ProvidedMediaDetails extends ProvidedMedia {
     backdropPath: string;
     genres: Genre[];
     runtime: number;
-    status: string;
+    status: MediaStatus;
     tagline: string;
     voteAverage: number;
     voteCount: number;
@@ -29,6 +29,8 @@ export interface MediaApiResponse {
     results: ProvidedMedia[],
     totalPages: number
 }
+
+export type MediaStatus = "Want" | "Inprogress" | "Completed" | "Dropped";
 
 export type MediaType = "book" | "movie";
 

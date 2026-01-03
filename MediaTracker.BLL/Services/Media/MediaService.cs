@@ -91,7 +91,7 @@ public class MediaService(ApplicationDbContext context, IMediaProviderManager me
 
         var mediaItem = await context.MediaItems.FindAsync(mediaItemId);
 
-        if (mediaItem is null) return Result.Failure<MediaItemDetailsResponse>(MediaErrors.NotFound);
+        if (mediaItem is null || mediaItem.ApplicationUserId != userId) return Result.Failure<MediaItemDetailsResponse>(MediaErrors.NotFound);
 
         var externalMediaResult = await mediaProviderManager.GetByIdAsync($"{mediaItem.ExternalId}", mediaItem.Type);
 
@@ -108,5 +108,24 @@ public class MediaService(ApplicationDbContext context, IMediaProviderManager me
         };
 
         return Result.Success(result);
+    }
+
+    public async Task<Result> DropAsync(string? userId, int mediaItemId)
+    {
+        if (string.IsNullOrWhiteSpace(userId)) return Result.Failure(AuthErrors.UserNotFound);
+        
+        var mediaItem = await context.MediaItems.FindAsync(mediaItemId);
+
+        if (mediaItem is null || mediaItem.ApplicationUserId != userId) 
+            return Result.Failure(MediaErrors.NotFound);
+
+        if (mediaItem.Status == EMediaStatus.Dropped) 
+            return Result.Failure(new Error("Media.AlreadyDropped", "The media is already dropped"));
+        
+        mediaItem.Status = EMediaStatus.Dropped;
+
+        await context.SaveChangesAsync();
+
+        return Result.Success();
     }
 }

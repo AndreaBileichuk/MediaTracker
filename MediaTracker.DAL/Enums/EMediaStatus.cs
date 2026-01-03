@@ -4,5 +4,6 @@ public enum EMediaStatus
 {
     Want,
     InProcess,
-    Completed
+    Completed,
+    Dropped
 }
