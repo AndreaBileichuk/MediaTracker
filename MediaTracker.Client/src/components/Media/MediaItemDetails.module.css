@@ -348,7 +348,8 @@
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin: 1.5rem 0; /* Відступ зверху і знизу */
+    margin: 1.5rem 0;
+    /* Відступ зверху і знизу */
     align-items: center;
 }
 
@@ -360,7 +361,8 @@
     color: #fff;
     cursor: pointer;
     display: flex;
-    flex-direction: column; /* Label зверху, Value знизу */
+    flex-direction: column;
+    /* Label зверху, Value знизу */
     align-items: flex-start;
     justify-content: center;
     min-width: 100px;
@@ -374,7 +376,7 @@
     background: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
     border-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .actionBtn:active {
@@ -406,13 +408,37 @@
 
 /* Специфічні стилі для кнопки DROP */
 .dropBtn {
-    flex-direction: row; /* Іконка зліва, текст справа */
+    flex-direction: row;
+    /* Іконка зліва, текст справа */
     align-items: center;
     gap: 8px;
-    min-width: auto; /* Вона може бути меншою */
+    min-width: auto;
+    /* Вона може бути меншою */
     border-color: rgba(255, 68, 68, 0.3);
     background: rgba(40, 0, 0, 0.4);
-    height: 52px; /* Щоб збігатися по висоті з іншими */
+    height: 52px;
+    /* Щоб збігатися по висоті з іншими */
+}
+
+.deleteBtn {
+    border-color: rgba(255, 68, 68, 0.2);
+    color: #ff4444;
+    background: rgba(40, 0, 0, 0.2);
+    margin-left: 12px;
+    width: 52px;
+    /* Square button */
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.deleteBtn:hover {
+    background: rgba(220, 20, 60, 0.4);
+    border-color: #ff4444;
+    color: white;
+    transform: scale(1.05);
 }
 
 .dropBtn:hover {
@@ -447,30 +473,42 @@
     }
 
     .actionBtn {
-        flex: 1; /* Кнопки розтягуються на мобільному */
-        align-items: center; /* Центруємо текст на мобільному */
+        flex: 1;
+        /* Кнопки розтягуються на мобільному */
+        align-items: center;
+        /* Центруємо текст на мобільному */
         min-width: 80px;
     }
 }
 
 .dropdownMenu {
     position: absolute;
-    top: 110%;
+    top: calc(100% + 8px);
     left: 0;
-    z-index: 10;
-    background-color: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    min-width: 100%;
+    z-index: 20;
+    min-width: 180px;
+    background-color: #1f1f1f;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
     overflow: hidden;
+    padding: 6px;
+    animation: fadeIn 0.15s ease-out;
 }
 
 .dropdownStatusItem {
-    padding: 8px 12px;
+    padding: 10px 12px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    color: #eee;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.dropdownStatusItem:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }

@@ -66,5 +66,8 @@ export const myMediaApi = {
         return await axiosClient.patch<BackendResult<void>>(`media/${id}/status`, {
             status: newStatus
         });
+    },
+    deleteMedia: async (id: number) => {
+        return await axiosClient.delete<BackendResult<void>>(`media/${id}`);
     }
 };
