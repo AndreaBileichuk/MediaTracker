@@ -1,5 +1,6 @@
 import axiosClient from "./axiosClient.ts";
 import type {BackendResult} from "./types.ts";
+import type {MediaStatus} from "./myMediaApi.ts";
 
 export interface ProvidedMedia {
     id: number;
@@ -29,8 +30,6 @@ export interface MediaApiResponse {
     results: ProvidedMedia[],
     totalPages: number
 }
-
-export type MediaStatus = "Planned" | "Inprogress" | "Completed" | "Dropped";
 
 export type MediaType = "book" | "movie";
 

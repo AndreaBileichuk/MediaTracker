@@ -2,7 +2,6 @@ import axiosClient from "./axiosClient.ts";
 import type {BackendResult} from "./types.ts";
 import type {MediaType, ProvidedMediaDetails} from "./mediaProviderApi.ts";
 
-
 export interface MyMediaListApiResponse {
     results: MediaItem[],
     totalPages: number,
@@ -14,18 +13,27 @@ export interface MediaItem {
     title: string,
     posterPath: string,
     type: MediaType,
-    status: string,
+    status: MediaStatus,
 }
 
 export interface MediaDetails {
     id: number,
     type: MediaType,
-    status: string,
+    status: MediaStatus,
     userRating: number | null,
     mediaInfo: ProvidedMediaDetails,
 }
 
-export type FilterType = 'Active' | 'InProcess' | 'Planned' | 'Completed' | 'Dropped';
+export const MEDIA_STATUSES = [
+    'InProcess',
+    'Planned',
+    'Completed',
+    'Dropped'
+] as const;
+
+export type MediaStatus = typeof MEDIA_STATUSES[number];
+
+export type FilterType = 'Active' | MediaStatus;
 
 export const myMediaApi = {
     getMedia: async (page: number, filter: FilterType) => {
@@ -53,5 +61,10 @@ export const myMediaApi = {
     },
     dropMedia: async (id: number) => {
         return await axiosClient.patch<BackendResult<void>>(`media/drop/${id}`);
+    },
+    changeStatus: async (id: number, newStatus: string) => {
+        return await axiosClient.patch<BackendResult<void>>(`media/${id}/status`, {
+            status: newStatus
+        });
     }
 };

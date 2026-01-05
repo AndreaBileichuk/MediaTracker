@@ -35,4 +35,10 @@ public class MediaController(IMediaService service) : ControllerBase
     {
         return await service.DropAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), id);
     }
+
+    [HttpPatch("{id}/status")]
+    public async Task<Result> ChangeStatusAsync([FromRoute] int id, [FromBody] ChangeStatusRequest request)
+    {
+        return await service.ChangeStatusAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), id, request);
+    }
 }

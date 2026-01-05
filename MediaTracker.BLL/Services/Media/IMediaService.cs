@@ -15,4 +15,6 @@ public interface IMediaService
     Task<Result<MediaItemDetailsResponse>> GetDetailsAsync(string? userId, int mediaItemId);
 
     Task<Result> DropAsync(string? userId, int mediaItemId);
+
+    Task<Result> ChangeStatusAsync(string? userId, int mediaItemId, ChangeStatusRequest request);
 }

@@ -130,10 +130,33 @@ public class MediaService(ApplicationDbContext context, IMediaProviderManager me
         if (mediaItem.Status == EMediaStatus.Dropped) 
             return Result.Failure(new Error("Media.AlreadyDropped", "The media is already dropped"));
         
+        if(mediaItem.Status == EMediaStatus.Completed) 
+            return Result.Failure(new Error("Media.AlreadyCompleted", "The media cannot be dropped if it is already completed!"));
+        
         mediaItem.Status = EMediaStatus.Dropped;
 
         await context.SaveChangesAsync();
 
+        return Result.Success();
+    }
+
+    public async Task<Result> ChangeStatusAsync(string? userId, int mediaItemId, ChangeStatusRequest request)
+    {
+        if(string.IsNullOrWhiteSpace(userId))  return Result.Failure(AuthErrors.UserNotFound);  
+        
+        var mediaItem = await context.MediaItems.FindAsync(mediaItemId);
+
+        if (mediaItem is null || mediaItem.ApplicationUserId != userId) 
+            return Result.Failure(MediaErrors.NotFound);
+
+        if (mediaItem.Status == request.Status) 
+            return Result.Failure(new Error("Media.TheStatusIsTheSame", "The media is already in the status you're trying to change it to."));
+
+        if (mediaItem.Status == EMediaStatus.Completed && request.Status == EMediaStatus.Dropped)
+            return Result.Failure(new Error("Media.AlreadyCompleted", "The media cannot be dropped if it is already completed!"));
+        
+        mediaItem.Status = request.Status;
+        await context.SaveChangesAsync();
         return Result.Success();
     }
 }

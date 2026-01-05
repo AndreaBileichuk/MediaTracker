@@ -4,10 +4,12 @@ import {type MediaDetails, myMediaApi} from "../../api/myMediaApi.ts";
 import type {AxiosError} from "axios";
 import type {BackendResult} from "../../api/types.ts";
 import {toast} from "react-toastify";
-import {Clock, Star, ArrowLeft, BookOpen, Trash2, ChevronDown, XCircle} from "lucide-react";
+import {Clock, Star, ArrowLeft, BookOpen, Trash2, XCircle} from "lucide-react";
 import s from "./MediaItemDetails.module.css";
 import {PLACEHOLDER_IMG} from "../../consts.ts";
 import {formatRuntime, getStatusColor, getYear} from "../../globalFunctions.ts";
+import StatusSelector from "./StatusSelector.tsx";
+import type {MediaStatus} from "../../api/myMediaApi.ts";
 
 interface Note {
     id: number;
@@ -62,9 +64,32 @@ function MediaItemDetails() {
         handleFetch();
     }, [id, navigate]);
 
-    const handleStatusChange = () => {
-        toast.info("Change Status clicked (Not implemented yet)");
-    };
+    async function handleStatusChange(status: MediaStatus) {
+        if(mediaDetails == null) return;
+
+        try {
+            const result = await myMediaApi.changeStatus(mediaDetails.id, status);
+            const data = result.data;
+
+            if(data.isSuccess) {
+                setMediaDetails(prev =>
+                    prev
+                        ? {
+                            ...prev,
+                            status: status
+                        }
+                        : prev
+                );
+
+                toast.success(`Status was changed successfully`);
+            }
+        }
+        catch(e) {
+            const error = e as AxiosError<BackendResult<void>>;
+            toast.error(error.response?.data.message);
+            console.log(error);
+        }
+    }
 
     const handleRate = () => {
         toast.info("Rate clicked (Not implemented yet)");
@@ -80,13 +105,12 @@ function MediaItemDetails() {
 
                 if(data.isSuccess) {
                     toast.success("Successfully dropped");
+                    navigate("/media/list");
                 }
             }
             catch(e) {
                 const error = e as AxiosError<BackendResult<void>>;
                 toast.error(error.response?.data.message ?? "Something went wrong");
-            } finally {
-                navigate("/media/list");
             }
         }
     };
@@ -141,17 +165,11 @@ function MediaItemDetails() {
                             </div>
 
                             <div className={s.actionsToolbar}>
-                                <button
-                                    className={s.actionBtn}
-                                    onClick={handleStatusChange}
-                                    style={{borderLeft: `4px solid ${getStatusColor(mediaDetails.status)}`}}
-                                    title="Change Status"
-                                >
-                                    <span className={s.actionLabel}>Status</span>
-                                    <span className={s.actionValue}>
-                                        {mediaDetails.status} <ChevronDown size={14} style={{opacity: 0.7}}/>
-                                    </span>
-                                </button>
+                                <StatusSelector
+                                    mediaDetails={mediaDetails}
+                                    onStatusUpdate={handleStatusChange}
+                                    getStatusColor={getStatusColor}
+                                />
 
                                 <button
                                     className={s.actionBtn}
@@ -169,10 +187,10 @@ function MediaItemDetails() {
                                 </button>
 
                                 <button
-                                    className={`${s.actionBtn} ${s.dropBtn} ${isDropped ? s.btnDisable : ""}`}
+                                    className={`${s.actionBtn} ${s.dropBtn} ${(isDropped || mediaDetails.status === 'Completed') ? s.btnDisable : ""}`}
                                     onClick={handleDrop}
                                     title="Remove from list"
-                                    disabled={isDropped}
+                                    disabled={isDropped || (mediaDetails.status === 'Completed')}
                                 >
                                     <XCircle size={18}/>
                                     <span>Drop</span>

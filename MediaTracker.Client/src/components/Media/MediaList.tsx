@@ -116,7 +116,7 @@ function MediaList() {
                     onClick={() => handleFilterChange('InProcess')}
                     title="In process"
                 >
-                    <PlayCircle size={16} /> <span className={s.btnLabel}>In progress</span>
+                    <PlayCircle size={16} /> <span className={s.btnLabel}>In process</span>
                 </button>
 
                 <button
@@ -147,7 +147,6 @@ function MediaList() {
 
                     <p>{currentEmptyState.description}</p>
 
-                    {/* Only show button if the config says so (e.g., Active, Planned) */}
                     {currentEmptyState.showButton && (
                         <MediaListButton text="Explore Media" />
                     )}
