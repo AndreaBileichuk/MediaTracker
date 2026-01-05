@@ -159,4 +159,19 @@ public class MediaService(ApplicationDbContext context, IMediaProviderManager me
         await context.SaveChangesAsync();
         return Result.Success();
     }
+
+    public async Task<Result> DeleteAsync(string? userId, int mediaItemId)
+    {
+        if (string.IsNullOrWhiteSpace(userId)) return Result.Failure(AuthErrors.UserNotFound);
+
+        var mediaItem = await context.MediaItems.FindAsync(mediaItemId);
+
+        if (mediaItem is null || mediaItem.ApplicationUserId != userId) return Result.Failure(MediaErrors.NotFound);
+
+        context.MediaItems.Remove(mediaItem);
+
+        await context.SaveChangesAsync();
+
+        return Result.Success();
+    }
 }

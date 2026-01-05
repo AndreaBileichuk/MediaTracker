@@ -17,4 +17,6 @@ public interface IMediaService
     Task<Result> DropAsync(string? userId, int mediaItemId);
 
     Task<Result> ChangeStatusAsync(string? userId, int mediaItemId, ChangeStatusRequest request);
+
+    Task<Result> DeleteAsync(string? userId, int mediaItemId);
 }

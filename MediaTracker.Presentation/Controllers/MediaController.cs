@@ -41,4 +41,10 @@ public class MediaController(IMediaService service) : ControllerBase
     {
         return await service.ChangeStatusAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), id, request);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<Result> DeleteAsync([FromRoute] int id)
+    {
+        return await service.DeleteAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), id);
+    }
 }
