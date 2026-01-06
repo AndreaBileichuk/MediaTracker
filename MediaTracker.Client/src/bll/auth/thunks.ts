@@ -1,7 +1,7 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import {authApi, type LoginRequest} from "../../api/authApi.ts";
+import {authApi, type LoginRequest, type RegisterRequest} from "../../api/authApi.ts";
 import type {BackendResult} from "../../api/types.ts";
-import type {AxiosError} from "axios";
+import {handleThunkError} from "../helpers/errorHelpers.ts";
 
 export const loginUser = createAsyncThunk<string, LoginRequest, { rejectValue: BackendResult<string> }>
 (
@@ -12,19 +12,21 @@ export const loginUser = createAsyncThunk<string, LoginRequest, { rejectValue: B
 
             return response.data.data!;
         } catch (err) {
-            const error = err as AxiosError<BackendResult<string>>;
-
-            if (error.response && error.response.data) {
-                return rejectWithValue(error.response.data);
-            }
-
-            return rejectWithValue({
-                isSuccess: false,
-                code: "Network.Error",
-                message: "Network error. Please check your connection.",
-                errors: [],
-                data: undefined
-            });
+            return handleThunkError(err, rejectWithValue);
         }
     }
 );
+
+export const registerUser = createAsyncThunk<string, RegisterRequest, {rejectValue: BackendResult<string>}>
+(
+    'auth/registerUser',
+    async (credentials, {rejectWithValue}) => {
+        try {
+            const response = await authApi.register(credentials);
+
+            return response.data.data!;
+        } catch(err) {
+            return handleThunkError(err, rejectWithValue);
+        }
+    }
+)

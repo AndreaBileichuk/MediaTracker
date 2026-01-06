@@ -14,7 +14,7 @@ public class ValidationAndResultFilter : IActionFilter
         var errors = context.ModelState
             .Where(x => x.Value!.Errors.Any())
             .SelectMany(x => x.Value!.Errors.Select(e 
-                => new Error(e.ErrorMessage, e.ErrorMessage)))
+                => new Error(x.Key, e.ErrorMessage)))
             .Distinct()
             .ToArray();
 

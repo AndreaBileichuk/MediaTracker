@@ -1,4 +1,4 @@
-import styles from "../Login/Login.module.css";
+import styles from "../Auth/Auth.module.css";
 import type {InputHTMLAttributes, ReactNode} from "react";
 
 interface CustomInputProps extends InputHTMLAttributes<HTMLInputElement> {

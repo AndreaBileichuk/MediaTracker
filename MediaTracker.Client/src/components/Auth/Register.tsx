@@ -1,24 +1,25 @@
-import { type FormEvent, useRef, useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../bll/store.ts";
-import { loginUser } from "../../bll/auth/thunks.ts";
-import { useNavigate, Link } from "react-router-dom";
-import styles from "./Login.module.css";
-import Shapes, { type ShapesHandle } from "../InteractableShapes/Shapes.tsx";
-import { EyeIconClosed, EyeIconOpen } from "../common/Icons.tsx";
-import { CustomInput } from "../common/CustomInput.tsx";
-import type { BackendResult } from "../../api/types.ts";
+import Shapes, {type ShapesHandle} from "../InteractableShapes/Shapes.tsx";
+import styles from "./Auth.module.css";
+import {CustomInput} from "../common/CustomInput.tsx";
+import {EyeIconClosed, EyeIconOpen} from "../common/Icons.tsx";
 import RedCustomBtn from "../common/CustomButtons/RedCustomBtn.tsx";
+import {Link, useNavigate} from "react-router-dom";
+import {type FormEvent, useEffect, useRef, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import type {AppDispatch, RootState} from "../../bll/store.ts";
+import {registerUser} from "../../bll/auth/thunks.ts";
 import {showSuccess} from "../../utils/toast.ts";
-import {mapBackendErrors} from "../../utils/errorHelpers.ts";
+import type {BackendResult} from "../../api/types.ts";
+import {mapBackendErrors} from "../../bll/helpers/errorHelpers.ts";
 
-function Login() {
+function Register() {
     const shapesRef = useRef<ShapesHandle>(null);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
     const { status, isAuthenticated } = useSelector((state: RootState) => state.auth);
 
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -38,8 +39,8 @@ function Login() {
         setValidationErrors({});
 
         try {
-            await dispatch(loginUser({ email, password })).unwrap();
-            showSuccess("Login successful! Welcome back!");
+            await dispatch(registerUser({ username, email, password })).unwrap();
+            showSuccess("You signed up successfully! Welcome!");
         }
         catch (err) {
             const apiResponse = err as BackendResult<string>;
@@ -50,7 +51,7 @@ function Login() {
                 setValidationErrors(fieldErrors);
             }
             else {
-                setGeneralError(apiResponse.message || "Login failed");
+                setGeneralError(apiResponse.message || "Signing up failed");
             }
         }
     }
@@ -59,7 +60,7 @@ function Login() {
 
     return (
         <div className={styles.container}>
-            <Shapes ref={shapesRef} />
+            <Shapes ref={shapesRef}/>
             <div className={styles.loginBox}>
                 <h1 className={styles.title}>
                     Welcome back to <span>MediaTracker</span>!
@@ -73,12 +74,25 @@ function Login() {
                     )}
 
                     <CustomInput
+                        label="Username"
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Your name"
+                        errorMessage={validationErrors["username"]}
+                        onFocus={() => shapesRef.current?.startTyping()}
+                        onBlur={() => shapesRef.current?.reset()}
+                        required
+                        disabled={isLoading}
+                    />
+
+                    <CustomInput
                         label="Email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="your@email.com"
-                        errorMessage={validationErrors["Email"]}
+                        errorMessage={validationErrors["email"]}
                         onFocus={() => shapesRef.current?.startTyping()}
                         onBlur={() => shapesRef.current?.reset()}
                         required
@@ -91,7 +105,7 @@ function Login() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        errorMessage={validationErrors["Password"]}
+                        errorMessage={validationErrors["password"]}
                         onFocus={() => shapesRef.current?.showPassword()}
                         onBlur={() => shapesRef.current?.reset()}
                         required
@@ -103,17 +117,18 @@ function Login() {
                             onClick={() => setShowPassword(!showPassword)}
                             disabled={isLoading}
                         >
-                            {showPassword ? <EyeIconOpen className={styles.icon} /> : <EyeIconClosed className={styles.icon} />}
+                            {showPassword ? <EyeIconOpen className={styles.icon}/> :
+                                <EyeIconClosed className={styles.icon}/>}
                         </button>
                     </CustomInput>
 
                     <RedCustomBtn
                         isLoading={isLoading}
-                        text={"Sign In"}
+                        text={"Sign Up"}
                     />
 
                     <div className={styles.registerLink}>
-                        Don't have an account? <Link to="/register">Register</Link>
+                        Already have an account? <Link to="/login">Login</Link>
                     </div>
                 </form>
             </div>
@@ -121,4 +136,4 @@ function Login() {
     );
 }
 
-export default Login;
+export default Register;

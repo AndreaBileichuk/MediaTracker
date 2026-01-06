@@ -2,11 +2,11 @@ import './App.css'
 import MediaSearch from "./components/MediaProvider/MediaSearch.tsx";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import NotFoundPage from "./components/NotFound/NotFoundPage.tsx";
-import Login from "./components/Login/Login.tsx";
+import Login from "./components/Auth/Login.tsx";
 import { Provider } from "react-redux";
 import { store } from "./bll/store.ts";
 import ProtectedRoute from "./components/common/ProtectedRoute/ProtectedRoute.tsx";
-import Register from "./components/Register/Register.tsx";
+import Register from "./components/Auth/Register.tsx";
 import MediaDetails from "./components/MediaProvider/common/MediaDetails.tsx";
 import MainLayout from "./components/layout/MainLayout.tsx";
 import MediaTopRated from "./components/MediaProvider/MediaTopRated.tsx";
