@@ -4,6 +4,9 @@ import {mediaProviderApi, type MediaApiResponse} from "../../api/mediaProviderAp
 import {Outlet} from "react-router-dom";
 import MediaList from "./common/MediaList.tsx";
 import Pagination from "../common/Pagination/Pagination.tsx";
+import RedCustomBtn from "../common/CustomButtons/RedCustomBtn.tsx";
+import type {BackendResult} from "../../api/types.ts";
+import type {AxiosError} from "axios";
 
 function MediaSearch() {
     const [media, setMedia] = useState<MediaApiResponse | null>(null);
@@ -28,7 +31,8 @@ function MediaSearch() {
             }
 
             setMedia(result.data);
-        } catch (error) {
+        } catch (e) {
+            const error = e as AxiosError<BackendResult<MediaApiResponse>>;
             console.error("Network error:", error);
         } finally {
             setIsLoading(false);
@@ -66,13 +70,11 @@ function MediaSearch() {
                     disabled={isLoading}
                 />
 
-                <button
+                <RedCustomBtn
+                    isLoading={isLoading}
+                    text={"Search"}
                     onClick={handleSearch}
-                    className={styles.button}
-                    disabled={isLoading}
-                >
-                    {isLoading ? "Searching..." : "Search"}
-                </button>
+                />
             </div>
 
             {isLoading && <div className={styles.loader}>Searching...</div>}
@@ -81,19 +83,16 @@ function MediaSearch() {
                 <p style={{textAlign: 'center', color: '#666', marginTop: '20px'}}>No results found.</p>
             )}
 
-            {
-                (media && media.results && media.results.length > 0) &&
-                (
-                    <>
-                        <MediaList mediaList={media.results}/>
+            {(media && media.results && media.results.length > 0) &&
+                <>
+                    <MediaList mediaList={media.results}/>
 
-                        <Pagination
-                            totalPages={media.totalPages}
-                            currentPage={currentPage}
-                            setCurrentPage={setCurrentPage}
-                        />
-                    </>
-                )
+                    <Pagination
+                        totalPages={media.totalPages}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                    />
+                </>
             }
 
             <Outlet/>

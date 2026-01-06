@@ -16,10 +16,9 @@ export function CustomInput({label, errorMessage, children, ...props}: Readonly<
             <div className={styles.inputWrapper}>
                 <input
                     {...props}
-                    // Додаємо клас з пропсів, якщо треба, але основний беремо зі стилів
                     className={`${styles.input} ${errorMessage ? styles.inputError : ''}`}
                 />
-                {children} {/* Кнопка ока рендериться тут, всередині relative блоку */}
+                {children}
             </div>
             {errorMessage && (
                 <span className={styles.fieldError}>

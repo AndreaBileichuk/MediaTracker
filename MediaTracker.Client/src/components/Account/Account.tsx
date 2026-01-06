@@ -8,7 +8,6 @@ import {Camera, Loader2} from "lucide-react";
 
 function Account() {
     const dispatch = useDispatch<AppDispatch>();
-
     const {user, status} = useSelector((state: RootState) => state.account);
 
     const fileInputRef = useRef<HTMLInputElement>(null);

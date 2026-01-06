@@ -11,6 +11,7 @@ import { formatRuntime, getStatusColor, getYear } from "../../globalFunctions.ts
 import StatusSelector from "./StatusSelector.tsx";
 import type { MediaStatus } from "../../api/myMediaApi.ts";
 import ConfirmationModal from "../common/ConfirmationModal/ConfirmationModal.tsx";
+import {showError, showSuccess} from "../../utils/toast.ts";
 
 interface Note {
     id: number;
@@ -57,7 +58,7 @@ function MediaItemDetails() {
                 }
             } catch (e) {
                 const error = e as AxiosError<BackendResult<MediaDetails>>;
-                toast.error(error.response?.data.message ?? "Request failed");
+                showError(error.response?.data.message ?? "Request failed");
                 navigate("/media/list");
             } finally {
                 setIsLoading(false);
@@ -84,12 +85,12 @@ function MediaItemDetails() {
                         : prev
                 );
 
-                toast.success(`Status was changed successfully`);
+                showSuccess(`Status was changed successfully`);
             }
         }
         catch (e) {
             const error = e as AxiosError<BackendResult<void>>;
-            toast.error(error.response?.data.message);
+            showError(error.response?.data.message ?? "Something is wrong");
             console.log(error);
         }
     }
@@ -107,13 +108,13 @@ function MediaItemDetails() {
                 const data = result.data;
 
                 if (data.isSuccess) {
-                    toast.success("Successfully dropped");
+                    showSuccess("Successfully dropped");
                     navigate("/media/list");
                 }
             }
             catch (e) {
                 const error = e as AxiosError<BackendResult<void>>;
-                toast.error(error.response?.data.message ?? "Something went wrong");
+                showError(error.response?.data.message ?? "Something went wrong");
             }
         }
     };
@@ -126,7 +127,7 @@ function MediaItemDetails() {
             const data = result.data;
 
             if (data.isSuccess) {
-                toast.success("The media was deleted successfully");
+                showSuccess("The media was deleted successfully");
                 setIsDeleteModalOpen(false);
                 navigate("..");
             }
@@ -134,7 +135,7 @@ function MediaItemDetails() {
         }
         catch (e) {
             const error = e as AxiosError<BackendResult<void>>;
-            toast.error(error.response?.data.message);
+            showError(error.response?.data.message ?? "Something is wrong");
         }
 
     }

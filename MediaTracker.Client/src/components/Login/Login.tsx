@@ -8,14 +8,15 @@ import Shapes, { type ShapesHandle } from "../InteractableShapes/Shapes.tsx";
 import { EyeIconClosed, EyeIconOpen } from "../common/Icons.tsx";
 import { CustomInput } from "../common/CustomInput.tsx";
 import type { BackendResult } from "../../api/types.ts";
-import {toast} from "react-toastify";
+import RedCustomBtn from "../common/CustomButtons/RedCustomBtn.tsx";
+import {showSuccess} from "../../utils/toast.ts";
+import {mapBackendErrors} from "../../utils/errorHelpers.ts";
 
 function Login() {
     const shapesRef = useRef<ShapesHandle>(null);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
-    // Access auth status
     const { status, isAuthenticated } = useSelector((state: RootState) => state.auth);
 
     const [email, setEmail] = useState("");
@@ -25,7 +26,6 @@ function Login() {
     const [generalError, setGeneralError] = useState<string | null>(null);
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-    // Redirect if already authenticated
     useEffect(() => {
         if (isAuthenticated) {
             navigate("/");
@@ -39,31 +39,18 @@ function Login() {
 
         try {
             await dispatch(loginUser({ email, password })).unwrap();
-            toast.success("Login successful",
-                {
-                    autoClose: 2000,
-                    hideProgressBar: true,
-                    closeOnClick: false,
-                    pauseOnHover: false,
-                    draggable: false,
-                });
+            showSuccess("Login successful! Welcome back!");
         }
         catch (err) {
-            const apiError = err as BackendResult<string>;
+            const apiResponse = err as BackendResult<string>;
 
-            if (apiError.errors && apiError.errors.length > 0) {
-                const errorsMap: Record<string, string> = {};
+            const fieldErrors = mapBackendErrors(apiResponse);
 
-                apiError.errors.forEach((e) => {
-                    if (e.code.includes("Email")) errorsMap["Email"] = e.message || "Invalid email";
-                    else if (e.code.includes("Password")) errorsMap["Password"] = e.message || "Invalid password";
-                    else errorsMap[e.code] = e.message || "Error";
-                });
-
-                setValidationErrors(errorsMap);
+            if(Object.keys(fieldErrors).length > 0) {
+                setValidationErrors(fieldErrors);
             }
             else {
-                setGeneralError(apiError.message || "Login failed");
+                setGeneralError(apiResponse.message || "Login failed");
             }
         }
     }
@@ -120,9 +107,10 @@ function Login() {
                         </button>
                     </CustomInput>
 
-                    <button type="submit" className={styles.button} disabled={isLoading}>
-                        {isLoading ? <span className={styles.loader}></span> : "Sign In"}
-                    </button>
+                    <RedCustomBtn
+                        isLoading={isLoading}
+                        text={"Sign In"}
+                    />
 
                     <div className={styles.registerLink}>
                         Don't have an account? <Link to="/register">Register</Link>

@@ -1,7 +1,7 @@
 import './App.css'
 import MediaSearch from "./components/MediaProvider/MediaSearch.tsx";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
-import NotFoundPage from "./components/common/NotFound/NotFoundPage.tsx";
+import NotFoundPage from "./components/NotFound/NotFoundPage.tsx";
 import Login from "./components/Login/Login.tsx";
 import { Provider } from "react-redux";
 import { store } from "./bll/store.ts";
