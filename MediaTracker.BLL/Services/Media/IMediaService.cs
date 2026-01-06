@@ -18,5 +18,7 @@ public interface IMediaService
 
     Task<Result> ChangeStatusAsync(string? userId, int mediaItemId, ChangeStatusRequest request);
 
+    Task<Result> RateAsync(string? userId, int mediaItemId, RateMediaRequest request);
+    
     Task<Result> DeleteAsync(string? userId, int mediaItemId);
 }

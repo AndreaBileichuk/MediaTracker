@@ -1,17 +1,17 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { type MediaDetails, myMediaApi } from "../../api/myMediaApi.ts";
-import type { AxiosError } from "axios";
-import type { BackendResult } from "../../api/types.ts";
-import { toast } from "react-toastify";
-import { Clock, Star, ArrowLeft, BookOpen, Trash2, XCircle } from "lucide-react";
+import {useNavigate, useParams} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {type MediaDetails, myMediaApi} from "../../api/myMediaApi.ts";
+import type {AxiosError} from "axios";
+import {type BackendResult, VALIDATION_ERROR} from "../../api/types.ts";
+import {Clock, Star, ArrowLeft, BookOpen, Trash2, XCircle} from "lucide-react";
 import s from "./MediaItemDetails.module.css";
-import { PLACEHOLDER_IMG } from "../../consts.ts";
-import { formatRuntime, getStatusColor, getYear } from "../../globalFunctions.ts";
-import StatusSelector from "./StatusSelector.tsx";
-import type { MediaStatus } from "../../api/myMediaApi.ts";
+import {PLACEHOLDER_IMG} from "../../consts.ts";
+import {formatRuntime, getStatusColor, getYear} from "../../globalFunctions.ts";
+import StatusSelector from "./common/StatusSelector.tsx";
+import type {MediaStatus} from "../../api/myMediaApi.ts";
 import ConfirmationModal from "../common/ConfirmationModal/ConfirmationModal.tsx";
 import {showError, showSuccess} from "../../utils/toast.ts";
+import RatingSelector from "./common/RatingSelector.tsx";
 
 interface Note {
     id: number;
@@ -30,14 +30,15 @@ const MOCK_NOTES: Note[] = [
         content: "Cinematography is beautiful, but the pacing felt a bit slow in the second act.",
         createdAt: "2023-10-20"
     },
-    { id: 3, content: "Must watch again to catch all the easter eggs.", createdAt: "2023-11-01" },
+    {id: 3, content: "Must watch again to catch all the easter eggs.", createdAt: "2023-11-01"},
 ];
 
 function MediaItemDetails() {
-    const { id } = useParams<{ id: string }>();
+    const {id} = useParams<{ id: string }>();
     const [mediaDetails, setMediaDetails] = useState<MediaDetails | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isRatingOpen, setIsRatingOpen] = useState(false);
 
     const navigate = useNavigate();
 
@@ -87,16 +88,33 @@ function MediaItemDetails() {
 
                 showSuccess(`Status was changed successfully`);
             }
-        }
-        catch (e) {
+        } catch (e) {
             const error = e as AxiosError<BackendResult<void>>;
             showError(error.response?.data.message ?? "Something is wrong");
             console.log(error);
         }
     }
 
-    const handleRate = () => {
-        toast.info("Rate clicked (Not implemented yet)");
+    async function handleRateSubmit(score: number) {
+        if (!mediaDetails) return;
+
+        try {
+            const result = await myMediaApi.rateMedia(mediaDetails.id, score);
+            const data = result.data;
+
+            if (data.isSuccess) {
+                setMediaDetails(prev => prev ? {...prev, userRating: score} : prev);
+                showSuccess(`Rated ${score}/10 successfully`);
+                setIsRatingOpen(false); // Close popover
+            }
+        } catch (e) {
+            const error = e as AxiosError<BackendResult<void>>;
+            showError(error.response?.data.message ?? "Failed to save rating");
+        }
+    }
+
+    const handleRateClick = () => {
+        setIsRatingOpen(!isRatingOpen);
     };
 
     const handleDrop = async () => {
@@ -111,8 +129,7 @@ function MediaItemDetails() {
                     showSuccess("Successfully dropped");
                     navigate("/media/list");
                 }
-            }
-            catch (e) {
+            } catch (e) {
                 const error = e as AxiosError<BackendResult<void>>;
                 showError(error.response?.data.message ?? "Something went wrong");
             }
@@ -132,10 +149,15 @@ function MediaItemDetails() {
                 navigate("..");
             }
 
-        }
-        catch (e) {
-            const error = e as AxiosError<BackendResult<void>>;
-            showError(error.response?.data.message ?? "Something is wrong");
+        } catch (e) {
+            const error = e as AxiosError<BackendResult<string>>;
+
+            if(error.response?.data.code == VALIDATION_ERROR) {
+                showError(error.response?.data.errors[0].message ?? "Something is wrong");
+            }
+            else {
+                showError(error.response?.data.message ?? "Something is wrong");
+            }
         }
 
     }
@@ -144,7 +166,7 @@ function MediaItemDetails() {
         return <div className={s.loadingScreen}>Loading details...</div>;
     }
 
-    const { mediaInfo } = mediaDetails;
+    const {mediaInfo} = mediaDetails;
     const isDropped = mediaDetails.status === "Dropped";
 
     return (
@@ -156,11 +178,11 @@ function MediaItemDetails() {
                         backgroundImage: `url(${mediaInfo.backdropPath || mediaInfo.posterPath})`
                     }}
                 />
-                <div className={s.heroGradientOverlay} />
+                <div className={s.heroGradientOverlay}/>
 
                 <div className={s.heroContentContainer}>
                     <button className={s.backButton} onClick={() => navigate(-1)}>
-                        <ArrowLeft size={20} /> Back
+                        <ArrowLeft size={20}/> Back
                     </button>
 
                     <div className={s.heroMainContent}>
@@ -182,10 +204,10 @@ function MediaItemDetails() {
 
                             <div className={s.metaRow}>
                                 <span className={s.metaItem}>
-                                    <Clock size={16} /> {formatRuntime(mediaInfo.runtime)}
+                                    <Clock size={16}/> {formatRuntime(mediaInfo.runtime)}
                                 </span>
                                 <span className={s.metaItem}>
-                                    <Star size={16} color="gold" /> {mediaInfo.voteAverage.toFixed(1)} TMDB
+                                    <Star size={16} color="gold"/> {mediaInfo.voteAverage.toFixed(1)} TMDB
                                 </span>
                             </div>
 
@@ -196,20 +218,32 @@ function MediaItemDetails() {
                                     getStatusColor={getStatusColor}
                                 />
 
-                                <button
-                                    className={s.actionBtn}
-                                    onClick={handleRate}
-                                    title="Rate this title"
-                                >
-                                    <span className={s.actionLabel}>My Score</span>
-                                    <span className={s.actionValue}>
-                                        <Star
-                                            size={14}
-                                            className={mediaDetails.userRating ? s.filledStar : ''}
+                                <div style={{position: 'relative'}}>
+                                    <button
+                                        className={s.actionBtn}
+                                        onClick={handleRateClick}
+                                        title="Rate this title"
+                                    >
+                                        <span className={s.actionLabel}>My Score</span>
+                                        <span className={s.actionValue}>
+                                            <Star
+                                                size={14}
+                                                className={mediaDetails.userRating ? s.filledStar : ''}
+                                                fill={mediaDetails.userRating ? "gold" : "none"} // Fill if rated
+                                            />
+                                                {mediaDetails.userRating ? `${mediaDetails.userRating}/10` : "Rate"}
+                                        </span>
+                                    </button>
+
+                                    {isRatingOpen && (
+                                        <RatingSelector
+                                            currentRating={mediaDetails.userRating}
+                                            onRate={handleRateSubmit}
+                                            onClose={() => setIsRatingOpen(false)}
+                                            isLoading={isLoading}
                                         />
-                                        {mediaDetails.userRating ? `${mediaDetails.userRating}/10` : "Rate"}
-                                    </span>
-                                </button>
+                                    )}
+                                </div>
 
                                 <button
                                     className={`${s.actionBtn} ${s.dropBtn} ${(isDropped || mediaDetails.status === 'Completed') ? s.btnDisable : ""}`}
@@ -217,7 +251,7 @@ function MediaItemDetails() {
                                     title="Remove from list"
                                     disabled={isDropped || (mediaDetails.status === 'Completed')}
                                 >
-                                    <XCircle size={18} />
+                                    <XCircle size={18}/>
                                     <span>Drop</span>
                                 </button>
 
@@ -226,7 +260,7 @@ function MediaItemDetails() {
                                     onClick={() => setIsDeleteModalOpen(true)}
                                     title="Delete Permanently"
                                 >
-                                    <Trash2 size={20} />
+                                    <Trash2 size={20}/>
                                 </button>
                             </div>
 
@@ -247,7 +281,7 @@ function MediaItemDetails() {
 
             <div className={s.notesSection}>
                 <div className={s.notesHeader}>
-                    <h2><BookOpen size={24} /> My Notes</h2>
+                    <h2><BookOpen size={24}/> My Notes</h2>
                     <button className={s.addNoteBtn}>+ Add Note</button>
                 </div>
 
@@ -257,7 +291,7 @@ function MediaItemDetails() {
                             <p className={s.noteContent}>{note.content}</p>
                             <div className={s.noteFooter}>
                                 <span className={s.noteDate}>{note.createdAt}</span>
-                                <button className={s.deleteNoteBtn}><Trash2 size={16} /></button>
+                                <button className={s.deleteNoteBtn}><Trash2 size={16}/></button>
                             </div>
                         </div>
                     ))}

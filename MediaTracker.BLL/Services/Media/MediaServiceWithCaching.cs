@@ -117,7 +117,20 @@ public class MediaServiceWithCaching(MediaService mediaService, IDistributedCach
 
         return result;
     }
-    
+
+    public async Task<Result> RateAsync(string? userId, int mediaItemId, RateMediaRequest request)
+    {
+        var result = await mediaService.RateAsync(userId, mediaItemId, request);
+
+        if (result.IsSuccess && !string.IsNullOrEmpty(userId))
+        {
+            await InvalidateUserCache(userId);
+            await distributedCache.RemoveAsync($"media-item-details-{userId}-{mediaItemId}");
+        }
+
+        return result;
+    }
+
     public async Task<Result> DeleteAsync(string? userId, int mediaItemId)
     {
         var result = await mediaService.DeleteAsync(userId, mediaItemId);

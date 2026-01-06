@@ -160,6 +160,23 @@ public class MediaService(ApplicationDbContext context, IMediaProviderManager me
         return Result.Success();
     }
 
+    public async Task<Result> RateAsync(string? userId, int mediaItemId, RateMediaRequest request)
+    {
+        if(string.IsNullOrWhiteSpace(userId))  return Result.Failure(AuthErrors.UserNotFound);
+
+        var mediaItem = await context.MediaItems.FindAsync(mediaItemId);
+
+        if (mediaItem is null || mediaItem.ApplicationUserId != userId)
+            return Result.Failure(MediaErrors.NotFound);
+
+        if (mediaItem.Status != EMediaStatus.Completed)
+            return Result.Failure(new Error("Rating", "Can't rate uncompleted media item!"));
+
+        mediaItem.UserRating = request.Rating;
+        await context.SaveChangesAsync();
+        return Result.Success();
+    }
+
     public async Task<Result> DeleteAsync(string? userId, int mediaItemId)
     {
         if (string.IsNullOrWhiteSpace(userId)) return Result.Failure(AuthErrors.UserNotFound);

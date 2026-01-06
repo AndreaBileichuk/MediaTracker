@@ -42,6 +42,12 @@ public class MediaController(IMediaService service) : ControllerBase
         return await service.ChangeStatusAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), id, request);
     }
 
+    [HttpPatch("{id}/rate")]
+    public async Task<Result> RateAsync([FromRoute] int id, [FromBody] RateMediaRequest request)
+    {
+        return await service.RateAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), id, request);
+    }
+
     [HttpDelete("{id}")]
     public async Task<Result> DeleteAsync([FromRoute] int id)
     {

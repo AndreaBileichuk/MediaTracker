@@ -11,3 +11,5 @@ export interface BackendResult<T> {
     message: string,
     errors: ApiError[],
 }
+
+export const VALIDATION_ERROR = "Validation.Error";

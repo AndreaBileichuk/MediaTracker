@@ -1,8 +1,8 @@
-import s from "./MediaItemDetails.module.css";
+import s from "../MediaItemDetails.module.css";
 import { ChevronDown } from "lucide-react";
-import { MEDIA_STATUSES, type MediaDetails } from "../../api/myMediaApi.ts";
+import { MEDIA_STATUSES, type MediaDetails } from "../../../api/myMediaApi.ts";
 import { useEffect, useRef, useState } from "react";
-import type { MediaStatus } from "../../api/myMediaApi.ts";
+import type { MediaStatus } from "../../../api/myMediaApi.ts";
 
 interface StatusSelectorProps {
     mediaDetails: MediaDetails;

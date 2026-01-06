@@ -512,3 +512,83 @@
 .dropdownStatusItem:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
+
+.popover {
+    position: absolute;
+    top: 110%; /* Show below the button */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a; /* Dark background matching your theme */
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    z-index: 50;
+    min-width: 280px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.closeBtn:hover {
+    color: #fff;
+}
+
+.starRow {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    margin-bottom: 8px;
+}
+
+.starBtn {
+    background: none;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.starBtn:hover {
+    transform: scale(1.2);
+}
+
+.starBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.filled {
+    color: gold;
+}
+
+.empty {
+    color: #444;
+}
+
+.ratingLabel {
+    text-align: center;
+    font-weight: bold;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
