@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import s from "../MediaProvider.module.css";
-import { mediaProviderApi, type ProvidedMediaDetails } from "../../../api/mediaProviderApi.ts";
+import {mediaProviderApi, type MediaType, type ProvidedMediaDetails} from "../../../api/mediaProviderApi.ts";
 import { Calendar, Clock, Star, X } from "lucide-react";
 import {type MediaItem, myMediaApi} from "../../../api/myMediaApi.ts";
 import { toast } from "react-toastify";
@@ -10,7 +10,7 @@ import type {BackendResult} from "../../../api/types.ts";
 import {formatRuntime, getYear} from "../../../globalFunctions.ts";
 
 function MediaDetails() {
-    const { id } = useParams<{ id: string }>();
+    const { type, id } = useParams<{ type: MediaType, id: string }>();
     const [detailedMediaInfo, setDetailedMediaInfo] = useState<ProvidedMediaDetails | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -32,13 +32,14 @@ function MediaDetails() {
         if (!id) return;
 
         const fetchMedia = async () => {
+            if(!type) return;
+
             try {
                 setIsLoading(true);
-                const response = await mediaProviderApi.getMediaById(Number(id), "movie");
+                const response = await mediaProviderApi.getMediaById(Number(id), type);
                 const result = response.data
 
                 if (!result.isSuccess || !result.data) {
-                    // Ideally toast or snackbar, but alert for now as per original or silence
                     console.error("Failed to load media details");
                     setDetailedMediaInfo(null);
                     return;
@@ -59,9 +60,9 @@ function MediaDetails() {
 
     async function handleAddClick() {
         try {
-            if(detailedMediaInfo === null) return;
+            if(detailedMediaInfo === null || !type) return;
 
-            const result = await myMediaApi.createMedia(detailedMediaInfo, "movie");
+            const result = await myMediaApi.createMedia(detailedMediaInfo, type);
             const data = result.data;
 
             if(data.isSuccess) {
@@ -128,12 +129,14 @@ function MediaDetails() {
                                     <Calendar size={14} />
                                     {getYear(detailedMediaInfo.releaseDate)}
                                 </div>
-                                <div className={s.statBadge}>
-                                    <Clock size={14} />
-                                    {formatRuntime(detailedMediaInfo.runtime)}
-                                </div>
+                                { detailedMediaInfo.runtime &&
+                                    <div className={s.statBadge}>
+                                        <Clock size={14}/>
+                                        {formatRuntime(detailedMediaInfo.runtime)}
+                                    </div>
+                                }
                                 <div className={`${s.statBadge} ${s.rating}`}>
-                                    <Star size={14} fill="#ffd700" color="#ffd700" />
+                                    <Star size={14} fill="#ffd700" color="#ffd700"/>
                                     {detailedMediaInfo.voteAverage.toFixed(1)}
                                 </div>
                                 {detailedMediaInfo.isAdult &&

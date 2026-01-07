@@ -1,14 +1,15 @@
 import styles from "../MediaProvider.module.css";
 import { Link } from "react-router-dom";
-import type { ProvidedMedia } from "../../../api/mediaProviderApi.ts";
+import type {MediaType, ProvidedMedia} from "../../../api/mediaProviderApi.ts";
 import React from "react";
 import {PLACEHOLDER_IMG} from "../../../consts.ts";
 
 interface MediaCardProps {
+    type: MediaType,
     media: ProvidedMedia
 }
 
-function MediaCard({ media }: MediaCardProps) {
+function MediaCard({ media, type}: MediaCardProps) {
     function handleImageError(e: React.SyntheticEvent<HTMLImageElement, Event>) {
         const img = e.currentTarget;
         img.onerror = null;
@@ -17,7 +18,7 @@ function MediaCard({ media }: MediaCardProps) {
 
     return (
         <li className={styles.card}>
-            <Link to={`${media.id}`}
+            <Link to={`${type}/${media.id}`}
                   style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
                 <div className={styles.posterWrapper}>
                     <img

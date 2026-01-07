@@ -2,12 +2,12 @@
 
 namespace MediaTracker.BLL.DTOs.MediaProvider;
 
-public class TmdbProviderSearchDetailedResponse
+public class TmdbProviderSeriesDetailsResponse
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
     
-    [JsonPropertyName("title")]
+    [JsonPropertyName("name")]
     public string Title { get; set; } = string.Empty;
     
     [JsonPropertyName("overview")]
@@ -19,10 +19,7 @@ public class TmdbProviderSearchDetailedResponse
     [JsonPropertyName("backdrop_path")]
     public string? BackdropPath { get; set; }
 
-    [JsonPropertyName("runtime")]
-    public int? Runtime { get; set; }
-    
-    [JsonPropertyName("release_date")]
+    [JsonPropertyName("first_air_date")]
     public string? ReleaseDate { get; set; }
     
     [JsonPropertyName("adult")]
@@ -42,13 +39,4 @@ public class TmdbProviderSearchDetailedResponse
     
     [JsonPropertyName("genres")]
     public List<TmdbGenreDto> Genres { get; set; } = new();
-}
-
-public class TmdbGenreDto
-{
-    [JsonPropertyName("id")]
-    public int Id { get; set; }
-    
-    [JsonPropertyName("name")]
-    public string Name { get; set; } = string.Empty;
 }

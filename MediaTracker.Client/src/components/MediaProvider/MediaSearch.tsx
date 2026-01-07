@@ -124,7 +124,7 @@ function MediaSearch() {
 
             {(media && media.results && media.results.length > 0) &&
                 <>
-                    <MediaList mediaList={media.results}/>
+                    <MediaList mediaList={media.results} type={type}/>
 
                     <Pagination
                         totalPages={media.totalPages}

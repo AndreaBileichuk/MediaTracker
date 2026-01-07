@@ -14,7 +14,7 @@ export interface ProvidedMedia {
 export interface ProvidedMediaDetails extends ProvidedMedia {
     backdropPath: string;
     genres: Genre[];
-    runtime: number;
+    runtime: number | null;
     status: MediaStatus;
     tagline: string;
     voteAverage: number;
@@ -39,6 +39,7 @@ export const mediaProviderApi = {
     },
 
     getMediaById: async (id: number, type: MediaType) => {
+        debugger
         return await axiosClient.get<BackendResult<ProvidedMediaDetails>>(`mediaprovider/${id}?type=${type}`);
     },
 

@@ -36,7 +36,7 @@ public class TmdbMovieProviderService(IHttpClientFactory httpClientFactory, IOpt
             return Result.Failure<MediaProviderDetailsResponse>(MediaErrors.NotFound);
         }
 
-        var tmdbMovie = await response.Content.ReadFromJsonAsync<TmdbProviderSearchDetailedResponse>();
+        var tmdbMovie = await response.Content.ReadFromJsonAsync<TmdbProviderMovieDetailsResponse>();
 
         if (tmdbMovie is null)
         {
