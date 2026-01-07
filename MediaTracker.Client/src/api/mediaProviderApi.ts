@@ -31,7 +31,7 @@ export interface MediaApiResponse {
     totalPages: number
 }
 
-export type MediaType = "book" | "movie";
+export type MediaType = "book" | "movie" | "series";
 
 export const mediaProviderApi = {
     searchMedia: async (query: string, type: MediaType, page: number) => {

@@ -6,6 +6,7 @@ using MediaTracker.BLL.Services.Account;
 using MediaTracker.BLL.Services.Auth;
 using MediaTracker.BLL.Services.Media;
 using MediaTracker.BLL.Services.MediaProvider;
+using MediaTracker.BLL.Services.MediaProvider.Helpers;
 using MediaTracker.BLL.Services.PhotoService;
 using MediaTracker.BLL.Settings;
 using MediaTracker.DAL.Data;
@@ -144,7 +145,9 @@ static class ServiceExtensions
 
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddScoped<TmdbProviderService>();
+        services.AddScoped<TmdbMovieProviderService>();
+        services.AddScoped<TmdbSeriesProviderService>();
+        
         services.AddScoped<MediaProviderServiceFactory>();
         services.AddScoped<IAuthService, AuthService>();
         
@@ -152,7 +155,7 @@ static class ServiceExtensions
         services.AddScoped<MediaService>();
         
         services.AddScoped<IMediaProviderManager, MediaProviderManager>();
-        services.AddScoped<IMediaProviderService, TmdbProviderService>();
+        services.AddScoped<IMediaProviderService, TmdbMovieProviderService>();
         services.AddScoped<IPhotoService, CloudinaryPhotoService>();
         services.AddScoped<IAccountService, AccountService>();
         

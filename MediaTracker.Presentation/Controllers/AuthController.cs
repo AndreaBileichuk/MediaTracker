@@ -1,11 +1,6 @@
-﻿using System.Security.Claims;
-using FluentValidation;
-using MediaTracker.BLL.DTOs;
-using MediaTracker.BLL.DTOs.Auth;
+﻿using MediaTracker.BLL.DTOs.Auth;
 using MediaTracker.BLL.Infrastructure;
 using MediaTracker.BLL.Services.Auth;
-using MediaTracker.Presentation.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
     
 namespace MediaTracker.Presentation.Controllers;
