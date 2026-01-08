@@ -1,14 +1,14 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import s from "../MediaProvider.module.css";
-import {mediaProviderApi, type MediaType, type ProvidedMediaDetails} from "../../../api/mediaProviderApi.ts";
+import { mediaProviderApi, type MediaType, type ProvidedMediaDetails } from "../../../api/mediaProviderApi.ts";
 import { Calendar, Clock, Star, X } from "lucide-react";
-import {type MediaItem, myMediaApi} from "../../../api/myMediaApi.ts";
+import { type MediaItem, myMediaApi } from "../../../api/myMediaApi.ts";
 import { toast } from "react-toastify";
 import axios from "axios";
-import type {BackendResult} from "../../../api/types.ts";
-import {formatRuntime, getYear} from "../../../globalFunctions.ts";
-import SeasonsList from "./SeasonsList.tsx";
+import type { BackendResult } from "../../../api/types.ts";
+import { formatRuntime, getYear } from "../../../globalFunctions.ts";
+import SeasonList from "../../common/SeasonList/SeasonList.tsx";
 
 function MediaDetails() {
     const { type, id } = useParams<{ type: MediaType, id: string }>();
@@ -33,7 +33,7 @@ function MediaDetails() {
         if (!id) return;
 
         const fetchMedia = async () => {
-            if(!type) return;
+            if (!type) return;
 
             try {
                 setIsLoading(true);
@@ -61,18 +61,18 @@ function MediaDetails() {
 
     async function handleAddClick() {
         try {
-            if(detailedMediaInfo === null || !type) return;
+            if (detailedMediaInfo === null || !type) return;
 
             const result = await myMediaApi.createMedia(detailedMediaInfo, type);
             const data = result.data;
 
-            if(data.isSuccess) {
+            if (data.isSuccess) {
                 toast.success("Media added");
             }
 
             navigate("..");
         }
-        catch(e) {
+        catch (e) {
             if (axios.isAxiosError<BackendResult<MediaItem>>(e)) {
                 toast.error(e.response?.data?.message ?? "Request failed");
                 console.error(e.response);
@@ -130,14 +130,14 @@ function MediaDetails() {
                                     <Calendar size={14} />
                                     {getYear(detailedMediaInfo.releaseDate)}
                                 </div>
-                                { detailedMediaInfo.runtime &&
+                                {detailedMediaInfo.runtime &&
                                     <div className={s.statBadge}>
-                                        <Clock size={14}/>
+                                        <Clock size={14} />
                                         {formatRuntime(detailedMediaInfo.runtime)}
                                     </div>
                                 }
                                 <div className={`${s.statBadge} ${s.rating}`}>
-                                    <Star size={14} fill="#ffd700" color="#ffd700"/>
+                                    <Star size={14} fill="#ffd700" color="#ffd700" />
                                     {detailedMediaInfo.voteAverage.toFixed(1)}
                                 </div>
                                 {detailedMediaInfo.isAdult &&
@@ -162,7 +162,7 @@ function MediaDetails() {
                             </div>
 
                             {detailedMediaInfo.seasons && detailedMediaInfo.seasons.length > 0 && (
-                                <SeasonsList seasons={detailedMediaInfo.seasons} />
+                                <SeasonList seasons={detailedMediaInfo.seasons} />
                             )}
 
                             <button className={s.addToListBtn} onClick={handleAddClick}>Add to my list</button>

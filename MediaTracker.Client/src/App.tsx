@@ -48,7 +48,7 @@ const router = createBrowserRouter([
                 element: <MediaTopRated />,
                 children: [
                     {
-                        path: ":id",
+                        path: ":type/:id",
                         element: <MediaDetails />
                     }
                 ]

@@ -7,13 +7,14 @@ import Pagination from "../common/Pagination/Pagination.tsx";
 import RedCustomBtn from "../common/CustomButtons/RedCustomBtn.tsx";
 import type {BackendResult} from "../../api/types.ts";
 import type {AxiosError} from "axios";
+import TypeSelector from "./common/TypeSelector.tsx";
 
 function MediaSearch() {
     const [media, setMedia] = useState<MediaApiResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState<number>(1);
 
-    const [type, setType] = useState<MediaType>("series");
+    const [type, setType] = useState<MediaType>("movie");
 
     const [inputValue, setInputValue] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
@@ -41,7 +42,6 @@ function MediaSearch() {
         }
     }
 
-    // 2. Add 'type' to dependency array so it refetches automatically when switched
     useEffect(() => {
         if (!searchQuery) return;
         fetchMedia(searchQuery, currentPage, type);
@@ -67,36 +67,7 @@ function MediaSearch() {
 
     return (
         <div className={styles.container}>
-            <div className={styles.typeSelector} style={{ marginBottom: '1rem', display: 'flex', gap: '10px' }}>
-                <button
-                    onClick={() => handleTypeChange("movie")}
-                    className={type === "movie" ? styles.activeTypeBtn : styles.inactiveTypeBtn}
-                    style={{
-                        fontWeight: type === "movie" ? 'bold' : 'normal',
-                        textDecoration: type === "movie" ? 'underline' : 'none',
-                        cursor: 'pointer',
-                        background: 'none',
-                        border: 'none',
-                        color: type === "movie" ? '#E50914' : '#fff' // Assuming Netflix-ish red/white theme
-                    }}
-                >
-                    Movies
-                </button>
-                <button
-                    onClick={() => handleTypeChange("series")}
-                    className={type === "series" ? styles.activeTypeBtn : styles.inactiveTypeBtn}
-                    style={{
-                        fontWeight: type === "series" ? 'bold' : 'normal',
-                        textDecoration: type === "series" ? 'underline' : 'none',
-                        cursor: 'pointer',
-                        background: 'none',
-                        border: 'none',
-                        color: type === "series" ? '#E50914' : '#fff'
-                    }}
-                >
-                    TV Series
-                </button>
-            </div>
+            <TypeSelector handleTypeChange={handleTypeChange} type={type}/>
 
             <div className={styles.searchBox}>
                 <input

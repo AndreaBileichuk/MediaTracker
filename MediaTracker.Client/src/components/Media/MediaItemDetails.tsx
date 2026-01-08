@@ -1,17 +1,18 @@
-import {useNavigate, useParams} from "react-router-dom";
-import {useEffect, useState} from "react";
-import {type MediaDetails, myMediaApi} from "../../api/myMediaApi.ts";
-import type {AxiosError} from "axios";
-import {type BackendResult, VALIDATION_ERROR} from "../../api/types.ts";
-import {Clock, Star, ArrowLeft, BookOpen, Trash2, XCircle} from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { type MediaDetails, myMediaApi } from "../../api/myMediaApi.ts";
+import type { AxiosError } from "axios";
+import { type BackendResult, VALIDATION_ERROR } from "../../api/types.ts";
+import { Clock, Star, ArrowLeft, BookOpen, Trash2, XCircle } from "lucide-react";
 import s from "./MediaItemDetails.module.css";
-import {PLACEHOLDER_IMG} from "../../consts.ts";
-import {formatRuntime, getStatusColor, getYear} from "../../globalFunctions.ts";
+import { PLACEHOLDER_IMG } from "../../consts.ts";
+import { formatRuntime, getStatusColor, getYear } from "../../globalFunctions.ts";
 import StatusSelector from "./common/StatusSelector.tsx";
-import type {MediaStatus} from "../../api/myMediaApi.ts";
+import type { MediaStatus } from "../../api/myMediaApi.ts";
 import ConfirmationModal from "../common/ConfirmationModal/ConfirmationModal.tsx";
-import {showError, showSuccess} from "../../utils/toast.ts";
+import { showError, showSuccess } from "../../utils/toast.ts";
 import RatingSelector from "./common/RatingSelector.tsx";
+import SeasonList from "../common/SeasonList/SeasonList.tsx";
 
 interface Note {
     id: number;
@@ -30,11 +31,11 @@ const MOCK_NOTES: Note[] = [
         content: "Cinematography is beautiful, but the pacing felt a bit slow in the second act.",
         createdAt: "2023-10-20"
     },
-    {id: 3, content: "Must watch again to catch all the easter eggs.", createdAt: "2023-11-01"},
+    { id: 3, content: "Must watch again to catch all the easter eggs.", createdAt: "2023-11-01" },
 ];
 
 function MediaItemDetails() {
-    const {id} = useParams<{ id: string }>();
+    const { id } = useParams<{ id: string }>();
     const [mediaDetails, setMediaDetails] = useState<MediaDetails | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -103,7 +104,7 @@ function MediaItemDetails() {
             const data = result.data;
 
             if (data.isSuccess) {
-                setMediaDetails(prev => prev ? {...prev, userRating: score} : prev);
+                setMediaDetails(prev => prev ? { ...prev, userRating: score } : prev);
                 showSuccess(`Rated ${score}/10 successfully`);
                 setIsRatingOpen(false); // Close popover
             }
@@ -152,7 +153,7 @@ function MediaItemDetails() {
         } catch (e) {
             const error = e as AxiosError<BackendResult<string>>;
 
-            if(error.response?.data.code == VALIDATION_ERROR) {
+            if (error.response?.data.code == VALIDATION_ERROR) {
                 showError(error.response?.data.errors[0].message ?? "Something is wrong");
             }
             else {
@@ -166,7 +167,7 @@ function MediaItemDetails() {
         return <div className={s.loadingScreen}>Loading details...</div>;
     }
 
-    const {mediaInfo} = mediaDetails;
+    const { mediaInfo } = mediaDetails;
     const isDropped = mediaDetails.status === "Dropped";
 
     return (
@@ -178,11 +179,11 @@ function MediaItemDetails() {
                         backgroundImage: `url(${mediaInfo.backdropPath || mediaInfo.posterPath})`
                     }}
                 />
-                <div className={s.heroGradientOverlay}/>
+                <div className={s.heroGradientOverlay} />
 
                 <div className={s.heroContentContainer}>
                     <button className={s.backButton} onClick={() => navigate(-1)}>
-                        <ArrowLeft size={20}/> Back
+                        <ArrowLeft size={20} /> Back
                     </button>
 
                     <div className={s.heroMainContent}>
@@ -203,11 +204,13 @@ function MediaItemDetails() {
                             {mediaInfo.tagline && <p className={s.tagline}>{mediaInfo.tagline}</p>}
 
                             <div className={s.metaRow}>
+                                {mediaInfo.runtime &&
+                                    <span className={s.metaItem}>
+                                        <Clock size={16} /> {formatRuntime(mediaInfo.runtime)}
+                                    </span>
+                                }
                                 <span className={s.metaItem}>
-                                    <Clock size={16}/> {formatRuntime(mediaInfo.runtime)}
-                                </span>
-                                <span className={s.metaItem}>
-                                    <Star size={16} color="gold"/> {mediaInfo.voteAverage.toFixed(1)} TMDB
+                                    <Star size={16} color="gold" /> {mediaInfo.voteAverage.toFixed(1)} TMDB
                                 </span>
                             </div>
 
@@ -218,7 +221,7 @@ function MediaItemDetails() {
                                     getStatusColor={getStatusColor}
                                 />
 
-                                <div style={{position: 'relative'}}>
+                                <div style={{ position: 'relative' }}>
                                     <button
                                         className={s.actionBtn}
                                         onClick={handleRateClick}
@@ -231,7 +234,7 @@ function MediaItemDetails() {
                                                 className={mediaDetails.userRating ? s.filledStar : ''}
                                                 fill={mediaDetails.userRating ? "gold" : "none"} // Fill if rated
                                             />
-                                                {mediaDetails.userRating ? `${mediaDetails.userRating}/10` : "Rate"}
+                                            {mediaDetails.userRating ? `${mediaDetails.userRating}/10` : "Rate"}
                                         </span>
                                     </button>
 
@@ -251,7 +254,7 @@ function MediaItemDetails() {
                                     title="Remove from list"
                                     disabled={isDropped || (mediaDetails.status === 'Completed')}
                                 >
-                                    <XCircle size={18}/>
+                                    <XCircle size={18} />
                                     <span>Drop</span>
                                 </button>
 
@@ -260,7 +263,7 @@ function MediaItemDetails() {
                                     onClick={() => setIsDeleteModalOpen(true)}
                                     title="Delete Permanently"
                                 >
-                                    <Trash2 size={20}/>
+                                    <Trash2 size={20} />
                                 </button>
                             </div>
 
@@ -279,9 +282,15 @@ function MediaItemDetails() {
                 </div>
             </div>
 
+            <div className={s.seasonList}>
+                {mediaDetails.mediaInfo.seasons && mediaDetails.mediaInfo.seasons.length > 0 && (
+                    <SeasonList seasons={mediaDetails.mediaInfo.seasons} />
+                )}
+            </div>
+
             <div className={s.notesSection}>
                 <div className={s.notesHeader}>
-                    <h2><BookOpen size={24}/> My Notes</h2>
+                    <h2><BookOpen size={24} /> My Notes</h2>
                     <button className={s.addNoteBtn}>+ Add Note</button>
                 </div>
 
@@ -291,7 +300,7 @@ function MediaItemDetails() {
                             <p className={s.noteContent}>{note.content}</p>
                             <div className={s.noteFooter}>
                                 <span className={s.noteDate}>{note.createdAt}</span>
-                                <button className={s.deleteNoteBtn}><Trash2 size={16}/></button>
+                                <button className={s.deleteNoteBtn}><Trash2 size={16} /></button>
                             </div>
                         </div>
                     ))}

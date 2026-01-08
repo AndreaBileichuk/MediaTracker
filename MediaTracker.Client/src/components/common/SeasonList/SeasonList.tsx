@@ -1,4 +1,4 @@
-import s from "./SeasonsList.module.css";
+import s from "./SeasonList.module.css";
 import type { Season } from "../../../api/mediaProviderApi.ts";
 
 interface Props {
