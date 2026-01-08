@@ -2,34 +2,24 @@
 using MediaTracker.BLL.DTOs.MediaProvider;
 using MediaTracker.BLL.Errors;
 using MediaTracker.BLL.Infrastructure;
-using MediaTracker.BLL.Services.MediaProvider.Helpers;
 using MediaTracker.BLL.Settings;
 using Microsoft.Extensions.Options;
 
 namespace MediaTracker.BLL.Services.MediaProvider;
 
 public class TmdbMovieProviderService(IHttpClientFactory httpClientFactory, IOptions<TmdbOptions> options)
-    : IMediaProviderService
+    : TmdbBaseProviderService(httpClientFactory, options)
 {
-    public async Task<Result<MediaSearchResponse>> SearchAsync(string query, int page)
+    private readonly IOptions<TmdbOptions> _options = options;
+    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+
+    protected override string RoutePrefix => "movie";
+    
+    public override async Task<Result<MediaProviderDetailsResponse>> GetByIdAsync(string externalId)
     {
-        var client = httpClientFactory.CreateClient("TmdbClient");
-        var response = await client.GetAsync(
-                $"search/movie?query={Uri.EscapeDataString(query)}&page={page}&api_key={options.Value.ApiKey}");
+        var client = _httpClientFactory.CreateClient("TmdbClient");
 
-        if (!response.IsSuccessStatusCode)
-        {
-            return Result.Failure<MediaSearchResponse>(MediaErrors.ProviderRequestFailed);
-        }
-
-        return await TmdbHelpers.GetResultingList(response.Content, options);
-    }
-
-    public async Task<Result<MediaProviderDetailsResponse>> GetByIdAsync(string externalId)
-    {
-        var client = httpClientFactory.CreateClient("TmdbClient");
-
-        var response = await client.GetAsync($"movie/{externalId}?api_key={options.Value.ApiKey}");
+        var response = await client.GetAsync($"movie/{externalId}?api_key={_options.Value.ApiKey}");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -45,12 +35,12 @@ public class TmdbMovieProviderService(IHttpClientFactory httpClientFactory, IOpt
 
         if (!string.IsNullOrEmpty(tmdbMovie.PosterPath))
         {
-            tmdbMovie.PosterPath = $"{options.Value.ImageBaseUrl}{tmdbMovie.PosterPath}";
+            tmdbMovie.PosterPath = $"{_options.Value.ImageBaseUrl}{tmdbMovie.PosterPath}";
         }
 
         if (!string.IsNullOrEmpty(tmdbMovie.BackdropPath))
         {
-            tmdbMovie.BackdropPath = $"{options.Value.ImageBaseUrl}{tmdbMovie.BackdropPath}";
+            tmdbMovie.BackdropPath = $"{_options.Value.ImageBaseUrl}{tmdbMovie.BackdropPath}";
         }
 
         return Result.Success(new MediaProviderDetailsResponse()
@@ -69,19 +59,5 @@ public class TmdbMovieProviderService(IHttpClientFactory httpClientFactory, IOpt
             VoteCount = tmdbMovie.VoteCount,
             Genres = tmdbMovie.Genres
         });
-    }
-
-    public async Task<Result<MediaSearchResponse>> GetTopRatedAsync(int page)
-    {
-        var client = httpClientFactory.CreateClient("TmdbClient");
-
-        var response = await client.GetAsync($"movie/top_rated?page={page}&api_key={options.Value.ApiKey}");
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return Result.Failure<MediaSearchResponse>(MediaErrors.ProviderRequestFailed);
-        }
-
-        return await TmdbHelpers.GetResultingList(response.Content, options);
     }
 }

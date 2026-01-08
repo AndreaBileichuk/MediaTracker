@@ -39,4 +39,30 @@ public class TmdbProviderSeriesDetailsResponse
     
     [JsonPropertyName("genres")]
     public List<TmdbGenreDto> Genres { get; set; } = new();
+
+    [JsonPropertyName("seasons")]
+    public List<TmdbSeasonsResponse> Seasons { get; set; } = new();
+}
+
+public class TmdbSeasonsResponse
+{
+    public int Id { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    [JsonPropertyName("overview")]
+    public string Overview { get; set; } = string.Empty;
+    
+    [JsonPropertyName("poster_path")]
+    public string? PosterPath { get; set; } = string.Empty;
+    
+    [JsonPropertyName("season_number")]
+    public int SeasonNumber { get; set; }
+    
+    [JsonPropertyName("episode_count")]
+    public int EpisodeCount { get; set; }
+
+    [JsonPropertyName("air_date")]
+    public string AirDate { get; set; } = string.Empty;
 }

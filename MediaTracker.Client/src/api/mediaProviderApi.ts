@@ -19,6 +19,16 @@ export interface ProvidedMediaDetails extends ProvidedMedia {
     tagline: string;
     voteAverage: number;
     voteCount: number;
+    seasons?: Season[]
+}
+
+export interface Season {
+    id: number;
+    name: string;
+    seasonNumber: number;
+    episodeCount: number;
+    posterPath: string;
+    airDate: string;
 }
 
 export interface Genre {

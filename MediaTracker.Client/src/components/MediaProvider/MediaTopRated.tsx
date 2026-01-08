@@ -42,7 +42,7 @@ function MediaTopRated() {
     return (
         <div className={styles.container}>
             <h1 style={{ color: 'white', marginBottom: '2rem' }}>Top Rated Media</h1>
-            <MediaList mediaList={media.results}/>
+            <MediaList mediaList={media.results} type={"movie"}/>
 
             <Pagination
                 totalPages={media.totalPages}

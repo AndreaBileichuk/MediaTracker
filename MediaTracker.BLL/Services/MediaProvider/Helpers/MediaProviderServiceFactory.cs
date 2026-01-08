@@ -5,7 +5,7 @@ namespace MediaTracker.BLL.Services.MediaProvider.Helpers;
 
 public class MediaProviderServiceFactory(IServiceProvider provider)
 {
-    public IMediaProviderService GetProvider(EMediaType type)
+    public TmdbBaseProviderService GetProvider(EMediaType type)
     {
         return type switch
         {

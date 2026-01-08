@@ -15,4 +15,23 @@ public class MediaProviderDetailsResponse : MediaProviderResponse
     public int VoteCount { get; set; }
 
     public List<TmdbGenreDto> Genres { get; set; } = [];
+
+    public List<SeasonsResponse>? Seasons { get; set; }
+}
+
+public class SeasonsResponse
+{
+    public int Id { get; set; }
+    
+    public string Name { get; set; } = string.Empty;
+    
+    public string Overview { get; set; } = string.Empty;
+    
+    public string? PosterPath { get; set; } = string.Empty;
+    
+    public int SeasonNumber { get; set; }
+    
+    public int EpisodeCount { get; set; }
+
+    public string AirDate { get; set; } = string.Empty;
 }

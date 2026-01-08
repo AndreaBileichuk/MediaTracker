@@ -8,68 +8,65 @@ using Microsoft.Extensions.Options;
 
 namespace MediaTracker.BLL.Services.MediaProvider;
 
-public class TmdbSeriesProviderService(IHttpClientFactory clientFactory, IOptions<TmdbOptions> options) : IMediaProviderService
+public class TmdbSeriesProviderService(IHttpClientFactory clientFactory, IOptions<TmdbOptions> options) 
+    : TmdbBaseProviderService(clientFactory, options)
 {
-    public async Task<Result<MediaSearchResponse>> SearchAsync(string query, int page)
+    private readonly IHttpClientFactory _clientFactory = clientFactory;
+    private readonly IOptions<TmdbOptions> _options = options;
+    protected override string RoutePrefix => "tv";
+    
+    public override async Task<Result<MediaProviderDetailsResponse>> GetByIdAsync(string externalId)
     {
-        var client = clientFactory.CreateClient("TmdbClient");
-        var response = await client.GetAsync($"search/tv?query={Uri.EscapeDataString(query)}&page={page}&api_key={options.Value.ApiKey}");
+        var client = _clientFactory.CreateClient("TmdbClient");
 
-        if (!response.IsSuccessStatusCode)
-        {
-            return Result.Failure<MediaSearchResponse>(MediaErrors.ProviderRequestFailed);
-        }
-        
-        return await TmdbHelpers.GetResultingList(response.Content, options);
-    }
-
-    public async Task<Result<MediaProviderDetailsResponse>> GetByIdAsync(string externalId)
-    {
-        var client = clientFactory.CreateClient("TmdbClient");
-
-        var response = await client.GetAsync($"tv/{externalId}?api_key={options.Value.ApiKey}");
+        var response = await client.GetAsync($"tv/{externalId}?api_key={_options.Value.ApiKey}");
 
         if (!response.IsSuccessStatusCode)
         {
             return Result.Failure<MediaProviderDetailsResponse>(MediaErrors.NotFound);
         }
 
-        var tmdbMovie = await response.Content.ReadFromJsonAsync<TmdbProviderSeriesDetailsResponse>();
+        var tmdbSeries = await response.Content.ReadFromJsonAsync<TmdbProviderSeriesDetailsResponse>();
 
-        if (tmdbMovie is null)
+        if (tmdbSeries is null)
         {
             return Result.Failure<MediaProviderDetailsResponse>(MediaErrors.NotFound);
         }
 
-        if (!string.IsNullOrEmpty(tmdbMovie.PosterPath))
+        if (!string.IsNullOrEmpty(tmdbSeries.PosterPath))
         {
-            tmdbMovie.PosterPath = $"{options.Value.ImageBaseUrl}{tmdbMovie.PosterPath}";
+            tmdbSeries.PosterPath = $"{_options.Value.ImageBaseUrl}{tmdbSeries.PosterPath}";
         }
 
-        if (!string.IsNullOrEmpty(tmdbMovie.BackdropPath))
+        if (!string.IsNullOrEmpty(tmdbSeries.BackdropPath))
         {
-            tmdbMovie.BackdropPath = $"{options.Value.ImageBaseUrl}{tmdbMovie.BackdropPath}";
+            tmdbSeries.BackdropPath = $"{_options.Value.ImageBaseUrl}{tmdbSeries.BackdropPath}";
         }
 
         return Result.Success(new MediaProviderDetailsResponse()
         {
-            Id = tmdbMovie.Id,
-            Title = tmdbMovie.Title,
-            Overview = tmdbMovie.Overview,
-            PosterPath = tmdbMovie.PosterPath,
-            BackdropPath = tmdbMovie.BackdropPath,
-            ReleaseDate = tmdbMovie.ReleaseDate,
-            IsAdult = tmdbMovie.IsAdult,
-            Status = tmdbMovie.Status,
-            Tagline = tmdbMovie.Tagline,
-            VoteAverage = tmdbMovie.VoteAverage,
-            VoteCount = tmdbMovie.VoteCount,
-            Genres = tmdbMovie.Genres
+            Id = tmdbSeries.Id,
+            Title = tmdbSeries.Title,
+            Overview = tmdbSeries.Overview,
+            PosterPath = tmdbSeries.PosterPath,
+            BackdropPath = tmdbSeries.BackdropPath,
+            ReleaseDate = tmdbSeries.ReleaseDate,
+            IsAdult = tmdbSeries.IsAdult,
+            Status = tmdbSeries.Status,
+            Tagline = tmdbSeries.Tagline,
+            VoteAverage = tmdbSeries.VoteAverage,
+            VoteCount = tmdbSeries.VoteCount,
+            Genres = tmdbSeries.Genres,
+            Seasons = tmdbSeries.Seasons?.Select(s => new SeasonsResponse()
+            {
+                Id = s.Id,
+                Name = s.Name,
+                SeasonNumber = s.SeasonNumber,
+                EpisodeCount = s.EpisodeCount,
+                PosterPath = GetFullImagePath(s.PosterPath),
+                AirDate = s.AirDate,
+                Overview = s.Overview
+            }).ToList()
         });
-    }
-
-    public async Task<Result<MediaSearchResponse>> GetTopRatedAsync(int page = 1)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import type {BackendResult} from "../../../api/types.ts";
 import {formatRuntime, getYear} from "../../../globalFunctions.ts";
+import SeasonsList from "./SeasonsList.tsx";
 
 function MediaDetails() {
     const { type, id } = useParams<{ type: MediaType, id: string }>();
@@ -159,6 +160,10 @@ function MediaDetails() {
                                     ))}
                                 </div>
                             </div>
+
+                            {detailedMediaInfo.seasons && detailedMediaInfo.seasons.length > 0 && (
+                                <SeasonsList seasons={detailedMediaInfo.seasons} />
+                            )}
 
                             <button className={s.addToListBtn} onClick={handleAddClick}>Add to my list</button>
                         </div>
