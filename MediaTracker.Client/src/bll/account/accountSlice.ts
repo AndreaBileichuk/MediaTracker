@@ -18,6 +18,11 @@ const initialState: AccountState = {
     status: 'idle'
 };
 
+export interface ChangePasswordRequest {
+    oldPassword: string,
+    newPassword: string
+}
+
 const accountSlice = createSlice({
     name: 'account',
     initialState,

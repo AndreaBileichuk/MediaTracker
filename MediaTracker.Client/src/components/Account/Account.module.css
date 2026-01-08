@@ -99,3 +99,8 @@
         transform: scale(1);
     }
 }
+
+.actions {
+    display: flex;
+    gap: 20px;
+}

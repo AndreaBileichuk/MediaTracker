@@ -35,3 +35,16 @@ export function mapBackendErrors<T>(backendResult: BackendResult<T>): Record<str
 
     return errorsMap;
 }
+
+export function mapBackendErrorsForChangePassword<T>(backendResult: BackendResult<T>): Record<string, string> {
+    const errorsMap: Record<string, string> = {};
+
+    if(backendResult.errors && backendResult.errors.length > 0) {
+        backendResult.errors.forEach((e) => {
+            if(e.code.toLowerCase().includes("mismatch")) errorsMap["oldPassword"] = e.message || "Invalid password";
+            else errorsMap["newPassword"] = e.message || "Invalid password";
+        })
+    }
+
+    return errorsMap;
+}

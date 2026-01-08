@@ -1,4 +1,5 @@
-﻿using MediaTracker.BLL.DTOs.Auth;
+﻿using MediaTracker.BLL.DTOs.Account;
+using MediaTracker.BLL.DTOs.Auth;
 using MediaTracker.BLL.Errors;
 using MediaTracker.BLL.Infrastructure;
 using MediaTracker.BLL.Services.PhotoService;
@@ -50,7 +51,25 @@ public class AccountService(UserManager<ApplicationUser> userManager, IPhotoServ
 
         return Result.Success(user);
     }
-    
+
+    public async Task<Result> ChangePasswordAsync(string userId, ChangePasswordRequest request)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+ 
+        if (user is null) return Result.Failure(AuthErrors.UserNotFound);
+
+        var result = await userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
+
+        if (result.Succeeded)
+        {
+            return Result.Success();
+        }
+
+        var errors = result.Errors.Select(e => new Error(e.Code, e.Description)).ToArray();
+
+        return ValidationResult<string>.WithErrors(errors);
+    }
+
     private static string GetPublicIdFromUrl(string url)
     {
         var uri = new Uri(url);

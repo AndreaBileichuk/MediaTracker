@@ -1,6 +1,6 @@
 import axiosClient from "./axiosClient.ts";
 import type {BackendResult} from "./types.ts";
-import type { User } from "../bll/account/accountSlice.ts";
+import type {ChangePasswordRequest, User} from "../bll/account/accountSlice.ts";
 
 export const accountApi = {
     me: async () => {
@@ -13,5 +13,9 @@ export const accountApi = {
                 "Content-Type": "multipart/form-data"
             }
         });
+    },
+
+    changePassword: async (request: ChangePasswordRequest) => {
+        return await axiosClient.post<BackendResult<void>>("/account/change-password", request)
     }
 };

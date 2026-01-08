@@ -14,6 +14,7 @@ import Account from "./components/Account/Account.tsx";
 import MediaList from "./components/Media/MediaList.tsx";
 import {ToastContainer} from "react-toastify";
 import MediaItemDetails from "./components/Media/MediaItemDetails.tsx";
+import ChangePassword from "./components/Account/ChangePassword/ChangePassword.tsx";
 
 const router = createBrowserRouter([
     {
@@ -55,7 +56,11 @@ const router = createBrowserRouter([
             },
             {
                 path: "account",
-                element: <Account />
+                element: <Account />,
+            },
+            {
+                path:"account/change-password",
+                element: <ChangePassword />
             }
         ]
     },

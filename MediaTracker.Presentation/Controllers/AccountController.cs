@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using MediaTracker.BLL.DTOs.Account;
 using MediaTracker.BLL.DTOs.Auth;
 using MediaTracker.BLL.Infrastructure;
 using MediaTracker.BLL.Services.Account;
@@ -18,8 +19,14 @@ public class AccountController(IAccountService service) : ControllerBase
     }
     
     [HttpGet("me")]
-    public async Task<Result<UserResponse>> GetMe()
+    public async Task<Result<UserResponse>> GetMeAsync()
     {
         return await service.GetMeAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    }
+
+    [HttpPost("change-password")]
+    public async Task<Result> ChangePasswordAsync([FromBody] ChangePasswordRequest request)
+    {
+        return await service.ChangePasswordAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)! ,request);
     }
 }
