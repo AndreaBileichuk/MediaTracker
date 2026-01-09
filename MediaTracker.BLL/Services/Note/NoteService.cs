@@ -10,19 +10,22 @@ public class NoteService(ApplicationDbContext context) : INoteService
 {
     private readonly int _pageSize = 5;
     
-    public async Task<Result<NoteListResponse>> GetAsync(string? userId, int mediaItemId, int page = 0)
+    public async Task<Result<NoteListResponse>> GetAsync(string? userId, int mediaItemId, int page = 1)
     {
         if (string.IsNullOrWhiteSpace(userId))
             return Result.Failure<NoteListResponse>(AuthErrors.Unauthorized);
 
-        if (page < 0) page = 0;
+        if (page < 1) page = 1;
 
-        var media = await context.MediaItems.FindAsync(mediaItemId);
+        var media = await context.MediaItems.AsNoTracking().FirstOrDefaultAsync(m => m.Id == mediaItemId);
 
         if (media is null)
             return Result.Failure<NoteListResponse>(MediaErrors.NotFound);
 
-        var query = context.Notes
+        if (media.ApplicationUserId != userId)
+            return Result.Failure<NoteListResponse>(MediaErrors.NotFound);
+        
+        var query = context.Notes.AsNoTracking()
                 .Where(n => n.MediaItemId == mediaItemId && media.ApplicationUserId == userId);
 
         var totalCount = await query.CountAsync();
@@ -60,15 +63,52 @@ public class NoteService(ApplicationDbContext context) : INoteService
             CreateAt = DateTime.UtcNow
         };
 
-        var entity = (await context.Notes.AddAsync(note)).Entity;
+        context.Notes.Add(note);
 
         await context.SaveChangesAsync();
 
-        return Result.Success(new NoteResponse(entity.Id, entity.Text, entity.CreateAt));
+        return Result.Success(new NoteResponse(note.Id, note.Text, note.CreateAt));
     }
 
     public async Task<Result> DeleteAsync(string? userId, int mediaItemId, int noteId)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(userId))
+            return Result.Failure(AuthErrors.Unauthorized);
+        
+        var note = await context.Notes
+            .Include(n => n.MediaItem) 
+            .FirstOrDefaultAsync(n => n.Id == noteId);
+        
+        if (note is null || note.MediaItemId != mediaItemId)
+            return Result.Failure(NoteErrors.NotFoundDeletion);
+
+        if (note.MediaItem?.ApplicationUserId != userId)
+            return Result.Failure(MediaErrors.NotFound);
+        
+        context.Remove(note);
+        await context.SaveChangesAsync();
+
+        return Result.Success();
+    }
+
+    public async Task<Result<NoteResponse>> UpdateAsync(string? userId, int mediaItemId, int noteId, CreateNoteRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+            return Result.Failure<NoteResponse>(AuthErrors.Unauthorized);
+        
+        var note = await context.Notes
+            .Include(n => n.MediaItem) 
+            .FirstOrDefaultAsync(n => n.Id == noteId);
+        
+        if (note is null || note.MediaItemId != mediaItemId)
+            return Result.Failure<NoteResponse>(NoteErrors.NotFound);
+
+        if (note.MediaItem?.ApplicationUserId != userId)
+            return Result.Failure<NoteResponse>(MediaErrors.NotFound);
+
+        note.Text = request.Text;
+        await context.SaveChangesAsync();
+
+        return Result.Success(new NoteResponse(note.Id, note.Text, note.CreateAt));
     }
 }

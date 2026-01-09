@@ -11,15 +11,30 @@ namespace MediaTracker.Presentation.Controllers;
 [Route("media/{mediaItemId}/notes")]
 public class NoteController(INoteService service) : ControllerBase
 {
+    private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+    
     [HttpGet]
     public async Task<Result<NoteListResponse>> GetAsync([FromRoute] int mediaItemId, [FromQuery] int page)
     {
-        return await service.GetAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!, mediaItemId, page);
+        return await service.GetAsync(UserId, mediaItemId, page);
     }
 
     [HttpPost]
     public async Task<Result<NoteResponse>> CreateAsync([FromRoute] int mediaItemId, [FromBody] CreateNoteRequest request)
     {
-        return await service.CreateAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!, mediaItemId, request);
+        return await service.CreateAsync(UserId, mediaItemId, request);
     }
+
+    [HttpPut("{noteId}")]
+    public async Task<Result<NoteResponse>> UpdateAsync([FromBody] CreateNoteRequest request, [FromRoute] int mediaItemId, [FromRoute] int noteId)
+    {
+        return await service.UpdateAsync(UserId, mediaItemId, noteId, request);
+    }
+
+    [HttpDelete("{noteId}")]
+    public async Task<Result> DeleteAsync([FromRoute] int mediaItemId, [FromRoute] int noteId)
+    {
+        return await service.DeleteAsync(UserId, mediaItemId, noteId);
+    }
+    
 }

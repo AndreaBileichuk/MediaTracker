@@ -10,4 +10,6 @@ public interface INoteService
     Task<Result<NoteResponse>> CreateAsync(string? userId, int mediaItemId, CreateNoteRequest request);
 
     Task<Result> DeleteAsync(string? userId, int mediaItemId, int noteId);
+
+    Task<Result<NoteResponse>> UpdateAsync(string? userId, int mediaItemId, int noteId, CreateNoteRequest request);
 }
