@@ -29,11 +29,11 @@ public class Result
 
 public class Result<TValue> : Result
 {
-    protected internal Result(TValue? value, bool isSuccess, Error error)
+    protected internal Result(TValue? data, bool isSuccess, Error error)
         :base(isSuccess, error)
     {
-        Value = value;
+        Data = data;
     }
 
-    public TValue? Value { get; }
+    public TValue? Data { get; }
 }

@@ -17,4 +17,8 @@ public static class AuthErrors
     public static readonly Error UserNotFound = new(
         "Auth.UserNotFound",
         "User not found");
+
+    public static readonly Error Unauthorized = new(
+        "Auth.Unauthorized"
+        , "User is not authorized");
 }

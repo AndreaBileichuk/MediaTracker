@@ -32,7 +32,7 @@ public class ValidationAndResultFilter : IActionFilter
         var type = value.GetType();
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Result<>))
         {
-            var dataProperty = type.GetProperty("Value");
+            var dataProperty = type.GetProperty("Data");
             var dataValue = dataProperty?.GetValue(value);
 
             var apiResponse = ResponseFactory.FromGenericResult(result, dataValue);

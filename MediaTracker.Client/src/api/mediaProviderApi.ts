@@ -49,7 +49,6 @@ export const mediaProviderApi = {
     },
 
     getMediaById: async (id: number, type: MediaType) => {
-        debugger
         return await axiosClient.get<BackendResult<ProvidedMediaDetails>>(`mediaprovider/${id}?type=${type}`);
     },
 

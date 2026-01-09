@@ -33,9 +33,9 @@ public class MediaServiceWithCaching(MediaService mediaService, IDistributedCach
 
         var result = await mediaService.GetAsync(page, userId, status);
 
-        if (result is { IsSuccess: true, Value.Results.Count: > 0 })
+        if (result is { IsSuccess: true, Data.Results.Count: > 0 })
         {
-            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Value),
+            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Data),
                 new DistributedCacheEntryOptions()
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
@@ -80,9 +80,9 @@ public class MediaServiceWithCaching(MediaService mediaService, IDistributedCach
 
         var result = await mediaService.GetDetailsAsync(userId, mediaItemId);
 
-        if (result is { IsSuccess: true, Value: not null })
+        if (result is { IsSuccess: true, Data: not null })
         {
-            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Value),
+            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Data),
                 new DistributedCacheEntryOptions()
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)

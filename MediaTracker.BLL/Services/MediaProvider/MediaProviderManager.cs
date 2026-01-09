@@ -39,9 +39,9 @@ public class MediaProviderManager(
 
         var result = await (mediaProviderServiceFactory.GetProvider(type)).SearchAsync(query, page);
 
-        if (result is { IsSuccess: true, Value.Results.Count: > 0 })
+        if (result is { IsSuccess: true, Data.Results.Count: > 0 })
         {
-            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Value), new DistributedCacheEntryOptions
+            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Data), new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) 
             });
@@ -77,7 +77,7 @@ public class MediaProviderManager(
 
         if (result.IsSuccess)
         {
-            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Value),
+            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Data),
                 new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
@@ -115,9 +115,9 @@ public class MediaProviderManager(
 
         var result = await (mediaProviderServiceFactory.GetProvider(type)).GetTopRatedAsync(page);
 
-        if (result is { IsSuccess: true, Value.Results.Count: > 0 })
+        if (result is { IsSuccess: true, Data.Results.Count: > 0 })
         {
-            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Value), new DistributedCacheEntryOptions
+            await distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(result.Data), new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) 
             });

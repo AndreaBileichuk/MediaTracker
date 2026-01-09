@@ -1,5 +1,4 @@
 ﻿using MediaTracker.BLL.DTOs.Account;
-using MediaTracker.BLL.DTOs.Auth;
 using MediaTracker.BLL.Errors;
 using MediaTracker.BLL.Infrastructure;
 using MediaTracker.BLL.Services.PhotoService;
@@ -25,7 +24,7 @@ public class AccountService(UserManager<ApplicationUser> userManager, IPhotoServ
         var uploadResult = await service.AddPhotoAsync(file);
         if (!uploadResult.IsSuccess) return Result.Failure<string>(uploadResult.Error);
 
-        user.AvatarUrl = uploadResult.Value!.SecureUrl.AbsoluteUri;
+        user.AvatarUrl = uploadResult.Data!.SecureUrl.AbsoluteUri;
         
         var updateResult = await userManager.UpdateAsync(user);
         if (!updateResult.Succeeded) 

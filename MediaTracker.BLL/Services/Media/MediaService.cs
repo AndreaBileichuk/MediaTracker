@@ -103,7 +103,7 @@ public class MediaService(ApplicationDbContext context, IMediaProviderManager me
 
         var externalMediaResult = await mediaProviderManager.GetByIdAsync($"{mediaItem.ExternalId}", mediaItem.Type);
 
-        if (!externalMediaResult.IsSuccess || externalMediaResult.Value == null) 
+        if (!externalMediaResult.IsSuccess || externalMediaResult.Data == null) 
             return Result.Failure<MediaItemDetailsResponse>(MediaErrors.NotFound);
 
         var result = new MediaItemDetailsResponse()
@@ -112,7 +112,7 @@ public class MediaService(ApplicationDbContext context, IMediaProviderManager me
             Type = mediaItem.Type,
             Status = mediaItem.Status,
             UserRating = mediaItem.UserRating,
-            MediaInfo = externalMediaResult.Value
+            MediaInfo = externalMediaResult.Data
         };
 
         return Result.Success(result);

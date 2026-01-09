@@ -7,6 +7,7 @@ using MediaTracker.BLL.Services.Auth;
 using MediaTracker.BLL.Services.Media;
 using MediaTracker.BLL.Services.MediaProvider;
 using MediaTracker.BLL.Services.MediaProvider.Helpers;
+using MediaTracker.BLL.Services.Note;
 using MediaTracker.BLL.Services.PhotoService;
 using MediaTracker.BLL.Settings;
 using MediaTracker.DAL.Data;
@@ -157,6 +158,7 @@ static class ServiceExtensions
         services.AddScoped<IMediaProviderManager, MediaProviderManager>();
         services.AddScoped<IPhotoService, CloudinaryPhotoService>();
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<INoteService, NoteService>();
         
         return services;
     }

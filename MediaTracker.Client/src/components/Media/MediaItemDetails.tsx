@@ -56,6 +56,7 @@ function MediaItemDetails() {
 
                 if (data.isSuccess && data.data) {
                     setMediaDetails(data.data);
+                    debugger
                     setNotes(MOCK_NOTES);
                 }
             } catch (e) {
