@@ -60,6 +60,28 @@
     color: #eee;
     line-height: 1.5;
     margin-bottom: 15px;
+    overflow-wrap: anywhere;
+    max-height: 80px;
+    overflow-y: auto;
+    padding-right: 5px;
+    /* Prevent text from hitting scrollbar */
+}
+
+.noteContent::-webkit-scrollbar {
+    width: 6px;
+}
+
+.noteContent::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.noteContent::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 3px;
+}
+
+.noteContent::-webkit-scrollbar-thumb:hover {
+    background-color: #666;
 }
 
 .noteFooter {

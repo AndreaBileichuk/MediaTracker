@@ -3,7 +3,7 @@ import {BookOpen} from "lucide-react";
 import NoteItem from "./NoteItem.tsx";
 import {useEffect, useState} from "react";
 import {type Note, noteApi, type NoteListApiResponse} from "../../../../api/noteApi.ts";
-import {Axios, type AxiosError} from "axios";
+import {type AxiosError} from "axios";
 import type {BackendResult} from "../../../../api/types.ts";
 import {showError, showSuccess} from "../../../../utils/toast.ts";
 import {NoteItemCreate} from "./NoteItemCreate.tsx";
@@ -80,6 +80,29 @@ function NoteList({mediaItemId}: NoteList) {
         setCreateActive(false);
     }
 
+    async function handleNoteDelete(noteId: number) {
+        try {
+            const response = await noteApi.deleteNote(mediaItemId, noteId);
+            const data = response.data;
+
+            if(data.isSuccess) {
+                setState(prev => {
+                    if(!prev) return prev;
+
+                    return {
+                        ...prev,
+                        results: prev.results.filter(n => n.id !== noteId)
+                    }
+                })
+                showSuccess("Successfully deleted!")
+            }
+        }
+        catch(e) {
+            const err = e as AxiosError<BackendResult<void>>;
+            showError(err.response?.data.message ?? "Something went wrong");
+        }
+    }
+
     if(state == null) {
         return <div>Loading notes...</div>
     }
@@ -92,8 +115,11 @@ function NoteList({mediaItemId}: NoteList) {
             </div>
 
             <div className={s.notesGrid}>
-                {createActive && <NoteItemCreate handleNoteCreate={handleNoteCreate} handleNoteCreateCancel={handleNoteCreateCancel}/>}
-                {state.results.map(note => (<NoteItem key={note.id} note={note} />))}
+                {createActive && <NoteItemCreate
+                    handleNoteCreate={handleNoteCreate}
+                    handleNoteCreateCancel={handleNoteCreateCancel}
+                />}
+                {state.results.map(note => (<NoteItem key={note.id} note={note} handleNoteDelete={handleNoteDelete}/>))}
                 {state.results.length === 0 && <p className={s.emptyNotes}>No notes yet. Start writing!</p>}
             </div>
         </div>

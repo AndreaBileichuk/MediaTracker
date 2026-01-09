@@ -3,7 +3,7 @@ import s from "./NoteList.module.css";
 
 interface NoteItemCreateProps {
     handleNoteCreate: (text: string) => void,
-    handleNoteCreateCancel: () => void
+    handleNoteCreateCancel: () => void,
 }
 
 export function NoteItemCreate({ handleNoteCreate, handleNoteCreateCancel }: NoteItemCreateProps) {

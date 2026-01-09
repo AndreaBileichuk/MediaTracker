@@ -18,5 +18,8 @@ export const noteApi = {
     },
     createNote: async (mediaItemId: number, text: string) => {
         return await axiosClient.post<BackendResult<Note>>(`media/${mediaItemId}/notes`, {text});
+    },
+    deleteNote: async (mediaItemId: number, noteId: number) => {
+        return await axiosClient.delete<BackendResult<void>>(`media/${mediaItemId}/notes/${noteId}`);
     }
 }
