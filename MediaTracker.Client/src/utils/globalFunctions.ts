@@ -14,3 +14,11 @@ export const getStatusColor = (status: string) => {
         default: return '#3498db';
     }
 };
+
+export function formatDate (date: string): string {
+    return new Intl.DateTimeFormat("uk-UA", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+    }).format(new Date(date));
+};

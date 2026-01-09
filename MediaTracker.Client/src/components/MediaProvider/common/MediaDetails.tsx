@@ -7,7 +7,7 @@ import { type MediaItem, myMediaApi } from "../../../api/myMediaApi.ts";
 import { toast } from "react-toastify";
 import axios from "axios";
 import type { BackendResult } from "../../../api/types.ts";
-import { formatRuntime, getYear } from "../../../globalFunctions.ts";
+import { formatRuntime, getYear } from "../../../utils/globalFunctions.ts";
 import SeasonList from "../../common/SeasonList/SeasonList.tsx";
 
 function MediaDetails() {

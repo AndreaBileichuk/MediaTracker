@@ -3,36 +3,17 @@ import { useEffect, useState } from "react";
 import { type MediaDetails, myMediaApi } from "../../api/myMediaApi.ts";
 import type { AxiosError } from "axios";
 import { type BackendResult, VALIDATION_ERROR } from "../../api/types.ts";
-import { Clock, Star, ArrowLeft, BookOpen, Trash2, XCircle } from "lucide-react";
+import { Clock, Star, ArrowLeft, Trash2, XCircle } from "lucide-react";
 import s from "./MediaItemDetails.module.css";
-import { PLACEHOLDER_IMG } from "../../consts.ts";
-import { formatRuntime, getStatusColor, getYear } from "../../globalFunctions.ts";
+import { PLACEHOLDER_IMG } from "../../utils/consts.ts";
+import { formatRuntime, getStatusColor, getYear } from "../../utils/globalFunctions.ts";
 import StatusSelector from "./common/StatusSelector.tsx";
 import type { MediaStatus } from "../../api/myMediaApi.ts";
 import ConfirmationModal from "../common/ConfirmationModal/ConfirmationModal.tsx";
 import { showError, showSuccess } from "../../utils/toast.ts";
 import RatingSelector from "./common/RatingSelector.tsx";
 import SeasonList from "../common/SeasonList/SeasonList.tsx";
-
-interface Note {
-    id: number;
-    content: string;
-    createdAt: string;
-}
-
-const MOCK_NOTES: Note[] = [
-    {
-        id: 1,
-        content: "The plot twist at the end was insane! Definitely didn't see that coming.",
-        createdAt: "2023-10-15"
-    },
-    {
-        id: 2,
-        content: "Cinematography is beautiful, but the pacing felt a bit slow in the second act.",
-        createdAt: "2023-10-20"
-    },
-    { id: 3, content: "Must watch again to catch all the easter eggs.", createdAt: "2023-11-01" },
-];
+import NoteList from "./common/NoteList/NoteList.tsx";
 
 function MediaItemDetails() {
     const { id } = useParams<{ id: string }>();
@@ -42,8 +23,6 @@ function MediaItemDetails() {
     const [isRatingOpen, setIsRatingOpen] = useState(false);
 
     const navigate = useNavigate();
-
-    const [notes, setNotes] = useState<Note[]>([]);
 
     useEffect(() => {
         async function handleFetch() {
@@ -56,8 +35,6 @@ function MediaItemDetails() {
 
                 if (data.isSuccess && data.data) {
                     setMediaDetails(data.data);
-                    debugger
-                    setNotes(MOCK_NOTES);
                 }
             } catch (e) {
                 const error = e as AxiosError<BackendResult<MediaDetails>>;
@@ -289,25 +266,8 @@ function MediaItemDetails() {
                 )}
             </div>
 
-            <div className={s.notesSection}>
-                <div className={s.notesHeader}>
-                    <h2><BookOpen size={24} /> My Notes</h2>
-                    <button className={s.addNoteBtn}>+ Add Note</button>
-                </div>
+            <NoteList mediaItemId={mediaDetails.id}/>
 
-                <div className={s.notesGrid}>
-                    {notes.map(note => (
-                        <div key={note.id} className={s.noteCard}>
-                            <p className={s.noteContent}>{note.content}</p>
-                            <div className={s.noteFooter}>
-                                <span className={s.noteDate}>{note.createdAt}</span>
-                                <button className={s.deleteNoteBtn}><Trash2 size={16} /></button>
-                            </div>
-                        </div>
-                    ))}
-                    {notes.length === 0 && <p className={s.emptyNotes}>No notes yet. Start writing!</p>}
-                </div>
-            </div>
             <ConfirmationModal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}

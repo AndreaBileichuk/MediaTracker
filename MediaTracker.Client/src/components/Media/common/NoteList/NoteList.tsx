@@ -1,0 +1,103 @@
+import s from "./NoteList.module.css"
+import {BookOpen} from "lucide-react";
+import NoteItem from "./NoteItem.tsx";
+import {useEffect, useState} from "react";
+import {type Note, noteApi, type NoteListApiResponse} from "../../../../api/noteApi.ts";
+import {Axios, type AxiosError} from "axios";
+import type {BackendResult} from "../../../../api/types.ts";
+import {showError, showSuccess} from "../../../../utils/toast.ts";
+import {NoteItemCreate} from "./NoteItemCreate.tsx";
+
+interface NoteList {
+    mediaItemId: number
+}
+
+function NoteList({mediaItemId}: NoteList) {
+    const [state, setState] = useState<NoteListApiResponse | null>(null);
+    const [page, setPage] = useState(1);
+
+    const [createActive, setCreateActive] = useState(false);
+
+    useEffect(() => {
+        async function handleFetch() {
+            try {
+                const response = await noteApi.getNotes(mediaItemId, page);
+                const data = response.data;
+
+                if(data.isSuccess && data.data) {
+                    setState(data.data);
+                }
+            }
+            catch(e) {
+                const err = e as AxiosError<BackendResult<NoteListApiResponse>>;
+                showError(err.response?.data.message ?? "Something went wrong");
+            }
+        }
+
+        handleFetch();
+    }, [mediaItemId, page]);
+
+    async function handleNoteCreate(noteText: string) {
+        try {
+            const response = await noteApi.createNote(mediaItemId, noteText);
+            const data = response.data;
+
+            if(data.isSuccess && data.data){
+                const newNote = data.data;
+
+                setCreateActive(false);
+                setState((prev) => {
+                    if (!prev) {
+                        return {
+                            results: [newNote],
+                            totalPages: 1
+                        };
+                    }
+
+                    return {
+                        ...prev,
+                        results: [newNote, ...prev.results],
+                    };
+                });
+
+                showSuccess("Successfully created the note.")
+            }
+        }
+        catch(e) {
+            const err = e as AxiosError<BackendResult<Note>>;
+
+            if(err.response && err.response.data.errors.length > 0) {
+                showError(err.response.data.errors[0].message ?? "Something went wrong");
+            }
+            else {
+                showError(err.response?.data.message ?? "Something went wrong");
+            }
+            console.log(e);
+        }
+    }
+
+    function handleNoteCreateCancel() {
+        setCreateActive(false);
+    }
+
+    if(state == null) {
+        return <div>Loading notes...</div>
+    }
+
+    return (
+        <div className={s.notesSection}>
+            <div className={s.notesHeader}>
+                <h2><BookOpen size={24}/> My Notes</h2>
+                <button className={s.addNoteBtn} onClick={() => setCreateActive(true)}>+ Add Note</button>
+            </div>
+
+            <div className={s.notesGrid}>
+                {createActive && <NoteItemCreate handleNoteCreate={handleNoteCreate} handleNoteCreateCancel={handleNoteCreateCancel}/>}
+                {state.results.map(note => (<NoteItem key={note.id} note={note} />))}
+                {state.results.length === 0 && <p className={s.emptyNotes}>No notes yet. Start writing!</p>}
+            </div>
+        </div>
+    );
+}
+
+export default NoteList;

@@ -2,7 +2,7 @@ import styles from "../MediaProvider.module.css";
 import { Link } from "react-router-dom";
 import type {MediaType, ProvidedMedia} from "../../../api/mediaProviderApi.ts";
 import React from "react";
-import {PLACEHOLDER_IMG} from "../../../consts.ts";
+import {PLACEHOLDER_IMG} from "../../../utils/consts.ts";
 
 interface MediaCardProps {
     type: MediaType,

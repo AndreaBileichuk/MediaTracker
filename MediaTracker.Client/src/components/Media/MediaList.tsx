@@ -4,8 +4,8 @@ import Pagination from "../common/Pagination/Pagination.tsx";
 import { useNavigate } from "react-router-dom";
 import s from "./Media.module.css";
 import {Loader2, PlusCircle, XCircle, PlayCircle, CheckCircle, Clock, Film} from "lucide-react";
-import { PLACEHOLDER_IMG } from "../../consts.ts";
-import { getStatusColor } from "../../globalFunctions.ts";
+import { PLACEHOLDER_IMG } from "../../utils/consts.ts";
+import { getStatusColor } from "../../utils/globalFunctions.ts";
 
 const EMPTY_STATES: Record<FilterType, {
     icon: React.ReactNode;
