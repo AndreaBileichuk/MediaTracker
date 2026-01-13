@@ -14,18 +14,26 @@ interface NoteList {
 
 function NoteList({mediaItemId}: NoteList) {
     const [state, setState] = useState<NoteListApiResponse | null>(null);
-    const [page, setPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const [createActive, setCreateActive] = useState(false);
 
     useEffect(() => {
-        async function handleFetch() {
+        async function loadNotes() {
             try {
-                const response = await noteApi.getNotes(mediaItemId, page);
+                const response = await noteApi.getNotes(mediaItemId, currentPage);
                 const data = response.data;
 
                 if(data.isSuccess && data.data) {
-                    setState(data.data);
+                    const value = data.data;
+                    setState(prev => {
+                        const array = prev?.results ? [...prev.results] : [];
+                        return {
+                            ...prev,
+                            totalPages: value.totalPages,
+                            results: [...array, ...value.results]
+                        }
+                    });
                 }
             }
             catch(e) {
@@ -34,8 +42,8 @@ function NoteList({mediaItemId}: NoteList) {
             }
         }
 
-        handleFetch();
-    }, [mediaItemId, page]);
+        loadNotes()
+    }, [mediaItemId, currentPage]);
 
     async function handleNoteCreate(noteText: string) {
         try {
@@ -103,6 +111,14 @@ function NoteList({mediaItemId}: NoteList) {
         }
     }
 
+    async function handleLoadMore() {
+        if(state?.totalPages && currentPage >= state.totalPages) {
+            return;
+        }
+
+        setCurrentPage(prev => prev + 1);
+    }
+
     if(state == null) {
         return <div>Loading notes...</div>
     }
@@ -121,7 +137,9 @@ function NoteList({mediaItemId}: NoteList) {
                 />}
                 {state.results.map(note => (<NoteItem key={note.id} note={note} handleNoteDelete={handleNoteDelete}/>))}
                 {state.results.length === 0 && <p className={s.emptyNotes}>No notes yet. Start writing!</p>}
+
             </div>
+            {state?.totalPages && currentPage < state.totalPages && <button onClick={handleLoadMore}>Load more</button>}
         </div>
     );
 }
