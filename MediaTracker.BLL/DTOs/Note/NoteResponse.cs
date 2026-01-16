@@ -1,3 +1,11 @@
-﻿namespace MediaTracker.BLL.DTOs.Note;
+﻿using MediaTracker.DAL.Enums;
 
-public record NoteResponse(int Id, string Text, DateTime CreatedAt);
+namespace MediaTracker.BLL.DTOs.Note;
+
+public record NoteResponse(
+    int Id,
+    string Title,
+    string Text,
+    ENoteType Type,
+    TimeSpan? TimeSpan,
+    DateTime CreatedAt);

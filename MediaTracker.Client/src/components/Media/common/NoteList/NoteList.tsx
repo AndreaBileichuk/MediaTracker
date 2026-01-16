@@ -2,7 +2,7 @@ import s from "./NoteList.module.css"
 import {BookOpen} from "lucide-react";
 import NoteItem from "./NoteItem.tsx";
 import {useEffect, useState} from "react";
-import {type Note, noteApi, type NoteListApiResponse} from "../../../../api/noteApi.ts";
+import {type CreateNote, type Note, noteApi, type NoteListApiResponse} from "../../../../api/noteApi.ts";
 import {type AxiosError} from "axios";
 import type {BackendResult} from "../../../../api/types.ts";
 import {showError, showSuccess} from "../../../../utils/toast.ts";
@@ -45,9 +45,9 @@ function NoteList({mediaItemId}: NoteList) {
         loadNotes()
     }, [mediaItemId, currentPage]);
 
-    async function handleNoteCreate(noteText: string) {
+    async function handleNoteCreate(newNote: CreateNote) {
         try {
-            const response = await noteApi.createNote(mediaItemId, noteText);
+            const response = await noteApi.createNote(mediaItemId, newNote);
             const data = response.data;
 
             if(data.isSuccess && data.data){
@@ -139,7 +139,7 @@ function NoteList({mediaItemId}: NoteList) {
                 {state.results.length === 0 && <p className={s.emptyNotes}>No notes yet. Start writing!</p>}
 
             </div>
-            {state?.totalPages && currentPage < state.totalPages && <button onClick={handleLoadMore}>Load more</button>}
+            {(state?.totalPages && currentPage < state.totalPages) ? <button onClick={handleLoadMore}>Load more</button> : <span></span>}
         </div>
     );
 }

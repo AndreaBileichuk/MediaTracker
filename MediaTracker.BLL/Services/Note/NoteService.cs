@@ -33,10 +33,10 @@ public class NoteService(ApplicationDbContext context) : INoteService
         var totalPages = (int)Math.Ceiling((double)totalCount / _pageSize);
         
         var items = await query
-            .OrderByDescending(m => m.CreateAt) 
+            .OrderByDescending(note => note.CreatedAt) 
             .Skip(_pageSize * (page - 1))
             .Take(_pageSize)
-            .Select(m => new NoteResponse(m.Id, m.Text, m.CreateAt))
+            .Select(note => new NoteResponse(note.Id, note.Title, note.Text, note.Type, note.Timestamp, note.CreatedAt))
             .ToListAsync();
         
         return Result.Success(new NoteListResponse()
@@ -58,16 +58,19 @@ public class NoteService(ApplicationDbContext context) : INoteService
 
         var note = new DAL.Entities.Note
         {
+            Title = request.Title,
             Text = request.Text,
+            Type = request.Type,
+            Timestamp = request.Timestamp,
             MediaItemId = mediaItemId,
-            CreateAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow
         };
 
         context.Notes.Add(note);
 
         await context.SaveChangesAsync();
 
-        return Result.Success(new NoteResponse(note.Id, note.Text, note.CreateAt));
+        return Result.Success(new NoteResponse(note.Id, note.Title, note.Text, note.Type, note.Timestamp, note.CreatedAt));
     }
 
     public async Task<Result> DeleteAsync(string? userId, int mediaItemId, int noteId)
@@ -109,6 +112,6 @@ public class NoteService(ApplicationDbContext context) : INoteService
         note.Text = request.Text;
         await context.SaveChangesAsync();
 
-        return Result.Success(new NoteResponse(note.Id, note.Text, note.CreateAt));
+        return Result.Success(new NoteResponse(note.Id, note.Title, note.Text, note.Type, note.Timestamp, note.CreatedAt));
     }
 }

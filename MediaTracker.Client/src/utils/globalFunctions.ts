@@ -21,4 +21,4 @@ export function formatDate (date: string): string {
         month: "2-digit",
         year: "numeric"
     }).format(new Date(date));
-};
+}
