@@ -44,29 +44,70 @@
     gap: 20px;
 }
 
+/* --- NOTE CARD --- */
 .noteCard {
     background-color: #1f1f1f;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 12px;
     border: 1px solid #333;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 140px;
+    min-height: 160px;
     transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.noteCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+    border-color: #444;
+}
+
+.noteHeader {
+    margin-bottom: 12px;
+}
+
+.noteTitle {
+    color: #fff;
+    margin: 0 0 8px 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.noteMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.8rem;
+}
+
+.noteBadge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: #aaa;
+    font-weight: 500;
 }
 
 .noteContent {
-    color: #eee;
-    line-height: 1.5;
+    color: #ddd;
+    line-height: 1.6;
     margin-bottom: 15px;
+    font-size: 0.95rem;
     overflow-wrap: anywhere;
-    max-height: 80px;
+    max-height: 120px;
     overflow-y: auto;
     padding-right: 5px;
-    /* Prevent text from hitting scrollbar */
 }
 
+/* Custom Scrollbar for Note Content */
 .noteContent::-webkit-scrollbar {
     width: 6px;
 }
@@ -89,41 +130,146 @@
     justify-content: space-between;
     align-items: center;
     border-top: 1px solid #333;
-    padding-top: 10px;
+    padding-top: 12px;
+    margin-top: auto;
 }
 
 .noteDate {
     font-size: 0.8rem;
     color: #777;
+    font-style: italic;
 }
 
 .deleteNoteBtn {
-    background: none;
+    background: transparent;
     border: none;
     color: #666;
     cursor: pointer;
     transition: all 0.2s ease;
     padding: 6px;
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .deleteNoteBtn:hover {
-    color: #ff4444;
-    background-color: rgba(255, 68, 68, 0.1);
+    color: #ff5252;
+    background-color: rgba(255, 82, 82, 0.15);
 }
 
-.createInput {
+/* --- CREATION CARD --- */
+.creationCard {
+    border-color: #555;
+    background-color: #252525;
+}
+
+.createTitleInput {
     background: transparent;
     border: none;
     color: #fff;
-    font-size: 1rem;
-    font-family: inherit;
+    font-size: 1.15rem;
+    font-weight: 600;
     width: 100%;
     outline: none;
     margin-bottom: 1rem;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 4px;
+    transition: border-color 0.2s ease;
 }
 
-.createInput::placeholder {
+.createTitleInput:focus {
+    border-bottom-color: #777;
+}
+
+.createTitleInput::placeholder {
+    color: #666;
+    font-weight: normal;
+}
+
+.createMetaRow {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.createSelect,
+.timeInputContainer {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid #444;
+    color: #ddd;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    width: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.createSelect {
+    padding: 6px 10px;
+    outline: none;
+    /* Ensure select takes full height if sharing row */
+    height: 100%;
+}
+
+/* Specific fix for select element to behave like a flex container or block */
+.createSelect {
+    display: flex;
+    /* Optional, but standard select behavior is usually enough */
+}
+
+.timeInputContainer:focus-within,
+.createSelect:focus {
+    border-color: #777;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.timeInput {
+    background: transparent;
+    border: none;
+    color: #ddd;
+    width: 24px;
+    text-align: center;
+    font-family: inherit;
+    font-size: inherit;
+    outline: none;
+    padding: 6px 0;
+}
+
+.timeInput::placeholder {
+    color: #555;
+}
+
+.timeSeparator {
+    color: #666;
+    margin: 0 1px;
+    padding-bottom: 2px;
+}
+
+/* Remove spinners from number inputs */
+.timeInput::-webkit-outer-spin-button,
+.timeInput::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.createTextArea {
+    background: transparent;
+    border: none;
+    color: #ddd;
+    font-size: 0.95rem;
+    font-family: inherit;
+    width: 100%;
+    outline: none;
+    resize: none;
+    line-height: 1.5;
+    min-height: 80px;
+    padding: 8px 0;
+}
+
+.createTextArea::placeholder {
     color: #555;
 }
 
@@ -131,12 +277,14 @@
     display: flex;
     justify-content: flex-end;
     gap: 10px;
-    margin-top: auto;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #333;
 }
 
 .actionBtn {
-    padding: 6px 14px;
-    border-radius: 4px;
+    padding: 6px 16px;
+    border-radius: 6px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
@@ -146,22 +294,30 @@
 
 .cancelBtn {
     background: transparent;
-    color: #888;
-    border: 1px solid #444;
+    color: #aaa;
+    border: 1px solid transparent;
 }
 
 .cancelBtn:hover {
-    color: #ccc;
-    border-color: #666;
+    color: #ddd;
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .saveBtn {
-    background: #eee;
+    background: linear-gradient(135deg, #eee 0%, #ccc 100%);
     color: #111;
 }
 
 .saveBtn:hover {
-    background: #fff;
+    background: linear-gradient(135deg, #fff 0%, #ddd 100%);
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
+}
+
+.saveBtn:disabled {
+    background: #444;
+    color: #777;
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
 @media (max-width: 768px) {

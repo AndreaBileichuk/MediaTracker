@@ -17,6 +17,8 @@ function NoteList({mediaItemId}: NoteList) {
     const [currentPage, setCurrentPage] = useState(1);
 
     const [createActive, setCreateActive] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+    const [deleting, setDeleting] = useState<number[]>([]);
 
     useEffect(() => {
         async function loadNotes() {
@@ -47,6 +49,7 @@ function NoteList({mediaItemId}: NoteList) {
 
     async function handleNoteCreate(newNote: CreateNote) {
         try {
+            setIsCreating(true);
             const response = await noteApi.createNote(mediaItemId, newNote);
             const data = response.data;
 
@@ -82,6 +85,9 @@ function NoteList({mediaItemId}: NoteList) {
             }
             console.log(e);
         }
+        finally {
+            setIsCreating(false);
+        }
     }
 
     function handleNoteCreateCancel() {
@@ -90,6 +96,7 @@ function NoteList({mediaItemId}: NoteList) {
 
     async function handleNoteDelete(noteId: number) {
         try {
+            setDeleting(prev => ([...prev, noteId]));
             const response = await noteApi.deleteNote(mediaItemId, noteId);
             const data = response.data;
 
@@ -108,6 +115,11 @@ function NoteList({mediaItemId}: NoteList) {
         catch(e) {
             const err = e as AxiosError<BackendResult<void>>;
             showError(err.response?.data.message ?? "Something went wrong");
+        }
+        finally {
+            setDeleting(prev => {
+                return prev.filter(n => n !== noteId);
+            });
         }
     }
 
@@ -134,8 +146,9 @@ function NoteList({mediaItemId}: NoteList) {
                 {createActive && <NoteItemCreate
                     handleNoteCreate={handleNoteCreate}
                     handleNoteCreateCancel={handleNoteCreateCancel}
+                    isLoading = {isCreating}
                 />}
-                {state.results.map(note => (<NoteItem key={note.id} note={note} handleNoteDelete={handleNoteDelete}/>))}
+                {state.results.map(note => (<NoteItem isDeleting={deleting.includes(note.id)} key={note.id} note={note} handleNoteDelete={handleNoteDelete}/>))}
                 {state.results.length === 0 && <p className={s.emptyNotes}>No notes yet. Start writing!</p>}
 
             </div>

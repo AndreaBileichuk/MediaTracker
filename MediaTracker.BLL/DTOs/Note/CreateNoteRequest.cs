@@ -6,4 +6,4 @@ public record CreateNoteRequest(
     string Title,
     string Text,
     ENoteType Type,
-    TimeSpan? Timestamp);
+    string? Timestamp);

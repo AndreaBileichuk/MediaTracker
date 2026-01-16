@@ -1,33 +1,33 @@
 import { Trash2, Clock, Tag } from "lucide-react";
 import s from "./NoteList.module.css";
 import { type Note } from "../../../../api/noteApi.ts";
-import {formatDate} from "../../../../utils/globalFunctions.ts";
+import { formatDate } from "../../../../utils/globalFunctions.ts";
 
 interface NoteItemProps {
     note: Note;
     handleNoteDelete: (id: number) => void;
+    isDeleting: boolean
 }
 
-const NoteItem = ({ note, handleNoteDelete }: NoteItemProps) => {
+const NoteItem = ({ note, handleNoteDelete, isDeleting }: NoteItemProps) => {
     const formattedDate = formatDate(note.createdAt);
 
     return (
         <div className={s.noteCard}>
-            <div style={{ marginBottom: "10px" }}>
-                <h4 style={{ color: "#fff", margin: "0 0 5px 0", fontSize: "1.1rem" }}>
+            <div className={s.noteHeader}>
+                <h4 className={s.noteTitle}>
                     {note.title}
                 </h4>
 
-                <div style={{ display: "flex", gap: "10px", fontSize: "0.8rem", color: "#888" }}>
-                    {/* Display Timestamp if it exists (e.g. video time) */}
+                <div className={s.noteMeta}>
                     {note.timestamp && (
-                        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                        <span className={s.noteBadge}>
                             <Clock size={12} /> {note.timestamp}
                         </span>
                     )}
 
                     {/* Display Note Type */}
-                    <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                    <span className={s.noteBadge}>
                         <Tag size={12} /> {note.type}
                     </span>
                 </div>
@@ -43,6 +43,7 @@ const NoteItem = ({ note, handleNoteDelete }: NoteItemProps) => {
                     className={s.deleteNoteBtn}
                     onClick={() => handleNoteDelete(note.id)}
                     title="Delete Note"
+                    disabled={isDeleting}
                 >
                     <Trash2 size={16} />
                 </button>

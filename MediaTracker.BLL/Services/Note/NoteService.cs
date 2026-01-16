@@ -50,18 +50,32 @@ public class NoteService(ApplicationDbContext context) : INoteService
     {
         if (string.IsNullOrWhiteSpace(userId))
             return Result.Failure<NoteResponse>(AuthErrors.Unauthorized);
-
+        
         var media = await context.MediaItems.FindAsync(mediaItemId);
 
         if (media is null || media.ApplicationUserId != userId)
             return Result.Failure<NoteResponse>(MediaErrors.NotFound);
+        
+        TimeSpan? finalTimestamp = null;
+
+        if (!string.IsNullOrWhiteSpace(request.Timestamp))
+        {
+            if (TimeSpan.TryParse(request.Timestamp, out var result))
+            {
+                finalTimestamp = result;
+            }
+            else if (TimeSpan.TryParse("00:" + request.Timestamp, out var resultMmSs))
+            {
+                finalTimestamp = resultMmSs;
+            }
+        }
 
         var note = new DAL.Entities.Note
         {
             Title = request.Title,
             Text = request.Text,
             Type = request.Type,
-            Timestamp = request.Timestamp,
+            Timestamp = finalTimestamp,
             MediaItemId = mediaItemId,
             CreatedAt = DateTime.UtcNow
         };
