@@ -1,22 +1,30 @@
-import { useState } from "react";
+import {useState} from "react";
 import s from "./NoteList.module.css";
-import { type CreateNote, NOTE_TYPES, type NoteType } from "../../../../api/noteApi.ts";
+import {type CreateNote, NOTE_TYPES, type NoteType, type UpdateNote} from "../../../../api/noteApi.ts";
 
 interface NoteItemCreateProps {
-    handleNoteCreate: (newNote: CreateNote) => void;
+    handleCommands: (newNote: CreateNote | UpdateNote) => void;
     handleNoteCreateCancel: () => void;
-    isLoading: boolean
+    isLoading: boolean,
+    updateNote?: CreateNote | null
 }
 
-export function NoteItemCreate({ handleNoteCreate, handleNoteCreateCancel, isLoading }: NoteItemCreateProps) {
-    const [createNote, setCreateNote] = useState<CreateNote>({
+export function NoteItemCreate({ handleCommands, handleNoteCreateCancel, isLoading, updateNote }: NoteItemCreateProps) {
+    const [createNote, setCreateNote] = useState<CreateNote>(updateNote || {
         text: "",
         title: "",
         timestamp: "",
         type: "General"
     });
 
-    const [time, setTime] = useState({ h: "", m: "", s: "" });
+    const [time, setTime] = useState(() => {
+        const obj = createNote.timestamp?.split(":") ?? [];
+        return {
+            h: obj[0] ?? "",
+            m: obj[1] ?? "",
+            s: obj[2] ?? ""
+        };
+    });
 
     const timestamp =
         time.h === "" && time.m === "" && time.s === ""
@@ -41,7 +49,7 @@ export function NoteItemCreate({ handleNoteCreate, handleNoteCreateCancel, isLoa
     function handleSave() {
         if (!createNote.title.trim() || !createNote.text.trim()) return;
 
-        handleNoteCreate({
+        handleCommands({
             ...createNote,
             timestamp: timestamp || null
         });

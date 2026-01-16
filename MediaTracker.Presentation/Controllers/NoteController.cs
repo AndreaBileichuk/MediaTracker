@@ -36,5 +36,4 @@ public class NoteController(INoteService service) : ControllerBase
     {
         return await service.DeleteAsync(UserId, mediaItemId, noteId);
     }
-    
 }

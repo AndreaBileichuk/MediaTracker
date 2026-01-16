@@ -55,27 +55,13 @@ public class NoteService(ApplicationDbContext context) : INoteService
 
         if (media is null || media.ApplicationUserId != userId)
             return Result.Failure<NoteResponse>(MediaErrors.NotFound);
-        
-        TimeSpan? finalTimestamp = null;
-
-        if (!string.IsNullOrWhiteSpace(request.Timestamp))
-        {
-            if (TimeSpan.TryParse(request.Timestamp, out var result))
-            {
-                finalTimestamp = result;
-            }
-            else if (TimeSpan.TryParse("00:" + request.Timestamp, out var resultMmSs))
-            {
-                finalTimestamp = resultMmSs;
-            }
-        }
 
         var note = new DAL.Entities.Note
         {
             Title = request.Title,
             Text = request.Text,
             Type = request.Type,
-            Timestamp = finalTimestamp,
+            Timestamp = ValidateTimeStamp(request.Timestamp),
             MediaItemId = mediaItemId,
             CreatedAt = DateTime.UtcNow
         };
@@ -124,8 +110,29 @@ public class NoteService(ApplicationDbContext context) : INoteService
             return Result.Failure<NoteResponse>(MediaErrors.NotFound);
 
         note.Text = request.Text;
+        note.Title = request.Title;
+        note.Timestamp = ValidateTimeStamp(request.Timestamp);
+        note.Type = request.Type;
+        
         await context.SaveChangesAsync();
 
         return Result.Success(new NoteResponse(note.Id, note.Title, note.Text, note.Type, note.Timestamp, note.CreatedAt));
+    }
+
+    public static TimeSpan? ValidateTimeStamp(string? timestamp)
+    {
+        if (!string.IsNullOrWhiteSpace(timestamp))
+        {
+            if (TimeSpan.TryParse(timestamp, out var result))
+            {
+                return result;
+            }
+            else if (TimeSpan.TryParse("00:" + timestamp, out var resultMmSs))
+            {
+                return resultMmSs;
+            }
+        }
+
+        return null;
     }
 }

@@ -7,5 +7,5 @@ public record NoteResponse(
     string Title,
     string Text,
     ENoteType Type,
-    TimeSpan? TimeSpan,
+    TimeSpan? Timestamp,
     DateTime CreatedAt);

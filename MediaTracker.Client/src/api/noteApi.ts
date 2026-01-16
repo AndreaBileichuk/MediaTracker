@@ -22,6 +22,11 @@ export interface CreateNote {
     timestamp?: string | null
 }
 
+export interface UpdateNote extends CreateNote
+{
+    id: number
+}
+
 export const NOTE_TYPES = [
     "General",
     "Quote",
@@ -38,6 +43,9 @@ export const noteApi = {
     },
     createNote: async (mediaItemId: number, newNote: CreateNote) => {
         return await axiosClient.post<BackendResult<Note>>(`media/${mediaItemId}/notes`, newNote);
+    },
+    updateNote: async (mediaItemId: number, updateNote: UpdateNote) => {
+        return await axiosClient.put<BackendResult<Note>>(`media/${mediaItemId}/notes/${updateNote.id}`, updateNote);
     },
     deleteNote: async (mediaItemId: number, noteId: number) => {
         return await axiosClient.delete<BackendResult<void>>(`media/${mediaItemId}/notes/${noteId}`);

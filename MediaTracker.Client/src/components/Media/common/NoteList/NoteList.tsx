@@ -1,22 +1,29 @@
 import s from "./NoteList.module.css"
-import {BookOpen} from "lucide-react";
+import { BookOpen } from "lucide-react";
 import NoteItem from "./NoteItem.tsx";
-import {useEffect, useState} from "react";
-import {type CreateNote, type Note, noteApi, type NoteListApiResponse} from "../../../../api/noteApi.ts";
-import {type AxiosError} from "axios";
-import type {BackendResult} from "../../../../api/types.ts";
-import {showError, showSuccess} from "../../../../utils/toast.ts";
-import {NoteItemCreate} from "./NoteItemCreate.tsx";
+import { Fragment, useEffect, useState } from "react";
+import {
+    type CreateNote,
+    type Note,
+    noteApi,
+    type NoteListApiResponse,
+    type UpdateNote
+} from "../../../../api/noteApi.ts";
+import { type AxiosError } from "axios";
+import type { BackendResult } from "../../../../api/types.ts";
+import { showError, showSuccess } from "../../../../utils/toast.ts";
+import { NoteItemCreate } from "./NoteItemCreate.tsx";
 
 interface NoteList {
     mediaItemId: number
 }
 
-function NoteList({mediaItemId}: NoteList) {
+function NoteList({ mediaItemId }: NoteList) {
     const [state, setState] = useState<NoteListApiResponse | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
 
     const [createActive, setCreateActive] = useState(false);
+    const [noteForUpdate, setNoteForUpdate] = useState<UpdateNote | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [deleting, setDeleting] = useState<number[]>([]);
 
@@ -26,19 +33,27 @@ function NoteList({mediaItemId}: NoteList) {
                 const response = await noteApi.getNotes(mediaItemId, currentPage);
                 const data = response.data;
 
-                if(data.isSuccess && data.data) {
+                if (data.isSuccess && data.data) {
                     const value = data.data;
                     setState(prev => {
-                        const array = prev?.results ? [...prev.results] : [];
+                        if (!prev) return { ...value };
+
+                        const newResults = value.results;
+                        const currentResults = prev.results;
+
+                        const uniqueNewResults = newResults.filter(
+                            newItem => !currentResults.some(existingItem => existingItem.id === newItem.id)
+                        );
+
                         return {
                             ...prev,
                             totalPages: value.totalPages,
-                            results: [...array, ...value.results]
-                        }
+                            results: [...currentResults, ...uniqueNewResults]
+                        };
                     });
                 }
             }
-            catch(e) {
+            catch (e) {
                 const err = e as AxiosError<BackendResult<NoteListApiResponse>>;
                 showError(err.response?.data.message ?? "Something went wrong");
             }
@@ -47,13 +62,21 @@ function NoteList({mediaItemId}: NoteList) {
         loadNotes()
     }, [mediaItemId, currentPage]);
 
+    function handleCommands(note: CreateNote | UpdateNote) {
+        if ("id" in note) {
+            handleNoteUpdate(note); // UpdateNote
+        } else {
+            handleNoteCreate(note); // CreateNote
+        }
+    }
+
     async function handleNoteCreate(newNote: CreateNote) {
         try {
             setIsCreating(true);
             const response = await noteApi.createNote(mediaItemId, newNote);
             const data = response.data;
 
-            if(data.isSuccess && data.data){
+            if (data.isSuccess && data.data) {
                 const newNote = data.data;
 
                 setCreateActive(false);
@@ -74,15 +97,8 @@ function NoteList({mediaItemId}: NoteList) {
                 showSuccess("Successfully created the note.")
             }
         }
-        catch(e) {
-            const err = e as AxiosError<BackendResult<Note>>;
-
-            if(err.response && err.response.data.errors.length > 0) {
-                showError(err.response.data.errors[0].message ?? "Something went wrong");
-            }
-            else {
-                showError(err.response?.data.message ?? "Something went wrong");
-            }
+        catch (e) {
+            handleError(e);
             console.log(e);
         }
         finally {
@@ -90,8 +106,53 @@ function NoteList({mediaItemId}: NoteList) {
         }
     }
 
+    async function handleNoteUpdate(note: UpdateNote) {
+        try {
+            setIsCreating(true);
+            const response = await noteApi.updateNote(mediaItemId, note);
+            const data = response.data;
+
+            if (data.isSuccess && data.data) {
+                const updatedNoteFromServer = data.data;
+
+                setCreateActive(false);
+                setState((prev) => {
+                    if (!prev) return prev;
+
+                    return {
+                        ...prev,
+                        results: prev.results.map(n =>
+                            n.id === noteForUpdate?.id ? updatedNoteFromServer : n
+                        )
+                    };
+                });
+                setNoteForUpdate(null);
+                showSuccess("Successfully created the note.")
+            }
+        }
+        catch (e) {
+            handleError(e);
+            console.log(e);
+        }
+        finally {
+            setIsCreating(false);
+        }
+    }
+
+    function handleError(e: unknown) {
+        const err = e as AxiosError<BackendResult<Note>>;
+
+        if (err.response && err.response.data.errors.length > 0) {
+            showError(err.response.data.errors[0].message ?? "Something went wrong");
+        }
+        else {
+            showError(err.response?.data.message ?? "Something went wrong");
+        }
+    }
+
     function handleNoteCreateCancel() {
         setCreateActive(false);
+        setNoteForUpdate(null);
     }
 
     async function handleNoteDelete(noteId: number) {
@@ -100,9 +161,9 @@ function NoteList({mediaItemId}: NoteList) {
             const response = await noteApi.deleteNote(mediaItemId, noteId);
             const data = response.data;
 
-            if(data.isSuccess) {
+            if (data.isSuccess) {
                 setState(prev => {
-                    if(!prev) return prev;
+                    if (!prev) return prev;
 
                     return {
                         ...prev,
@@ -112,7 +173,7 @@ function NoteList({mediaItemId}: NoteList) {
                 showSuccess("Successfully deleted!")
             }
         }
-        catch(e) {
+        catch (e) {
             const err = e as AxiosError<BackendResult<void>>;
             showError(err.response?.data.message ?? "Something went wrong");
         }
@@ -124,35 +185,63 @@ function NoteList({mediaItemId}: NoteList) {
     }
 
     async function handleLoadMore() {
-        if(state?.totalPages && currentPage >= state.totalPages) {
+        if (state?.totalPages && currentPage >= state.totalPages) {
             return;
         }
 
         setCurrentPage(prev => prev + 1);
     }
 
-    if(state == null) {
+    async function handeNoteUpdateInitiate(note: Note) {
+        setNoteForUpdate({
+            id: note.id,
+            title: note.title,
+            text: note.text,
+            type: note.type,
+            timestamp: note.timestamp
+        });
+    }
+
+    if (state == null) {
         return <div>Loading notes...</div>
     }
 
     return (
         <div className={s.notesSection}>
             <div className={s.notesHeader}>
-                <h2><BookOpen size={24}/> My Notes</h2>
+                <h2><BookOpen size={24} /> My Notes</h2>
                 <button className={s.addNoteBtn} onClick={() => setCreateActive(true)}>+ Add Note</button>
             </div>
 
             <div className={s.notesGrid}>
                 {createActive && <NoteItemCreate
-                    handleNoteCreate={handleNoteCreate}
+                    handleCommands={handleCommands}
                     handleNoteCreateCancel={handleNoteCreateCancel}
-                    isLoading = {isCreating}
+                    isLoading={isCreating}
                 />}
-                {state.results.map(note => (<NoteItem isDeleting={deleting.includes(note.id)} key={note.id} note={note} handleNoteDelete={handleNoteDelete}/>))}
+                {state.results.map(note => (
+                    <Fragment key={note.id}>
+                        {(noteForUpdate && noteForUpdate.id === note.id)
+                            ? <NoteItemCreate
+                                handleCommands={handleCommands}
+                                handleNoteCreateCancel={handleNoteCreateCancel}
+                                isLoading={isCreating}
+                                updateNote={noteForUpdate}
+                            />
+                            : <NoteItem
+                                isDeleting={deleting.includes(note.id)}
+                                key={note.id}
+                                note={note}
+                                handleNoteDelete={handleNoteDelete}
+                                handeNoteUpdateInitiate={handeNoteUpdateInitiate}
+                            />
+                        }
+                    </Fragment>
+                ))}
                 {state.results.length === 0 && <p className={s.emptyNotes}>No notes yet. Start writing!</p>}
 
             </div>
-            {(state?.totalPages && currentPage < state.totalPages) ? <button onClick={handleLoadMore}>Load more</button> : <span></span>}
+            {(state?.totalPages && currentPage < state.totalPages) ? <button className={s.loadMoreBtn} onClick={handleLoadMore}>Load more</button> : <span></span>}
         </div>
     );
 }
