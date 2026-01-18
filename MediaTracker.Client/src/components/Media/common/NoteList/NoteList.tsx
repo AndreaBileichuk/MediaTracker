@@ -26,6 +26,7 @@ function NoteList({ mediaItemId }: NoteList) {
     const [noteForUpdate, setNoteForUpdate] = useState<UpdateNote | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [deleting, setDeleting] = useState<number[]>([]);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
         async function loadNotes() {
@@ -60,7 +61,7 @@ function NoteList({ mediaItemId }: NoteList) {
         }
 
         loadNotes()
-    }, [mediaItemId, currentPage]);
+    }, [mediaItemId, currentPage, refreshKey]);
 
     function handleCommands(note: CreateNote | UpdateNote) {
         if ("id" in note) {
@@ -127,7 +128,7 @@ function NoteList({ mediaItemId }: NoteList) {
                     };
                 });
                 setNoteForUpdate(null);
-                showSuccess("Successfully created the note.")
+                showSuccess("Successfully updated the note.")
             }
         }
         catch (e) {
@@ -162,14 +163,9 @@ function NoteList({ mediaItemId }: NoteList) {
             const data = response.data;
 
             if (data.isSuccess) {
-                setState(prev => {
-                    if (!prev) return prev;
-
-                    return {
-                        ...prev,
-                        results: prev.results.filter(n => n.id !== noteId)
-                    }
-                })
+                setState(null);
+                setCurrentPage(1);
+                setRefreshKey(prev => prev + 1);
                 showSuccess("Successfully deleted!")
             }
         }

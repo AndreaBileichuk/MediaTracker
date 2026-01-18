@@ -1,6 +1,7 @@
-import {useState} from "react";
+import { useState } from "react";
 import s from "./NoteList.module.css";
-import {type CreateNote, NOTE_TYPES, type NoteType, type UpdateNote} from "../../../../api/noteApi.ts";
+import { type CreateNote, NOTE_TYPES, type NoteType, type UpdateNote } from "../../../../api/noteApi.ts";
+import { Clock, Check, X, Tag } from "lucide-react";
 
 interface NoteItemCreateProps {
     handleCommands: (newNote: CreateNote | UpdateNote) => void;
@@ -57,54 +58,88 @@ export function NoteItemCreate({ handleCommands, handleNoteCreateCancel, isLoadi
 
     return (
         <div className={`${s.noteCard} ${s.creationCard}`}>
-            <input
-                className={s.createTitleInput}
-                onChange={(e) => setCreateNote(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Note Title..."
-                autoFocus
-                value={createNote.title}
-            />
+            <div className={s.creationHeaderRow}>
+                <div className={s.createHeaderLeft}>
+                    <input
+                        className={s.createTitleInput}
+                        onChange={(e) => setCreateNote(prev => ({ ...prev, title: e.target.value }))}
+                        placeholder="Note Title..."
+                        autoFocus
+                        value={createNote.title}
+                    />
 
-            <div className={s.createMetaRow}>
-                <select
-                    className={s.createSelect}
-                    value={createNote.type}
-                    onChange={(e) => setCreateNote(prev => ({ ...prev, type: e.target.value as NoteType }))}
-                >
-                    {NOTE_TYPES.map(type => (
-                        <option key={type} value={type} style={{ color: "black" }}>
-                            {type}
-                        </option>
-                    ))}
-                </select>
+                    <div className={s.createMetaRow}>
+                        <div className={s.timeInputContainer} title="Timestamp (HH:MM:SS)">
+                            <Clock size={11} />
+                            <input
+                                className={s.timeInput}
+                                placeholder="00"
+                                value={time.h}
+                                onChange={(e) => handleTimeChange("h", e.target.value)}
+                                onBlur={() => handleTimeBlur("h")}
+                                maxLength={2}
+                            />
+                            <span className={s.timeSeparator}>:</span>
+                            <input
+                                className={s.timeInput}
+                                placeholder="00"
+                                value={time.m}
+                                onChange={(e) => handleTimeChange("m", e.target.value)}
+                                onBlur={() => handleTimeBlur("m")}
+                                maxLength={2}
+                            />
+                            <span className={s.timeSeparator}>:</span>
+                            <input
+                                className={s.timeInput}
+                                placeholder="00"
+                                value={time.s}
+                                onChange={(e) => handleTimeChange("s", e.target.value)}
+                                onBlur={() => handleTimeBlur("s")}
+                                maxLength={2}
+                            />
+                        </div>
 
-                <div className={s.timeInputContainer} title="Timestamp (HH:MM:SS)">
-                    <input
-                        className={s.timeInput}
-                        placeholder="00"
-                        value={time.h}
-                        onChange={(e) => handleTimeChange("h", e.target.value)}
-                        onBlur={() => handleTimeBlur("h")}
-                        maxLength={2}
-                    />
-                    <span className={s.timeSeparator}>:</span>
-                    <input
-                        className={s.timeInput}
-                        placeholder="00"
-                        value={time.m}
-                        onChange={(e) => handleTimeChange("m", e.target.value)}
-                        onBlur={() => handleTimeBlur("m")}
-                        maxLength={2}
-                    />
-                    <span className={s.timeSeparator}>:</span>
-                    <input
-                        className={s.timeInput}
-                        placeholder="00"
-                        value={time.s}
-                        onChange={(e) => handleTimeChange("s", e.target.value)}
-                        onBlur={() => handleTimeBlur("s")}
-                        maxLength={2}
-                    />
+                        <div className={s.createSelect}>
+                            <Tag size={11} style={{ marginRight: 4 }} />
+                            <select
+                                style={{
+                                    background: "transparent",
+                                    border: "none",
+                                    color: "inherit",
+                                    fontSize: "inherit",
+                                    fontWeight: "inherit",
+                                    outline: "none",
+                                    cursor: "pointer"
+                                }}
+                                value={createNote.type}
+                                onChange={(e) => setCreateNote(prev => ({ ...prev, type: e.target.value as NoteType }))}
+                            >
+                                {NOTE_TYPES.map(type => (
+                                    <option key={type} value={type}>
+                                        {type}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div className={s.createHeaderRight}>
+                    <button
+                        className={`${s.actionBtnIcon} ${s.saveBtnIcon}`}
+                        onClick={handleSave}
+                        disabled={!createNote.title || !createNote.text || isLoading}
+                        title="Save Note"
+                    >
+                        <Check size={20} />
+                    </button>
+                    <button
+                        className={`${s.actionBtnIcon} ${s.cancelBtnIcon}`}
+                        onClick={handleNoteCreateCancel}
+                        title="Cancel"
+                    >
+                        <X size={20} />
+                    </button>
                 </div>
             </div>
 
@@ -113,24 +148,8 @@ export function NoteItemCreate({ handleCommands, handleNoteCreateCancel, isLoadi
                 onChange={(e) => setCreateNote(prev => ({ ...prev, text: e.target.value }))}
                 placeholder="Write your note here..."
                 value={createNote.text}
-                rows={3}
+                rows={4}
             />
-
-            <div className={s.createActions}>
-                <button
-                    className={`${s.actionBtn} ${s.cancelBtn}`}
-                    onClick={handleNoteCreateCancel}
-                >
-                    Cancel
-                </button>
-                <button
-                    className={`${s.actionBtn} ${s.saveBtn}`}
-                    onClick={handleSave}
-                    disabled={!createNote.title || !createNote.text || isLoading}
-                >
-                    Save
-                </button>
-            </div>
         </div>
     );
 }

@@ -18,24 +18,26 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    color: #e5e5e5;
 }
 
 .addNoteBtn {
-    background: linear-gradient(135deg, #eee 0%, #ccc 100%);
-    color: #111;
+    background: #e50914;
+    color: #fff;
     border: none;
-    padding: 10px 20px;
-    border-radius: 30px;
+    padding: 10px 24px;
+    border-radius: 8px;
     cursor: pointer;
-    font-weight: 700;
+    font-weight: 600;
+    font-size: 0.9rem;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(229, 9, 20, 0.3);
 }
 
 .addNoteBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(255, 255, 255, 0.2);
-    background: linear-gradient(135deg, #fff 0%, #ddd 100%);
+    background: #c4070f;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
 }
 
 .notesGrid {
@@ -45,10 +47,8 @@
 }
 
 /* --- NOTE CARD --- */
-/* --- NOTE CARD --- */
-/* --- NOTE CARD --- */
 .noteCard {
-    background-color: #1a1a1a;
+    background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 100%);
     padding: 0;
     border-radius: 8px;
     border: 1px solid #2a2a2a;
@@ -61,34 +61,49 @@
     overflow: hidden;
 }
 
+.noteCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #e50914 0%, rgba(229, 9, 20, 0) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
 .noteCard:hover {
-    background-color: #202020;
-    border-color: #444;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, #202020 0%, #151515 100%);
+    border-color: #3a3a3a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.noteCard:hover::before {
+    opacity: 1;
 }
 
 .noteHeaderRow {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: 12px 16px;
+    padding: 16px 20px;
     background-color: rgba(255, 255, 255, 0.02);
     border-bottom: 1px solid #2a2a2a;
     min-height: 60px;
-    /* Ensure logical height for header */
 }
 
 .noteHeaderLeft {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 
 .noteTitle {
-    color: #e5e5e5;
+    color: #fff;
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 600;
     line-height: 1.2;
 }
@@ -103,39 +118,41 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 2px 8px;
-    background-color: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    background-color: rgba(255, 255, 255, 0.06);
     border-radius: 4px;
-    color: #888;
+    color: #999;
     font-size: 0.75rem;
     font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .noteHeaderRight {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 8px;
+    gap: 10px;
 }
 
 .noteDate {
     font-size: 0.75rem;
-    color: #555;
+    color: #666;
     white-space: nowrap;
+    font-weight: 500;
 }
 
 .noteActions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
 }
 
 .actionBtnIcon {
-    background: transparent;
-    border: none;
-    color: #666;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid #2a2a2a;
+    color: #888;
     cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
+    padding: 6px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -143,14 +160,21 @@
 }
 
 .actionBtnIcon:hover {
-    color: #fff;
-    background-color: rgba(255, 255, 255, 0.1);
+    color: #e50914;
+    background-color: rgba(229, 9, 20, 0.1);
+    border-color: rgba(229, 9, 20, 0.3);
+    transform: translateY(-1px);
+}
+
+.actionBtnIcon:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 .noteContent {
-    padding: 16px;
-    color: #bbb;
-    line-height: 1.6;
+    padding: 20px;
+    color: #ccc;
+    line-height: 1.7;
     font-size: 0.95rem;
     overflow-wrap: anywhere;
     max-height: 300px;
@@ -175,30 +199,59 @@
     background-color: #555;
 }
 
-/* Removed old footer styles as they are no longer used */
-
 /* --- CREATION CARD --- */
 .creationCard {
-    border-color: #555;
-    background-color: #252525;
+    border: 1px solid #e50914;
+    background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 100%);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 1px rgba(229, 9, 20, 0.5);
+    position: relative;
+    overflow: visible;
+}
+
+.creationHeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px 24px 16px;
+    gap: 16px;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.createHeaderLeft {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.createHeaderRight {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
 .createTitleInput {
-    background: transparent;
-    border: none;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid #2a2a2a;
     color: #fff;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
     width: 100%;
     outline: none;
-    margin-bottom: 0.75rem;
-    border-bottom: 2px solid transparent;
-    padding-bottom: 4px;
-    transition: border-color 0.2s ease;
+    padding: 12px 14px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.createTitleInput:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: #3a3a3a;
 }
 
 .createTitleInput:focus {
-    border-bottom-color: #777;
+    background: rgba(255, 255, 255, 0.06);
+    border-color: #e50914;
+    box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.1);
 }
 
 .createTitleInput::placeholder {
@@ -209,84 +262,139 @@
 .createMetaRow {
     display: flex;
     gap: 10px;
-    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
 }
 
-.createSelect,
 .timeInputContainer {
-    background-color: rgba(0, 0, 0, 0.2);
-    border: 1px solid #444;
-    color: #ddd;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    width: 50%;
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #999;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
 }
 
-/* ... */
-.createTextArea {
+.timeInputContainer:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: #3a3a3a;
+}
+
+.timeInput {
     background: transparent;
     border: none;
+    color: #e5e5e5;
+    font-size: 0.85rem;
+    width: 26px;
+    text-align: center;
+    outline: none;
+    font-weight: 500;
+}
+
+.timeInput::placeholder {
+    color: #555;
+}
+
+.timeSeparator {
+    color: #666;
+    font-weight: 600;
+}
+
+.createSelect {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #999;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.createSelect:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: #3a3a3a;
+}
+
+.createSelect select {
+    background: transparent;
+    border: none;
+    color: #e5e5e5;
+    font-size: inherit;
+    font-weight: 500;
+    outline: none;
+    cursor: pointer;
+}
+
+.createTextArea {
+    background: rgba(255, 255, 255, 0.02);
+    border: none;
+    border-top: 1px solid #2a2a2a;
     color: #ddd;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-family: inherit;
     width: 100%;
     outline: none;
-    resize: none;
-    line-height: 1.5;
-    min-height: 60px;
-    padding: 8px 0;
-}
-
-/* ... */
-.createActions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid #333;
-}
-
-.actionBtn {
-    padding: 6px 16px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
+    resize: vertical;
+    line-height: 1.6;
+    min-height: 140px;
+    padding: 18px 24px;
     transition: all 0.2s ease;
-    border: none;
 }
 
-.cancelBtn {
-    background: transparent;
-    color: #aaa;
-    border: 1px solid transparent;
+.createTextArea:hover {
+    background: rgba(255, 255, 255, 0.03);
 }
 
-.cancelBtn:hover {
-    color: #ddd;
-    background-color: rgba(255, 255, 255, 0.05);
+.createTextArea:focus {
+    background: rgba(255, 255, 255, 0.05);
 }
 
-.saveBtn {
-    background: linear-gradient(135deg, #eee 0%, #ccc 100%);
-    color: #111;
+.createTextArea::placeholder {
+    color: #666;
 }
 
-.saveBtn:hover {
-    background: linear-gradient(135deg, #fff 0%, #ddd 100%);
-    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
+.saveBtnIcon {
+    background: #e50914;
+    color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(229, 9, 20, 0.3);
 }
 
-.saveBtn:disabled {
-    background: #444;
-    color: #777;
+.saveBtnIcon:hover:not(:disabled) {
+    color: #fff;
+    background: #c4070f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(229, 9, 20, 0.4);
+}
+
+.saveBtnIcon:disabled {
+    background: #333;
+    color: #666;
     cursor: not-allowed;
+    opacity: 0.5;
     box-shadow: none;
+}
+
+.cancelBtnIcon {
+    background: rgba(255, 255, 255, 0.05);
+    color: #aaa;
+    padding: 10px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.cancelBtnIcon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transform: translateY(-2px);
 }
 
 .loadMoreBtn {
@@ -311,6 +419,13 @@
     color: #ddd;
 }
 
+.emptyNotes {
+    color: #666;
+    text-align: center;
+    padding: 3rem;
+    font-size: 1rem;
+}
+
 .panelContainer {
     display: flex;
 }
@@ -318,5 +433,15 @@
 @media (max-width: 768px) {
     .notesSection {
         padding: 1rem;
+    }
+
+    .creationHeaderRow {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .createHeaderRight {
+        width: 100%;
+        justify-content: flex-end;
     }
 }
