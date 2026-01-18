@@ -26,42 +26,41 @@ function NoteList({ mediaItemId }: NoteList) {
     const [noteForUpdate, setNoteForUpdate] = useState<UpdateNote | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [deleting, setDeleting] = useState<number[]>([]);
-    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
-        async function loadNotes() {
-            try {
-                const response = await noteApi.getNotes(mediaItemId, currentPage);
-                const data = response.data;
+        fetchNotes(currentPage)
+    }, [mediaItemId, currentPage]);
 
-                if (data.isSuccess && data.data) {
-                    const value = data.data;
-                    setState(prev => {
-                        if (!prev) return { ...value };
+    async function fetchNotes(page: number, isBackgroundRefresh = false) {
+        try {
+            const response = await noteApi.getNotes(mediaItemId, currentPage);
+            const data = response.data;
 
-                        const newResults = value.results;
-                        const currentResults = prev.results;
+            if (data.isSuccess && data.data) {
+                const value = data.data;
+                setState(prev => {
+                    if (!prev || (page === 1 && !isBackgroundRefresh)) return { ...value };
 
-                        const uniqueNewResults = newResults.filter(
-                            newItem => !currentResults.some(existingItem => existingItem.id === newItem.id)
-                        );
+                    const newResults = value.results;
+                    const currentResults = prev.results;
 
-                        return {
-                            ...prev,
-                            totalPages: value.totalPages,
-                            results: [...currentResults, ...uniqueNewResults]
-                        };
-                    });
-                }
-            }
-            catch (e) {
-                const err = e as AxiosError<BackendResult<NoteListApiResponse>>;
-                showError(err.response?.data.message ?? "Something went wrong");
+                    const uniqueNewResults = newResults.filter(
+                        newItem => !currentResults.some(existingItem => existingItem.id === newItem.id)
+                    );
+
+                    return {
+                        ...prev,
+                        totalPages: value.totalPages,
+                        results: [...currentResults, ...uniqueNewResults]
+                    };
+                });
             }
         }
-
-        loadNotes()
-    }, [mediaItemId, currentPage, refreshKey]);
+        catch (e) {
+            const err = e as AxiosError<BackendResult<NoteListApiResponse>>;
+            showError(err.response?.data.message ?? "Something went wrong");
+        }
+    }
 
     function handleCommands(note: CreateNote | UpdateNote) {
         if ("id" in note) {
@@ -157,16 +156,23 @@ function NoteList({ mediaItemId }: NoteList) {
     }
 
     async function handleNoteDelete(noteId: number) {
+        debugger
         try {
             setDeleting(prev => ([...prev, noteId]));
             const response = await noteApi.deleteNote(mediaItemId, noteId);
-            const data = response.data;
 
-            if (data.isSuccess) {
-                setState(null);
-                setCurrentPage(1);
-                setRefreshKey(prev => prev + 1);
+            if (response.data.isSuccess) {
+                setState(prev => {
+                    if (!prev) return prev;
+                    return {
+                        ...prev,
+                        results: prev.results.filter(n => n.id !== noteId)
+                    };
+                });
+
                 showSuccess("Successfully deleted!")
+
+                await fetchNotes(currentPage, true);
             }
         }
         catch (e) {
