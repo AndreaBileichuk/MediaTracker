@@ -4,6 +4,7 @@ using FluentValidation.AspNetCore;
 using MediaTracker.BLL.DTOs.Validator;
 using MediaTracker.BLL.Services.Account;
 using MediaTracker.BLL.Services.Auth;
+using MediaTracker.BLL.Services.Email;
 using MediaTracker.BLL.Services.Media;
 using MediaTracker.BLL.Services.MediaProvider;
 using MediaTracker.BLL.Services.MediaProvider.Helpers;
@@ -92,6 +93,10 @@ static class ServiceExtensions
         services.Configure<CloudinaryOptions>(
             configuration.GetSection(CloudinaryOptions.SectionName)
         );
+
+        services.Configure<EmailSettingsOptions>(
+            configuration.GetSection(EmailSettingsOptions.SectionName)
+        );
         
         return services;
     }
@@ -159,6 +164,8 @@ static class ServiceExtensions
         services.AddScoped<IPhotoService, CloudinaryPhotoService>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<INoteService, NoteService>();
+
+        services.AddTransient<IEmailService, EmailService>();
         
         return services;
     }

@@ -156,7 +156,6 @@ function NoteList({ mediaItemId }: NoteList) {
     }
 
     async function handleNoteDelete(noteId: number) {
-        debugger
         try {
             setDeleting(prev => ([...prev, noteId]));
             const response = await noteApi.deleteNote(mediaItemId, noteId);

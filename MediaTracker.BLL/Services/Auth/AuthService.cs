@@ -4,6 +4,7 @@ using System.Text;
 using MediaTracker.BLL.DTOs.Auth;
 using MediaTracker.BLL.Errors;
 using MediaTracker.BLL.Infrastructure;
+using MediaTracker.BLL.Services.Email;
 using MediaTracker.BLL.Settings;
 using MediaTracker.DAL.Data;
 using MediaTracker.DAL.Entities;
@@ -18,7 +19,8 @@ public class AuthService(
     IOptions<JwtOptions> jwtOptions,
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    ApplicationDbContext context) : IAuthService
+    ApplicationDbContext context,
+    IEmailService emailService) : IAuthService
 {
     public async Task<Result<string>> LoginAsync(LoginRequest loginRequest)
     {
