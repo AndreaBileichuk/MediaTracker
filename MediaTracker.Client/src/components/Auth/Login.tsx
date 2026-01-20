@@ -9,8 +9,11 @@ import { EyeIconClosed, EyeIconOpen } from "../common/Icons.tsx";
 import { CustomInput } from "../common/CustomInput.tsx";
 import type { BackendResult } from "../../api/types.ts";
 import RedCustomBtn from "../common/CustomButtons/RedCustomBtn.tsx";
-import {showSuccess} from "../../utils/toast.ts";
+import {showError, showSuccess} from "../../utils/toast.ts";
 import {mapBackendErrors} from "../../bll/helpers/errorHelpers.ts";
+import EnterEmailModal from "./EnterEmailModal/EnterEmailModal.tsx";
+import {authApi} from "../../api/authApi.ts";
+import type {AxiosError} from "axios";
 
 function Login() {
     const shapesRef = useRef<ShapesHandle>(null);
@@ -25,6 +28,9 @@ function Login() {
 
     const [generalError, setGeneralError] = useState<string | null>(null);
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalLoading, setIsModalLoading] = useState(false);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -52,6 +58,25 @@ function Login() {
             else {
                 setGeneralError(apiResponse.message || "Login failed");
             }
+        }
+    }
+
+    async function handleEmailConfirm(email: string) {
+        try {
+            setIsModalLoading(true);
+            const response = await authApi.forgotPassword(email);
+
+            if(response.data.isSuccess) {
+                showSuccess("Reset sent to email successfully!");
+            }
+        }
+        catch(e) {
+            const err = e as AxiosError<BackendResult<void>>;
+            showError(err.response?.data.message ?? "Something went wrong.");
+        }
+        finally {
+            setIsModalOpen(false);
+            setIsModalLoading(false);
         }
     }
 
@@ -103,7 +128,8 @@ function Login() {
                             onClick={() => setShowPassword(!showPassword)}
                             disabled={isLoading}
                         >
-                            {showPassword ? <EyeIconOpen className={styles.icon} /> : <EyeIconClosed className={styles.icon} />}
+                            {showPassword ? <EyeIconOpen className={styles.icon}/> :
+                                <EyeIconClosed className={styles.icon}/>}
                         </button>
                     </CustomInput>
 
@@ -112,10 +138,20 @@ function Login() {
                         text={"Sign In"}
                     />
 
-                    <div className={styles.registerLink}>
-                        Don't have an account? <Link to="/register">Register</Link>
+                    <div>
+                        <div className={styles.registerLink} onClick={() => setIsModalOpen(true)}>Forgot password?</div>
+
+                        <div className={styles.registerLink}>
+                            Don't have an account? <Link to="/register">Register</Link>
+                        </div>
                     </div>
                 </form>
+                <EnterEmailModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={handleEmailConfirm}
+                    isLoading={isModalLoading}
+                />
             </div>
         </div>
     );

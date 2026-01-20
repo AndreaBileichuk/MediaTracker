@@ -19,5 +19,8 @@ export const authApi = {
 
     register: async (data: RegisterRequest) => {
         return await axiosClient.post<BackendResult<string>>('/auth/register', data);
+    },
+    forgotPassword: async (email: string) => {
+        return await axiosClient.post<BackendResult<void>>('/auth/forgot-password', {email})
     }
 };
