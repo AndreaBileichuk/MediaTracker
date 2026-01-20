@@ -15,6 +15,7 @@ import MediaList from "./components/Media/MediaList.tsx";
 import {ToastContainer} from "react-toastify";
 import MediaItemDetails from "./components/Media/MediaItemDetails.tsx";
 import ChangePassword from "./components/Account/ChangePassword/ChangePassword.tsx";
+import ResetPasswordPage from "./components/Auth/ResetPasswordPage.tsx";
 
 const router = createBrowserRouter([
     {
@@ -71,6 +72,10 @@ const router = createBrowserRouter([
     {
         path: "/register",
         element: <Register />
+    },
+    {
+        path: "/reset-password",
+        element: <ResetPasswordPage />
     }
 ])
 

@@ -9,6 +9,7 @@ using MediaTracker.BLL.Settings;
 using MediaTracker.DAL.Data;
 using MediaTracker.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
@@ -19,8 +20,9 @@ public class AuthService(
     IOptions<JwtOptions> jwtOptions,
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    ApplicationDbContext context,
-    IEmailService emailService) : IAuthService
+    IEmailService emailService,
+    IConfiguration configuration
+    ) : IAuthService
 {
     public async Task<Result<string>> LoginAsync(LoginRequest loginRequest)
     {
@@ -63,14 +65,40 @@ public class AuthService(
         return ValidationResult<string>.WithErrors(errors);
     }
 
+    public async Task<Result> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
+    {
+        var user = await userManager.FindByEmailAsync(forgotPasswordRequest.Email);
+
+        if (user == null)
+            return Result.Success();
+
+        if (user.Email == null || configuration["FrontEndUrl"] == null)
+            return Result.Failure(GeneralErrors.SomethingWentWrong);
+
+        var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+        var frontendUrl = configuration["FrontEndUrl"];
+        var resetLink = $"{frontendUrl}/reset-password?token={token}&email={user.Email}";
+
+        await emailService.SendEmailAsync(user.Email, "Reset Password", 
+            $"<a href='{resetLink}'>Click here to reset</a>");
+
+        return Result.Success();
+    }
+
+    public async Task<Result> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
+    {
+        throw new NotImplementedException();
+    }
+
     private string GenerateToken(ApplicationUser user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.Key));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
             new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
             new Claim(ClaimTypes.Name, user.UserName ?? "")
         };
@@ -81,7 +109,7 @@ public class AuthService(
             Audience = jwtOptions.Value.Audience,
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddDays(jwtOptions.Value.ExpireDays),
-            SigningCredentials = creds
+            SigningCredentials = credentials
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();

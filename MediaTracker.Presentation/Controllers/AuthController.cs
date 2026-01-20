@@ -19,4 +19,10 @@ public class AuthController(IAuthService service) : ControllerBase
     {
         return await service.RegisterAsync(registerRequest);
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<Result> ForgotPassword([FromBody] ForgotPasswordRequest forgotPasswordRequest)
+    {
+        return await service.ForgotPasswordAsync(forgotPasswordRequest);
+    }
 }

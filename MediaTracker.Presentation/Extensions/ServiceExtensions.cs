@@ -118,7 +118,9 @@ static class ServiceExtensions
         {
             options.User.RequireUniqueEmail = true;
             options.SignIn.RequireConfirmedAccount = false;
-        }).AddEntityFrameworkStores<ApplicationDbContext>();
+        })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
         
         return services;
     }
@@ -178,17 +180,13 @@ static class ServiceExtensions
         return services;
     }
 
-    public static IServiceCollection AddCustomCors(this IServiceCollection services)
+    public static IServiceCollection AddCustomCors(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddCors(options =>
         {
             options.AddPolicy("AllowFrontend", policy =>
             {
-                policy.WithOrigins("http://localhost:5174")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-                
-                policy.WithOrigins("http://localhost:5173")
+                policy.WithOrigins(configuration["FrontEndUrl"]!)
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
