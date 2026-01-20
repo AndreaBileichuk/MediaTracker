@@ -61,7 +61,7 @@ function Register() {
     return (
         <div className={styles.container}>
             <Shapes ref={shapesRef}/>
-            <div className={styles.loginBox}>
+            <div className={styles.box}>
                 <h1 className={styles.title}>
                     Welcome back to <span>MediaTracker</span>!
                 </h1>
