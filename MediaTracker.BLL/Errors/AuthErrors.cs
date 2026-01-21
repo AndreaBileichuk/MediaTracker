@@ -22,6 +22,10 @@ public static class AuthErrors
         "Auth.Unauthorized"
         , "User is not authorized");
 
+    public static readonly Error EmailNotConfirmed = new(
+        "Auth.EmailNotConfirmed",
+        "Please verify your email address to login.");
+    
     public static readonly Error EmailVerificationInvalidCode = new(
         "Auth.InvalidCode",
         "The code for email verification is invalid.");

@@ -12,6 +12,7 @@ import RedCustomBtn from "../common/CustomButtons/RedCustomBtn.tsx";
 import {showError, showSuccess} from "../../utils/toast.ts";
 import {mapBackendErrors} from "../../bll/helpers/errorHelpers.ts";
 import EnterEmailModal from "./EnterEmailModal/EnterEmailModal.tsx";
+import SendVerificationModal from "./SendVerificationModal/SendVerificationModal.tsx";
 
 function Login() {
     const shapesRef = useRef<ShapesHandle>(null);
@@ -23,6 +24,7 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
     const [generalError, setGeneralError] = useState<string | null>(null);
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -45,13 +47,15 @@ function Login() {
             showSuccess("Login successful! Welcome back!");
         }
         catch (err) {
-            debugger
             const apiResponse = err as BackendResult<string>;
 
             const fieldErrors = mapBackendErrors(apiResponse);
 
             if(Object.keys(fieldErrors).length > 0) {
                 setValidationErrors(fieldErrors);
+            }
+            else if(apiResponse.code.includes("EmailNotConfirmed")) {
+                setShowConfirmationModal(true);
             }
             else {
                 setGeneralError(apiResponse.message || "Login failed");
@@ -71,6 +75,10 @@ function Login() {
         finally {
             setIsModalOpen(false);
         }
+    }
+
+    async function handleResendEmail() {
+        alert("Okay, got you!")
     }
 
     const isLoading = status === 'loading';
@@ -148,6 +156,14 @@ function Login() {
                         onClose={() => setIsModalOpen(false)}
                         onConfirm={handleEmailConfirm}
                         isLoading={isLoading}
+                    />
+
+                    <SendVerificationModal
+                        isOpen={showConfirmationModal}
+                        onClose={() => setShowConfirmationModal(false)}
+                        onConfirm={handleResendEmail}
+                        isLoading={isLoading}
+                        initialEmail={email}
                     />
                 </div>
             </div>

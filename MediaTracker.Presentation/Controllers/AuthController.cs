@@ -38,4 +38,10 @@ public class AuthController(IAuthService service) : ControllerBase
     {
         return await service.ConfirmEmail(User.FindFirstValue(ClaimTypes.NameIdentifier), confirmEmailRequest);
     }
+
+    [HttpPost("resend-confirmation-email")]
+    public async Task<Result> ResendConfirmation(ResendConfirmationEmailRequest resendConfirmationEmailRequest)
+    {
+        return await service.ResendConfirmation(resendConfirmationEmailRequest);
+    }
 }

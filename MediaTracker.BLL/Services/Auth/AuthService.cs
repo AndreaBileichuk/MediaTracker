@@ -6,7 +6,6 @@ using MediaTracker.BLL.Errors;
 using MediaTracker.BLL.Infrastructure;
 using MediaTracker.BLL.Services.Email;
 using MediaTracker.BLL.Settings;
-using MediaTracker.DAL.Data;
 using MediaTracker.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -36,12 +35,14 @@ public class AuthService(
         
         var result = await signInManager.CheckPasswordSignInAsync(user, loginRequest.Password, lockoutOnFailure: false);
         
-        if (result.Succeeded)
+        if (result.Succeeded) return Result.Success(GenerateToken(user));
+        
+        if (result.IsNotAllowed && !user.EmailConfirmed)
         {
-            return Result.Success(GenerateToken(user));
-        }
-
-        return Result.Failure<string>(AuthErrors.InvalidCredentials);    
+            return Result.Failure<string>(AuthErrors.EmailNotConfirmed);
+        } 
+        
+        return Result.Failure<string>(AuthErrors.InvalidCredentials);
     }
 
     public async Task<Result<string>> RegisterAsync(RegisterRequest registerRequest)
@@ -56,16 +57,7 @@ public class AuthService(
         
         if (result.Succeeded)
         {
-            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            
-            var tokenGeneratedBytes = Encoding.UTF8.GetBytes(token);
-            var codeEncoded = WebEncoders.Base64UrlEncode(tokenGeneratedBytes);
-            
-            var callbackUrl = $"{configuration["FrontEndUrl"]}/email-confirmation?userId={user.Id}&code={codeEncoded}";
-
-            await emailService.SendEmailAsync(user.Email!, "Confirm your email", 
-                $"Please, confirm your account by <a href='{callbackUrl}'>Clicking here</a>.");
-            
+            await ResendConfirmation(new ResendConfirmationEmailRequest(user.Email));
             return Result.Success(GenerateToken(user));
         }
 
@@ -129,6 +121,28 @@ public class AuthService(
         var result = await userManager.ConfirmEmailAsync(user, codeDecoded);
 
         if (!result.Succeeded) return Result.Failure(AuthErrors.EmailVerificationInvalidCode);
+
+        return Result.Success();
+    }
+
+    public async Task<Result> ResendConfirmation(ResendConfirmationEmailRequest resendConfirmationEmailRequest)
+    {
+        var user = await userManager.FindByEmailAsync(resendConfirmationEmailRequest.Email);
+
+        if (user is null || user.EmailConfirmed)
+        {
+            return Result.Success();
+        }
+        
+        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            
+        var tokenGeneratedBytes = Encoding.UTF8.GetBytes(token);
+        var codeEncoded = WebEncoders.Base64UrlEncode(tokenGeneratedBytes);
+            
+        var callbackUrl = $"{configuration["FrontEndUrl"]}/email-confirmation?userId={user.Id}&code={codeEncoded}";
+
+        await emailService.SendEmailAsync(user.Email!, "Confirm your email", 
+            $"Please, confirm your account by <a href='{callbackUrl}'>Clicking here</a>.");
 
         return Result.Success();
     }
