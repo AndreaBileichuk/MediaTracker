@@ -12,6 +12,12 @@ export interface RegisterRequest {
     password: string
 }
 
+export interface PasswordResetRequest {
+    email: string,
+    token: string,
+    newPassword: string
+}
+
 export const authApi = {
     login: async (data: LoginRequest) => {
         return await axiosClient.post<BackendResult<string>>('/auth/login', data);
@@ -22,5 +28,8 @@ export const authApi = {
     },
     forgotPassword: async (email: string) => {
         return await axiosClient.post<BackendResult<void>>('/auth/forgot-password', {email})
+    },
+    resetPassword: async (data: PasswordResetRequest) => {
+        return await axiosClient.post<BackendResult<void>>('/auth/reset-password', data);
     }
 };

@@ -25,4 +25,10 @@ public class AuthController(IAuthService service) : ControllerBase
     {
         return await service.ForgotPasswordAsync(forgotPasswordRequest);
     }
+
+    [HttpPost("reset-password")]
+    public async Task<Result> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
+    {
+        return await service.ResetPasswordAsync(resetPasswordRequest);
+    }
 }

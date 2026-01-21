@@ -49,7 +49,6 @@ function ChangePassword() {
             navigate("/account");
         }
         catch(e) {
-            debugger
             const apiResponse = e as BackendResult<void>;
 
             const fieldErrors = mapBackendErrorsForChangePassword(apiResponse);
@@ -83,7 +82,7 @@ function ChangePassword() {
                 )}
 
                 <CustomInput
-                    label="OldPassword"
+                    label="Old Password"
                     type={state.showOldPassword ? "text" : "password"}
                     value={state.oldPassword}
                     onChange={(e) =>
@@ -91,7 +90,7 @@ function ChangePassword() {
                             ...prev,
                             oldPassword: e.target.value,
                             validationErrors: { ...prev.validationErrors, oldPassword: "" }}))}
-                    placeholder="Your name"
+                    placeholder="Your old password"
                     errorMessage={state.validationErrors["oldPassword"]}
                     required
                     disabled={state.isLoading}
@@ -108,7 +107,7 @@ function ChangePassword() {
                 </CustomInput>
 
                 <CustomInput
-                    label="NewPassword"
+                    label="New Password"
                     type={state.showNewPassword ? "text" : "password"}
                     value={state.newPassword}
                     onChange={(e) =>
@@ -116,7 +115,7 @@ function ChangePassword() {
                             ...prev,
                             newPassword: e.target.value,
                             validationErrors: { ...prev.validationErrors, newPassword: "" }}))}
-                    placeholder="Your name"
+                    placeholder="Your new password"
                     errorMessage={state.validationErrors["newPassword"]}
                     required
                     disabled={state.isLoading}

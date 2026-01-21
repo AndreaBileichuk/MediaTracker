@@ -83,75 +83,80 @@ function Login() {
     const isLoading = status === 'loading';
 
     return (
-        <div className={styles.container}>
-            <Shapes ref={shapesRef} />
-            <div className={styles.box}>
-                <h1 className={styles.title}>
-                    Welcome back to <span>MediaTracker</span>!
-                </h1>
+        <div className={styles.outer}>
+            <div className={styles.container}>
+                <Shapes ref={shapesRef}/>
+                <div className={styles.box}>
+                    <h1 className={styles.title}>
+                        Welcome back to <span>MediaTracker</span>!
+                    </h1>
 
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    {generalError && (
-                        <div className={styles.error} role="alert">
-                            {generalError}
-                        </div>
-                    )}
+                    <form onSubmit={handleSubmit} className={styles.form}>
+                        {generalError && (
+                            <div className={styles.error} role="alert">
+                                {generalError}
+                            </div>
+                        )}
 
-                    <CustomInput
-                        label="Email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="your@email.com"
-                        errorMessage={validationErrors["email"]}
-                        onFocus={() => shapesRef.current?.startTyping()}
-                        onBlur={() => shapesRef.current?.reset()}
-                        required
-                        disabled={isLoading}
-                    />
+                        <CustomInput
+                            label="Email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="your@email.com"
+                            errorMessage={validationErrors["email"]}
+                            onFocus={() => shapesRef.current?.startTyping()}
+                            onBlur={() => shapesRef.current?.reset()}
+                            required
+                            disabled={isLoading}
+                        />
 
-                    <CustomInput
-                        label="Password"
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        errorMessage={validationErrors["password"]}
-                        onFocus={() => shapesRef.current?.showPassword()}
-                        onBlur={() => shapesRef.current?.reset()}
-                        required
-                        disabled={isLoading}
-                    >
-                        <button
-                            type="button"
-                            className={styles.eyeButton}
-                            onClick={() => setShowPassword(!showPassword)}
+                        <CustomInput
+                            label="Password"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="••••••••"
+                            errorMessage={validationErrors["password"]}
+                            onFocus={() => shapesRef.current?.showPassword()}
+                            onBlur={() => shapesRef.current?.reset()}
+                            required
                             disabled={isLoading}
                         >
-                            {showPassword ? <EyeIconOpen className={styles.icon}/> :
-                                <EyeIconClosed className={styles.icon}/>}
-                        </button>
-                    </CustomInput>
+                            <button
+                                type="button"
+                                className={styles.eyeButton}
+                                onClick={() => setShowPassword(!showPassword)}
+                                disabled={isLoading}
+                            >
+                                {showPassword ? <EyeIconOpen className={styles.icon}/> :
+                                    <EyeIconClosed className={styles.icon}/>}
+                            </button>
+                        </CustomInput>
 
-                    <RedCustomBtn
-                        isLoading={isLoading}
-                        text={"Sign In"}
-                    />
+                        <RedCustomBtn
+                            isLoading={isLoading}
+                            text={"Sign In"}
+                        />
 
-                    <div>
-                        <div className={styles.registerLink} onClick={() => setIsModalOpen(true)}>Forgot password?</div>
+                        <div>
+                            <div className={styles.forgotPassword}
+                                 onClick={() => setIsModalOpen(true)}>
+                                Forgot password?
+                            </div>
 
-                        <div className={styles.registerLink}>
-                            Don't have an account? <Link to="/register">Register</Link>
+                            <div className={styles.registerLink}>
+                                Don't have an account? <Link to="/register">Register</Link>
+                            </div>
                         </div>
-                    </div>
-                </form>
-                <EnterEmailModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    onConfirm={handleEmailConfirm}
-                    isLoading={isModalLoading}
-                />
+                    </form>
+                    <EnterEmailModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onConfirm={handleEmailConfirm}
+                        isLoading={isModalLoading}
+                    />
+                </div>
             </div>
         </div>
     );

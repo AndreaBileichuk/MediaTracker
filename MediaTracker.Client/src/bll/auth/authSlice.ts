@@ -1,6 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {fetchCurrentUser} from "../account/thunks.ts";
-import {loginUser, registerUser} from "./thunks.ts";
+import {loginUser, registerUser, resetPassword} from "./thunks.ts";
 
 interface AuthState {
     token: string | null;
@@ -57,6 +57,17 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             localStorage.removeItem('token');
         });
+
+        builder
+            .addCase(resetPassword.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(resetPassword.fulfilled, (state) => {
+                state.status = 'succeeded';
+            })
+            .addCase(resetPassword.rejected, (state) => {
+                state.status = 'failed';
+            })
     },
 });
 

@@ -22,13 +22,19 @@ function EnterEmailModal({isOpen, onClose, onConfirm, isLoading}: EnterEmailModa
     function handleSubmit(e : FormEvent<HTMLFormElement>) {
         e.preventDefault();
         onConfirm(email);
+        setEmail("")
+    }
+
+    function handleClose() {
+        onClose();
+        setEmail("")
     }
 
     return createPortal((
-            <div className={s.overlay} onClick={onClose}>
+            <div className={s.overlay} onClick={handleClose}>
                 <div className={s.modal} onClick={(e) => e.stopPropagation()}>
                     <div className={s.header}>
-                        <h3>Write you email</h3>
+                        <h3>Write your email</h3>
                         <button onClick={onClose} className={s.closeBtn}><X size={20}/></button>
                     </div>
 
@@ -43,7 +49,7 @@ function EnterEmailModal({isOpen, onClose, onConfirm, isLoading}: EnterEmailModa
                         />
 
                         <div className={s.footer}>
-                            <button className={s.cancelBtn} onClick={onClose}>Cancel</button>
+                            <button className={s.cancelBtn} onClick={handleClose}>Cancel</button>
                             <RedCustomBtn isLoading={isLoading} text={"Save"}/>
                         </div>
                     </form>

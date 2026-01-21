@@ -77,8 +77,10 @@ public class AuthService(
 
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
 
+        var encodedToken = Uri.EscapeDataString(token);
         var frontendUrl = configuration["FrontEndUrl"];
-        var resetLink = $"{frontendUrl}/reset-password?token={token}&email={user.Email}";
+
+        var resetLink = $"{frontendUrl}/reset-password?token={encodedToken}&email={user.Email}";
 
         await emailService.SendEmailAsync(user.Email, "Reset Password", 
             $"<a href='{resetLink}'>Click here to reset</a>");
@@ -88,7 +90,19 @@ public class AuthService(
 
     public async Task<Result> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
     {
-        throw new NotImplementedException();
+        var user = await userManager.FindByEmailAsync(resetPasswordRequest.Email);
+
+        if (user is null) return Result.Failure(AuthErrors.UserNotFound);
+
+        var result = await userManager.ResetPasswordAsync(user, resetPasswordRequest.Token, resetPasswordRequest.NewPassword);
+
+        if (result.Succeeded) return Result.Success();
+        
+        var errors =  result.Errors
+            .Select(e => new Error(e.Code, e.Description))
+            .ToArray();
+        
+        return ValidationResult.WithErrors(errors);
     }
 
     private string GenerateToken(ApplicationUser user)

@@ -59,78 +59,80 @@ function Register() {
     const isLoading = status === 'loading';
 
     return (
-        <div className={styles.container}>
-            <Shapes ref={shapesRef}/>
-            <div className={styles.box}>
-                <h1 className={styles.title}>
-                    Welcome back to <span>MediaTracker</span>!
-                </h1>
+        <div className={styles.outer}>
+            <div className={styles.container}>
+                <Shapes ref={shapesRef}/>
+                <div className={styles.box}>
+                    <h1 className={styles.title}>
+                        Welcome back to <span>MediaTracker</span>!
+                    </h1>
 
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    {generalError && (
-                        <div className={styles.error} role="alert">
-                            {generalError}
-                        </div>
-                    )}
+                    <form onSubmit={handleSubmit} className={styles.form}>
+                        {generalError && (
+                            <div className={styles.error} role="alert">
+                                {generalError}
+                            </div>
+                        )}
 
-                    <CustomInput
-                        label="Username"
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Your name"
-                        errorMessage={validationErrors["username"]}
-                        onFocus={() => shapesRef.current?.startTyping()}
-                        onBlur={() => shapesRef.current?.reset()}
-                        required
-                        disabled={isLoading}
-                    />
+                        <CustomInput
+                            label="Username"
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Your name"
+                            errorMessage={validationErrors["username"]}
+                            onFocus={() => shapesRef.current?.startTyping()}
+                            onBlur={() => shapesRef.current?.reset()}
+                            required
+                            disabled={isLoading}
+                        />
 
-                    <CustomInput
-                        label="Email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="your@email.com"
-                        errorMessage={validationErrors["email"]}
-                        onFocus={() => shapesRef.current?.startTyping()}
-                        onBlur={() => shapesRef.current?.reset()}
-                        required
-                        disabled={isLoading}
-                    />
+                        <CustomInput
+                            label="Email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="your@email.com"
+                            errorMessage={validationErrors["email"]}
+                            onFocus={() => shapesRef.current?.startTyping()}
+                            onBlur={() => shapesRef.current?.reset()}
+                            required
+                            disabled={isLoading}
+                        />
 
-                    <CustomInput
-                        label="Password"
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        errorMessage={validationErrors["password"]}
-                        onFocus={() => shapesRef.current?.showPassword()}
-                        onBlur={() => shapesRef.current?.reset()}
-                        required
-                        disabled={isLoading}
-                    >
-                        <button
-                            type="button"
-                            className={styles.eyeButton}
-                            onClick={() => setShowPassword(!showPassword)}
+                        <CustomInput
+                            label="Password"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="••••••••"
+                            errorMessage={validationErrors["password"]}
+                            onFocus={() => shapesRef.current?.showPassword()}
+                            onBlur={() => shapesRef.current?.reset()}
+                            required
                             disabled={isLoading}
                         >
-                            {showPassword ? <EyeIconOpen className={styles.icon}/> :
-                                <EyeIconClosed className={styles.icon}/>}
-                        </button>
-                    </CustomInput>
+                            <button
+                                type="button"
+                                className={styles.eyeButton}
+                                onClick={() => setShowPassword(!showPassword)}
+                                disabled={isLoading}
+                            >
+                                {showPassword ? <EyeIconOpen className={styles.icon}/> :
+                                    <EyeIconClosed className={styles.icon}/>}
+                            </button>
+                        </CustomInput>
 
-                    <RedCustomBtn
-                        isLoading={isLoading}
-                        text={"Sign Up"}
-                    />
+                        <RedCustomBtn
+                            isLoading={isLoading}
+                            text={"Sign Up"}
+                        />
 
-                    <div className={styles.registerLink}>
-                        Already have an account? <Link to="/login">Login</Link>
-                    </div>
-                </form>
+                        <div className={styles.registerLink}>
+                            Already have an account? <Link to="/login">Login</Link>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );
