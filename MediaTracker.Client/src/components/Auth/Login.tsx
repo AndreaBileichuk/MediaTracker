@@ -45,6 +45,7 @@ function Login() {
             showSuccess("Login successful! Welcome back!");
         }
         catch (err) {
+            debugger
             const apiResponse = err as BackendResult<string>;
 
             const fieldErrors = mapBackendErrors(apiResponse);

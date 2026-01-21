@@ -118,6 +118,7 @@ static class ServiceExtensions
         {
             options.User.RequireUniqueEmail = true;
             options.SignIn.RequireConfirmedAccount = false;
+            options.SignIn.RequireConfirmedEmail = true;
         })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();

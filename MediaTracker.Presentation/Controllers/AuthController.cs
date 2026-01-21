@@ -1,4 +1,5 @@
-﻿using MediaTracker.BLL.DTOs.Auth;
+﻿using System.Security.Claims;
+using MediaTracker.BLL.DTOs.Auth;
 using MediaTracker.BLL.Infrastructure;
 using MediaTracker.BLL.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
@@ -30,5 +31,11 @@ public class AuthController(IAuthService service) : ControllerBase
     public async Task<Result> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
     {
         return await service.ResetPasswordAsync(resetPasswordRequest);
+    }
+
+    [HttpPost("confirm-email")]
+    public async Task<Result> ConfirmEmail([FromBody] ConfirmEmailRequest confirmEmailRequest)
+    {
+        return await service.ConfirmEmail(User.FindFirstValue(ClaimTypes.NameIdentifier), confirmEmailRequest);
     }
 }

@@ -12,4 +12,6 @@ public interface IAuthService
     Task<Result> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest);
 
     Task<Result> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest);
+
+    Task<Result> ConfirmEmail(string? userId, ConfirmEmailRequest confirmEmailRequest);
 }
