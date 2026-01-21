@@ -1,6 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {fetchCurrentUser} from "../account/thunks.ts";
-import {loginUser, registerUser, resetPassword} from "./thunks.ts";
+import {forgotPassword, loginUser, registerUser, resetPassword} from "./thunks.ts";
 
 interface AuthState {
     token: string | null;
@@ -62,11 +62,22 @@ const authSlice = createSlice({
             .addCase(resetPassword.pending, (state) => {
                 state.status = 'loading';
             })
-            .addCase(resetPassword.fulfilled, (state) => {
-                state.status = 'succeeded';
-            })
             .addCase(resetPassword.rejected, (state) => {
                 state.status = 'failed';
+            })
+            .addCase(resetPassword.fulfilled, state => {
+                state.status = 'succeeded';
+            });
+
+        builder
+            .addCase(forgotPassword.pending, state => {
+                state.status = 'loading';
+            })
+            .addCase(forgotPassword.fulfilled, state => {
+                state.status = 'succeeded';
+            })
+            .addCase(forgotPassword.rejected, (state) => {
+                state.status = 'failed'
             })
     },
 });

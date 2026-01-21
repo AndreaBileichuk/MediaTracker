@@ -1,5 +1,11 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import {authApi, type LoginRequest, type PasswordResetRequest, type RegisterRequest} from "../../api/authApi.ts";
+import {
+    authApi,
+    type ForgotPasswordRequest,
+    type LoginRequest,
+    type PasswordResetRequest,
+    type RegisterRequest
+} from "../../api/authApi.ts";
 import type {BackendResult} from "../../api/types.ts";
 import {handleThunkError} from "../helpers/errorHelpers.ts";
 
@@ -31,6 +37,19 @@ export const registerUser = createAsyncThunk<string, RegisterRequest, {rejectVal
     }
 )
 
+export const forgotPassword = createAsyncThunk<void, ForgotPasswordRequest, {rejectValue: BackendResult<void>}>(
+    'auth/forgotPassword',
+    async (credentials, {rejectWithValue}) => {
+        try {
+            const response = await authApi.forgotPassword(credentials);
+            return response.data.data!;
+        }
+        catch(err) {
+            return handleThunkError(err, rejectWithValue);
+        }
+    }
+)
+
 export const resetPassword = createAsyncThunk<void, PasswordResetRequest, {rejectValue: BackendResult<void>}>
 (
     'auth/resetPassword',
@@ -45,3 +64,4 @@ export const resetPassword = createAsyncThunk<void, PasswordResetRequest, {rejec
         }
     }
 )
+

@@ -8,7 +8,7 @@ import RedCustomBtn from "../../common/CustomButtons/RedCustomBtn.tsx";
 interface EnterEmailModalProps {
     isOpen: boolean,
     onClose: () => void
-    onConfirm: (email: string) => void
+    onConfirm: (email: string) => Promise<void>
     isLoading: boolean
 }
 
@@ -19,9 +19,9 @@ function EnterEmailModal({isOpen, onClose, onConfirm, isLoading}: EnterEmailModa
 
     if (!isOpen || modalRoot == null) return null;
 
-    function handleSubmit(e : FormEvent<HTMLFormElement>) {
+    async function handleSubmit(e : FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        onConfirm(email);
+        await onConfirm(email);
         setEmail("")
     }
 

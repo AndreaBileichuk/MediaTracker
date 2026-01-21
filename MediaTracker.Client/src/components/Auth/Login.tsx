@@ -1,7 +1,7 @@
 import { type FormEvent, useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../bll/store.ts";
-import { loginUser } from "../../bll/auth/thunks.ts";
+import {forgotPassword, loginUser} from "../../bll/auth/thunks.ts";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "./Auth.module.css";
 import Shapes, { type ShapesHandle } from "../InteractableShapes/Shapes.tsx";
@@ -12,8 +12,6 @@ import RedCustomBtn from "../common/CustomButtons/RedCustomBtn.tsx";
 import {showError, showSuccess} from "../../utils/toast.ts";
 import {mapBackendErrors} from "../../bll/helpers/errorHelpers.ts";
 import EnterEmailModal from "./EnterEmailModal/EnterEmailModal.tsx";
-import {authApi} from "../../api/authApi.ts";
-import type {AxiosError} from "axios";
 
 function Login() {
     const shapesRef = useRef<ShapesHandle>(null);
@@ -30,7 +28,6 @@ function Login() {
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isModalLoading, setIsModalLoading] = useState(false);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -63,20 +60,15 @@ function Login() {
 
     async function handleEmailConfirm(email: string) {
         try {
-            setIsModalLoading(true);
-            const response = await authApi.forgotPassword(email);
-
-            if(response.data.isSuccess) {
-                showSuccess("Reset sent to email successfully!");
-            }
+            await dispatch(forgotPassword({email}))
+            showSuccess("Reset sent to email successfully!");
         }
-        catch(e) {
-            const err = e as AxiosError<BackendResult<void>>;
-            showError(err.response?.data.message ?? "Something went wrong.");
+        catch(err) {
+            const apiResponse = err as BackendResult<string>;
+            showError(apiResponse.message ?? "Something went wrong.");
         }
         finally {
             setIsModalOpen(false);
-            setIsModalLoading(false);
         }
     }
 
@@ -154,7 +146,7 @@ function Login() {
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
                         onConfirm={handleEmailConfirm}
-                        isLoading={isModalLoading}
+                        isLoading={isLoading}
                     />
                 </div>
             </div>
