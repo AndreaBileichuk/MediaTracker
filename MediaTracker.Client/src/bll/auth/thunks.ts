@@ -1,6 +1,6 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {
-    authApi,
+    authApi, type ConfirmEmailRequest,
     type ForgotPasswordRequest,
     type LoginRequest,
     type PasswordResetRequest,
@@ -79,3 +79,15 @@ export const resendConfirmation = createAsyncThunk<void, ResendConfirmationReque
     }
 )
 
+export const confirmEmail = createAsyncThunk<void, ConfirmEmailRequest, {rejectValue: BackendResult<void>}>(
+    'auth/confirmEmail',
+    async (credentials, {rejectWithValue}) => {
+        try {
+            const response = await authApi.confirmEmail(credentials);
+            return response.data.data;
+        }
+        catch(err) {
+            return handleThunkError(err, rejectWithValue);
+        }
+    }
+)

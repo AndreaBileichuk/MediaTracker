@@ -26,6 +26,11 @@ export interface ResendConfirmationRequest {
     email: string,
 }
 
+export interface ConfirmEmailRequest {
+    userId: string,
+    code: string
+}
+
 export const authApi = {
     login: async (data: LoginRequest) => {
         return await axiosClient.post<BackendResult<string>>('/auth/login', data);
@@ -41,5 +46,8 @@ export const authApi = {
     },
     resendConfirmation: async (data: ResendConfirmationRequest) => {
         return await axiosClient.post<BackendResult<void>>('/auth/resend-confirmation-email', data);
+    },
+    confirmEmail: async (data: ConfirmEmailRequest) => {
+        return await axiosClient.post<BackendResult<void>>('/auth/confirm-email', data);
     }
 };

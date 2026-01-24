@@ -79,7 +79,6 @@ function Login() {
 
     async function handleResendEmailConfirmation(email: string) {
         try {
-            debugger
             await dispatch(resendConfirmation({email})).unwrap()
             showSuccess("Verification sent to email successfully!");
         }

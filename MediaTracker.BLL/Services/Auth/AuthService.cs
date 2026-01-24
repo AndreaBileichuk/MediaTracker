@@ -22,26 +22,26 @@ public class AuthService(
     SignInManager<ApplicationUser> signInManager,
     IEmailService emailService,
     IConfiguration configuration
-    ) : IAuthService
+) : IAuthService
 {
     public async Task<Result<string>> LoginAsync(LoginRequest loginRequest)
     {
         var user = await userManager.FindByEmailAsync(loginRequest.Email);
-        
+
         if (user == null)
         {
             return Result.Failure<string>(AuthErrors.InvalidCredentials);
         }
-        
+
         var result = await signInManager.CheckPasswordSignInAsync(user, loginRequest.Password, lockoutOnFailure: false);
-        
+
         if (result.Succeeded) return Result.Success(GenerateToken(user));
-        
+
         if (result.IsNotAllowed && !user.EmailConfirmed)
         {
             return Result.Failure<string>(AuthErrors.EmailNotConfirmed);
-        } 
-        
+        }
+
         return Result.Failure<string>(AuthErrors.InvalidCredentials);
     }
 
@@ -52,19 +52,19 @@ public class AuthService(
             Email = registerRequest.Email,
             UserName = registerRequest.UserName
         };
-        
+
         var result = await userManager.CreateAsync(user, registerRequest.Password);
-        
+
         if (result.Succeeded)
         {
             await ResendConfirmation(new ResendConfirmationEmailRequest(user.Email));
             return Result.Success(GenerateToken(user));
         }
 
-        var errors =  result.Errors
+        var errors = result.Errors
             .Select(e => new Error(e.Code, e.Description))
             .ToArray();
-        
+
         return ValidationResult<string>.WithErrors(errors);
     }
 
@@ -85,7 +85,7 @@ public class AuthService(
 
         var resetLink = $"{frontendUrl}/reset-password?token={encodedToken}&email={user.Email}";
 
-        await emailService.SendEmailAsync(user.Email, "Reset Password", 
+        await emailService.SendEmailAsync(user.Email, "Reset Password",
             $"<a href='{resetLink}'>Click here to reset</a>");
 
         return Result.Success();
@@ -97,25 +97,29 @@ public class AuthService(
 
         if (user is null) return Result.Failure(AuthErrors.UserNotFound);
 
-        var result = await userManager.ResetPasswordAsync(user, resetPasswordRequest.Token, resetPasswordRequest.NewPassword);
+        var result =
+            await userManager.ResetPasswordAsync(user, resetPasswordRequest.Token, resetPasswordRequest.NewPassword);
 
         if (result.Succeeded) return Result.Success();
-        
-        var errors =  result.Errors
+
+        var errors = result.Errors
             .Select(e => new Error(e.Code, e.Description))
             .ToArray();
-        
+
         return ValidationResult.WithErrors(errors);
     }
 
-    public async Task<Result> ConfirmEmail(string? userId, ConfirmEmailRequest confirmEmailRequest)
+    public async Task<Result> ConfirmEmail(ConfirmEmailRequest confirmEmailRequest)
     {
-        if (userId == null || string.IsNullOrWhiteSpace(confirmEmailRequest.code)) return Result.Failure(AuthErrors.Unauthorized);
+
+        var (userId, code) = confirmEmailRequest;
+        
+        if (string.IsNullOrWhiteSpace(code)) return Result.Failure(AuthErrors.Unauthorized);
     
         var user = await userManager.FindByIdAsync(userId);
         if (user is null) return Result.Failure(AuthErrors.UserNotFound);
     
-        var decodedBytes = WebEncoders.Base64UrlDecode(confirmEmailRequest.code);
+        var decodedBytes = WebEncoders.Base64UrlDecode(code);
         var codeDecoded = Encoding.UTF8.GetString(decodedBytes);
     
         var result = await userManager.ConfirmEmailAsync(user, codeDecoded);

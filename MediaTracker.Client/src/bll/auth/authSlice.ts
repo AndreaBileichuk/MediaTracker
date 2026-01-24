@@ -1,6 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {fetchCurrentUser} from "../account/thunks.ts";
-import {forgotPassword, loginUser, registerUser, resendConfirmation, resetPassword} from "./thunks.ts";
+import {confirmEmail, forgotPassword, loginUser, registerUser, resendConfirmation, resetPassword} from "./thunks.ts";
 
 interface AuthState {
     token: string | null;
@@ -88,6 +88,17 @@ const authSlice = createSlice({
                 state.status = 'failed'
             })
             .addCase(resendConfirmation.fulfilled, state => {
+                state.status = 'succeeded'
+            })
+
+        builder
+            .addCase(confirmEmail.pending, state => {
+                state.status = 'loading';
+            })
+            .addCase(confirmEmail.rejected, (state) => {
+                state.status = 'failed'
+            })
+            .addCase(confirmEmail.fulfilled, state => {
                 state.status = 'succeeded'
             })
     },

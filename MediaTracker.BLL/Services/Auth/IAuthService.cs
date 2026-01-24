@@ -19,7 +19,7 @@ public interface IAuthService
 
     Task<Result> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest);
 
-    Task<Result> ConfirmEmail(string? userId, ConfirmEmailRequest confirmEmailRequest);
+    Task<Result> ConfirmEmail(ConfirmEmailRequest confirmEmailRequest);
 
     Task<Result> ResendConfirmation(ResendConfirmationEmailRequest resendConfirmationEmailRequest);
 }
