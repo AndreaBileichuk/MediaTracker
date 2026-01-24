@@ -22,11 +22,14 @@ export interface PasswordResetRequest {
     newPassword: string
 }
 
+export interface ResendConfirmationRequest {
+    email: string,
+}
+
 export const authApi = {
     login: async (data: LoginRequest) => {
         return await axiosClient.post<BackendResult<string>>('/auth/login', data);
     },
-
     register: async (data: RegisterRequest) => {
         return await axiosClient.post<BackendResult<string>>('/auth/register', data);
     },
@@ -35,5 +38,8 @@ export const authApi = {
     },
     resetPassword: async (data: PasswordResetRequest) => {
         return await axiosClient.post<BackendResult<void>>('/auth/reset-password', data);
+    },
+    resendConfirmation: async (data: ResendConfirmationRequest) => {
+        return await axiosClient.post<BackendResult<void>>('/auth/resend-confirmation-email', data);
     }
 };

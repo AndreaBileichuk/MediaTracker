@@ -40,7 +40,7 @@ public class AuthController(IAuthService service) : ControllerBase
     }
 
     [HttpPost("resend-confirmation-email")]
-    public async Task<Result> ResendConfirmation(ResendConfirmationEmailRequest resendConfirmationEmailRequest)
+    public async Task<Result> ResendConfirmation([FromBody] ResendConfirmationEmailRequest resendConfirmationEmailRequest)
     {
         return await service.ResendConfirmation(resendConfirmationEmailRequest);
     }

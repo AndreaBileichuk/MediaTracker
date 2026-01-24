@@ -4,7 +4,7 @@ import {
     type ForgotPasswordRequest,
     type LoginRequest,
     type PasswordResetRequest,
-    type RegisterRequest
+    type RegisterRequest, type ResendConfirmationRequest
 } from "../../api/authApi.ts";
 import type {BackendResult} from "../../api/types.ts";
 import {handleThunkError} from "../helpers/errorHelpers.ts";
@@ -56,6 +56,20 @@ export const resetPassword = createAsyncThunk<void, PasswordResetRequest, {rejec
     async (credentials, {rejectWithValue}) => {
         try {
             const response = await authApi.resetPassword(credentials);
+
+            return response.data.data;
+        }
+        catch(err) {
+            return handleThunkError(err, rejectWithValue);
+        }
+    }
+)
+
+export const resendConfirmation = createAsyncThunk<void, ResendConfirmationRequest, {rejectValue: BackendResult<void>}>(
+    'auth/resendConfirmation',
+    async (credentials, {rejectWithValue}) => {
+        try {
+            const response = await authApi.resendConfirmation(credentials);
 
             return response.data.data;
         }

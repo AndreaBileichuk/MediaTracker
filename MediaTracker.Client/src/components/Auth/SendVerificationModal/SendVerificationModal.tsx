@@ -21,7 +21,7 @@ function SendVerificationModal({isOpen, onClose, onConfirm, isLoading, initialEm
     if (!isOpen || modalRoot == null) return null;
 
     async function handleSubmit() {
-        alert("FKDLFKDF")
+        await onConfirm(email);
     }
 
     async function handleClose() {

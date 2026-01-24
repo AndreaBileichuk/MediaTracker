@@ -111,17 +111,17 @@ public class AuthService(
     public async Task<Result> ConfirmEmail(string? userId, ConfirmEmailRequest confirmEmailRequest)
     {
         if (userId == null || string.IsNullOrWhiteSpace(confirmEmailRequest.code)) return Result.Failure(AuthErrors.Unauthorized);
-
+    
         var user = await userManager.FindByIdAsync(userId);
         if (user is null) return Result.Failure(AuthErrors.UserNotFound);
-
+    
         var decodedBytes = WebEncoders.Base64UrlDecode(confirmEmailRequest.code);
         var codeDecoded = Encoding.UTF8.GetString(decodedBytes);
-
+    
         var result = await userManager.ConfirmEmailAsync(user, codeDecoded);
-
+    
         if (!result.Succeeded) return Result.Failure(AuthErrors.EmailVerificationInvalidCode);
-
+    
         return Result.Success();
     }
 
