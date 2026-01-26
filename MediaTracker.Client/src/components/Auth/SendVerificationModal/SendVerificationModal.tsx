@@ -1,5 +1,5 @@
 import {createPortal} from "react-dom";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import s from "../../common/ConfirmationModal/ConfirmationModal.module.css";
 import {X} from "lucide-react";
 import {CustomInput} from "../../common/CustomInput.tsx";
@@ -17,6 +17,10 @@ const modalRoot = document.getElementById("modal");
 
 function SendVerificationModal({isOpen, onClose, onConfirm, isLoading, initialEmail} : SendVerificationModalProps) {
     const [email, setEmail] = useState(initialEmail);
+
+    useEffect(() => {
+        setEmail(initialEmail);
+    }, [initialEmail]);
 
     if (!isOpen || modalRoot == null) return null;
 

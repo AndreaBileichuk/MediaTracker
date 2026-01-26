@@ -45,7 +45,7 @@ public class AuthService(
         return Result.Failure<string>(AuthErrors.InvalidCredentials);
     }
 
-    public async Task<Result<string>> RegisterAsync(RegisterRequest registerRequest)
+    public async Task<Result> RegisterAsync(RegisterRequest registerRequest)
     {
         var user = new ApplicationUser()
         {
@@ -57,8 +57,9 @@ public class AuthService(
 
         if (result.Succeeded)
         {
-            await ResendConfirmation(new ResendConfirmationEmailRequest(user.Email));
-            return Result.Success(GenerateToken(user));
+            await SendConfirmation(new ResendConfirmationEmailRequest(user.Email));
+        
+            return Result.Success();
         }
 
         var errors = result.Errors
@@ -129,7 +130,7 @@ public class AuthService(
         return Result.Success();
     }
 
-    public async Task<Result> ResendConfirmation(ResendConfirmationEmailRequest resendConfirmationEmailRequest)
+    public async Task<Result> SendConfirmation(ResendConfirmationEmailRequest resendConfirmationEmailRequest)
     {
         var user = await userManager.FindByEmailAsync(resendConfirmationEmailRequest.Email);
 

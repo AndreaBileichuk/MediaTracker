@@ -7,10 +7,11 @@ import {Link, useNavigate} from "react-router-dom";
 import {type FormEvent, useEffect, useRef, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import type {AppDispatch, RootState} from "../../bll/store.ts";
-import {registerUser} from "../../bll/auth/thunks.ts";
-import {showSuccess} from "../../utils/toast.ts";
+import {registerUser, resendConfirmation} from "../../bll/auth/thunks.ts";
+import {showError, showSuccess} from "../../utils/toast.ts";
 import type {BackendResult} from "../../api/types.ts";
 import {mapBackendErrors} from "../../bll/helpers/errorHelpers.ts";
+import SendVerificationModal from "./SendVerificationModal/SendVerificationModal.tsx";
 
 function Register() {
     const shapesRef = useRef<ShapesHandle>(null);
@@ -27,6 +28,8 @@ function Register() {
     const [generalError, setGeneralError] = useState<string | null>(null);
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+
     useEffect(() => {
         if (isAuthenticated) {
             navigate("/");
@@ -40,7 +43,8 @@ function Register() {
 
         try {
             await dispatch(registerUser({ username, email, password })).unwrap();
-            showSuccess("You signed up successfully! Welcome!");
+            showSuccess("User registered. Please confirm your email.");
+            setShowConfirmationModal(true);
         }
         catch (err) {
             const apiResponse = err as BackendResult<string>;
@@ -53,6 +57,17 @@ function Register() {
             else {
                 setGeneralError(apiResponse.message || "Signing up failed");
             }
+        }
+    }
+
+    async function handleResendEmailConfirmation(email: string) {
+        try {
+            await dispatch(resendConfirmation({email})).unwrap()
+            showSuccess("Verification sent to email successfully!");
+        }
+        catch(err) {
+            const apiResponse = err as BackendResult<string>;
+            showError(apiResponse.message ?? "Something went wrong.");
         }
     }
 
@@ -134,6 +149,14 @@ function Register() {
                     </form>
                 </div>
             </div>
+
+            <SendVerificationModal
+                isOpen={showConfirmationModal}
+                onClose={() => setShowConfirmationModal(false)}
+                onConfirm={handleResendEmailConfirmation}
+                isLoading={isLoading}
+                initialEmail={email}
+            />
         </div>
     );
 }

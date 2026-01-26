@@ -16,7 +16,7 @@ public class AuthController(IAuthService service) : ControllerBase
     }
     
     [HttpPost("[action]")]
-    public async Task<Result<string>> Register([FromBody] RegisterRequest registerRequest)
+    public async Task<Result> Register([FromBody] RegisterRequest registerRequest)
     {
         return await service.RegisterAsync(registerRequest);
     }
@@ -42,6 +42,6 @@ public class AuthController(IAuthService service) : ControllerBase
     [HttpPost("resend-confirmation-email")]
     public async Task<Result> ResendConfirmation([FromBody] ResendConfirmationEmailRequest resendConfirmationEmailRequest)
     {
-        return await service.ResendConfirmation(resendConfirmationEmailRequest);
+        return await service.SendConfirmation(resendConfirmationEmailRequest);
     }
 }

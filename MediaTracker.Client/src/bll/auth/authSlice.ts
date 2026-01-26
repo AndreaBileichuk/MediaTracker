@@ -42,11 +42,8 @@ const authSlice = createSlice({
             .addCase(registerUser.pending, (state) => {
                 state.status = 'loading';
             })
-            .addCase(registerUser.fulfilled, (state, action) => {
+            .addCase(registerUser.fulfilled, (state) => {
                 state.status = 'succeeded';
-                state.token = action.payload;
-                state.isAuthenticated = true;
-                localStorage.setItem('token', action.payload);
             })
             .addCase(registerUser.rejected, (state) => {
                 state.status = 'failed';

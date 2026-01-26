@@ -13,7 +13,7 @@ public interface IAuthService
 {
     Task<Result<string>> LoginAsync(LoginRequest loginRequest);
 
-    Task<Result<string>> RegisterAsync(RegisterRequest registerRequest);
+    Task<Result> RegisterAsync(RegisterRequest registerRequest);
 
     Task<Result> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest);
 
@@ -21,5 +21,5 @@ public interface IAuthService
 
     Task<Result> ConfirmEmail(ConfirmEmailRequest confirmEmailRequest);
 
-    Task<Result> ResendConfirmation(ResendConfirmationEmailRequest resendConfirmationEmailRequest);
+    Task<Result> SendConfirmation(ResendConfirmationEmailRequest resendConfirmationEmailRequest);
 }
